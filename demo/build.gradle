@@ -8,8 +8,8 @@ android {
         applicationId "com.smoothsync.smoothsetup.demo"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 11
-        versionName "1.0.11"
+        versionCode 18
+        versionName "1.0.18"
     }
     buildTypes {
         release {

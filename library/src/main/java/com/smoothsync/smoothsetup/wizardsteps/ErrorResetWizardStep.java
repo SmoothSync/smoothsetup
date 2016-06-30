@@ -29,21 +29,23 @@ import android.widget.Button;
 
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.WizardStep;
-import com.smoothsync.smoothsetup.wizardcontroller.BroadcastWizardController;
+import com.smoothsync.smoothsetup.wizardtransitions.ResetWizardTransition;
 
 
 /**
  * A WizardStep shows an error message with an option to retry.
+ *
+ * @author Marten Gajda <marten@dmfs.org>
  */
-public final class ErrorWizardStep implements WizardStep
+public final class ErrorResetWizardStep implements WizardStep
 {
 
-	private final static String ARG_RETRY_STEP = "retry_step";
+	private final static String ARG_RESET_STEP = "reset_step";
 
 	private final WizardStep mRetryStep;
 
 
-	public ErrorWizardStep(WizardStep retryStep)
+	public ErrorResetWizardStep(WizardStep retryStep)
 	{
 		this.mRetryStep = retryStep;
 	}
@@ -57,11 +59,18 @@ public final class ErrorWizardStep implements WizardStep
 
 
 	@Override
+	public boolean skipOnBack()
+	{
+		return true;
+	}
+
+
+	@Override
 	public Fragment fragment(Context context)
 	{
 		Fragment result = new ErrorFragment();
 		Bundle arguments = new Bundle();
-		arguments.putParcelable(ARG_RETRY_STEP, mRetryStep);
+		arguments.putParcelable(ARG_RESET_STEP, mRetryStep);
 		arguments.putParcelable(ARG_WIZARD_STEP, this);
 		result.setArguments(arguments);
 		return result;
@@ -81,19 +90,19 @@ public final class ErrorWizardStep implements WizardStep
 		dest.writeParcelable(mRetryStep, flags);
 	}
 
-	public final static Creator<ErrorWizardStep> CREATOR = new Creator<ErrorWizardStep>()
+	public final static Creator<ErrorResetWizardStep> CREATOR = new Creator<ErrorResetWizardStep>()
 	{
 		@Override
-		public ErrorWizardStep createFromParcel(Parcel source)
+		public ErrorResetWizardStep createFromParcel(Parcel source)
 		{
-			return new ErrorWizardStep((WizardStep) source.readParcelable(getClass().getClassLoader()));
+			return new ErrorResetWizardStep((WizardStep) source.readParcelable(getClass().getClassLoader()));
 		}
 
 
 		@Override
-		public ErrorWizardStep[] newArray(int size)
+		public ErrorResetWizardStep[] newArray(int size)
 		{
-			return new ErrorWizardStep[0];
+			return new ErrorResetWizardStep[size];
 		}
 	};
 
@@ -116,7 +125,7 @@ public final class ErrorWizardStep implements WizardStep
 		@Override
 		public void onClick(View v)
 		{
-			new BroadcastWizardController(getContext()).reset((WizardStep) getArguments().getParcelable(ARG_RETRY_STEP), true);
+			new ResetWizardTransition((WizardStep) getArguments().getParcelable(ARG_RESET_STEP)).execute(getContext());
 		}
 	}
 }

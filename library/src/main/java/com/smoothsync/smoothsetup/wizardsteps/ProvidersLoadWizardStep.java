@@ -30,7 +30,7 @@ import com.smoothsync.api.ProductionApi;
 import com.smoothsync.api.ProductionApiClient;
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
-import com.smoothsync.smoothsetup.ProviderLoadTask;
+import com.smoothsync.smoothsetup.ProvidersLoadTask;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.WizardStep;
 import com.smoothsync.smoothsetup.wizardtransitions.AutomaticWizardTransition;
@@ -40,30 +40,27 @@ import org.dmfs.httpclient.httpurlconnection.HttpUrlConnectionExecutor;
 import org.dmfs.oauth2.client.BasicOAuth2ClientCredentials;
 import org.dmfs.oauth2.client.OAuth2ClientCredentials;
 
+import java.util.List;
+
 
 /**
  * A {@link WizardStep} that loads a provider by its id, before moving on to a setup step.
  */
-public final class ProviderLoadWizardStep implements WizardStep
+public final class ProvidersLoadWizardStep implements WizardStep
 {
-	private final static String ARG_PROVIDER_ID = "provider-id";
 	private final static String ARG_ACCOUNT = "account";
 
-	private final String mProviderId;
 	private final String mAccount;
 
 
 	/**
 	 * Create a ProviderLoadWizardStep that loads the provider with the given id.
-	 * 
-	 * @param providerId
-	 *            The provider id.
+	 *
 	 * @param account
 	 *            An optional account to set up.
 	 */
-	public ProviderLoadWizardStep(String providerId, String account)
+	public ProvidersLoadWizardStep(String account)
 	{
-		mProviderId = providerId;
 		mAccount = account;
 	}
 
@@ -87,7 +84,6 @@ public final class ProviderLoadWizardStep implements WizardStep
 	{
 		Fragment result = new LoadFragment();
 		Bundle args = new Bundle();
-		args.putString(ARG_PROVIDER_ID, mProviderId);
 		args.putString(ARG_ACCOUNT, mAccount);
 		args.putParcelable(ARG_WIZARD_STEP, this);
 		result.setArguments(args);
@@ -105,27 +101,26 @@ public final class ProviderLoadWizardStep implements WizardStep
 	@Override
 	public void writeToParcel(Parcel dest, int flags)
 	{
-		dest.writeString(mProviderId);
 		dest.writeString(mAccount);
 	}
 
 	public final static Creator CREATOR = new Creator()
 	{
 		@Override
-		public ProviderLoadWizardStep createFromParcel(Parcel source)
+		public ProvidersLoadWizardStep createFromParcel(Parcel source)
 		{
-			return new ProviderLoadWizardStep(source.readString(), source.readString());
+			return new ProvidersLoadWizardStep(source.readString());
 		}
 
 
 		@Override
-		public ProviderLoadWizardStep[] newArray(int size)
+		public ProvidersLoadWizardStep[] newArray(int size)
 		{
-			return new ProviderLoadWizardStep[size];
+			return new ProvidersLoadWizardStep[size];
 		}
 	};
 
-	public static class LoadFragment extends Fragment implements ProviderLoadTask.LoaderCallback
+	public static class LoadFragment extends Fragment implements ProvidersLoadTask.LoaderCallback
 	{
 
 		@Nullable
@@ -149,22 +144,23 @@ public final class ProviderLoadWizardStep implements WizardStep
 
 			SmoothSyncApi api = new ProductionApi(executor, client);
 
-			new ProviderLoadTask(api, this).execute(getArguments().getString(ARG_PROVIDER_ID));
+			new ProvidersLoadTask(api, this).execute();
 		}
 
 
 		@Override
-		public void onLoad(final Provider provider)
+		public void onLoad(final List<Provider> providers)
 		{
 			if (isAdded())
 			{
-				if (provider == null)
+				if (providers == null)
 				{
-					new AutomaticWizardTransition(new ErrorResetWizardStep((WizardStep) getArguments().getParcelable(ARG_WIZARD_STEP))).execute(getContext());
+					new AutomaticWizardTransition(new ErrorRetryWizardStep()).execute(getContext());
 				}
 				else
 				{
-					new AutomaticWizardTransition(new ProviderLoginWizardStep(provider, getArguments().getString(ARG_ACCOUNT))).execute(getContext());
+					new AutomaticWizardTransition(
+						new ChooseProviderStep(providers.toArray(new Provider[providers.size()]), getArguments().getString(ARG_ACCOUNT))).execute(getContext());
 				}
 			}
 		}

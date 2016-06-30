@@ -51,7 +51,14 @@ public final class GenericProviderWizardStep implements WizardStep
 	@Override
 	public String title(Context context)
 	{
-		return "Login";
+		return context.getString(R.string.smoothsetup_wizard_title_login);
+	}
+
+
+	@Override
+	public boolean skipOnBack()
+	{
+		return false;
 	}
 
 

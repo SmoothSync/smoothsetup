@@ -23,6 +23,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.smoothsync.smoothsetup.R;
+import com.smoothsync.smoothsetup.wizardsteps.ProvidersLoadWizardStep;
+import com.smoothsync.smoothsetup.wizardtransitions.RegularWizardTransition;
 
 import org.dmfs.httpclient.exceptions.ProtocolException;
 
@@ -138,6 +140,7 @@ public final class FixedButtonSetupAdapter extends AbstractSmoothSetupAdapter
 				@Override
 				public void onClick(View v)
 				{
+					new RegularWizardTransition(new ProvidersLoadWizardStep("")).execute(v.getContext());
 				}
 			});
 		}

@@ -51,4 +51,12 @@ public interface WizardStep extends Parcelable
 	 * @return A {@link Fragment}.
 	 */
 	public Fragment fragment(Context context);
+
+
+	/**
+	 * True if this step should be skipped when going back to the previous step.
+	 * 
+	 * @return
+	 */
+	public boolean skipOnBack();
 }

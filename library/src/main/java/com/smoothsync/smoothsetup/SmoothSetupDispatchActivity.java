@@ -29,7 +29,7 @@ import android.text.TextUtils;
 import com.smoothsync.smoothsetup.model.WizardStep;
 import com.smoothsync.smoothsetup.wizardsteps.GenericProviderWizardStep;
 import com.smoothsync.smoothsetup.wizardsteps.ProviderLoadWizardStep;
-import com.smoothsync.smoothsetup.wizardsteps.WaitForBroadcastWizardStep;
+import com.smoothsync.smoothsetup.wizardsteps.WaitForReferrerWizardStep;
 
 
 /**
@@ -100,7 +100,7 @@ public final class SmoothSetupDispatchActivity extends AppCompatActivity
 		}
 
 		// launch wait fo the referrer braodcast
-		launchStep(new WaitForBroadcastWizardStep());
+		launchStep(new WaitForReferrerWizardStep());
 	}
 
 

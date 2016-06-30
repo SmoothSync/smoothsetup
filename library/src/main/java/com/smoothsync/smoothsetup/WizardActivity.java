@@ -26,16 +26,14 @@ import android.os.Handler;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.AutoCompleteTextView;
 
 import com.smoothsync.smoothsetup.model.WizardStep;
-import com.smoothsync.smoothsetup.wizardcontroller.BroadcastWizardController;
+import com.smoothsync.smoothsetup.wizardtransitions.AbstractBroadcastWizardTransition;
 
 
 /**
@@ -53,8 +51,8 @@ public final class WizardActivity extends AppCompatActivity implements FragmentM
 
 	private FragmentManager mFragmentManager;
 	private final Handler mHandler = new Handler();
-	AutoCompleteTextView mLogin;
-	WizardStep mWizardStep;
+	private WizardStep mWizardStep;
+	private int bsdepth = 0;
 
 
 	public static void launch(Context context, WizardStep initialWizardStep)
@@ -87,6 +85,8 @@ public final class WizardActivity extends AppCompatActivity implements FragmentM
 		mFragmentManager = getSupportFragmentManager();
 		mWizardStep = config.getParcelable(KEY_INITIAL_WIZARD_STEP);
 
+		getSupportFragmentManager().addOnBackStackChangedListener(this);
+
 		if (savedInstanceState == null)
 		{
 			getSupportActionBar().setTitle(mWizardStep.title(WizardActivity.this));
@@ -94,11 +94,8 @@ public final class WizardActivity extends AppCompatActivity implements FragmentM
 		}
 		else
 		{
-			// make sure the toolbar is setup up properly.
-			onBackStackChanged();
+			updateActionBar();
 		}
-
-		getSupportFragmentManager().addOnBackStackChangedListener(this);
 	}
 
 
@@ -108,10 +105,8 @@ public final class WizardActivity extends AppCompatActivity implements FragmentM
 		super.onResume();
 		// set up wizard controller
 		IntentFilter filter = new IntentFilter();
-		filter.addAction(BroadcastWizardController.NEXT_STEP_ACTION);
-		filter.addAction(BroadcastWizardController.PREV_STEP_ACTION);
-		filter.addAction(BroadcastWizardController.RESTART_ACTION);
-		LocalBroadcastManager.getInstance(this).registerReceiver(mWizardControlReceiver, filter);
+		filter.addAction(AbstractBroadcastWizardTransition.ACTION_WIZARD_TRANSITION);
+		LocalBroadcastManager.getInstance(this).registerReceiver(mWizardTransactionReceiver, filter);
 	}
 
 
@@ -119,11 +114,11 @@ public final class WizardActivity extends AppCompatActivity implements FragmentM
 	protected void onPause()
 	{
 		// clear the broadcast receiver, to make sure we don't perform any fragment transactions after onSaveInstanceState, we do this in onPause.
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(mWizardControlReceiver);
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mWizardTransactionReceiver);
 		super.onPause();
 	}
 
-	private final BroadcastReceiver mWizardControlReceiver = new BroadcastReceiver()
+	private final BroadcastReceiver mWizardTransactionReceiver = new BroadcastReceiver()
 	{
 		@Override
 		public void onReceive(final Context context, final Intent intent)
@@ -134,60 +129,16 @@ public final class WizardActivity extends AppCompatActivity implements FragmentM
 				@Override
 				public void run()
 				{
-					if (BroadcastWizardController.NEXT_STEP_ACTION.equals(intent.getAction()))
+					if (AbstractBroadcastWizardTransition.ACTION_WIZARD_TRANSITION.equals(intent.getAction()))
 					{
-						mWizardStep = ((WizardStep) intent.getParcelableExtra(BroadcastWizardController.EXTRA_WIZARDSTEP));
+						AbstractBroadcastWizardTransition wizardTransition = intent
+							.getParcelableExtra(AbstractBroadcastWizardTransition.EXTRA_WIZARD_TRANSITION);
+						wizardTransition.apply(WizardActivity.this, mFragmentManager,
+							(WizardStep) mFragmentManager.findFragmentById(R.id.wizards).getArguments().getParcelable(WizardStep.ARG_WIZARD_STEP));
+						mFragmentManager.executePendingTransactions();
 
-						FragmentTransaction transaction = mFragmentManager.beginTransaction();
-						if (intent.getBooleanExtra(BroadcastWizardController.EXTRA_IS_AUTOMATIC, false))
-						{
-							transaction.setCustomAnimations(R.anim.smoothsetup_fade_in, R.anim.smoothsetup_fade_out);
-						}
-						else
-						{
-							transaction.setCustomAnimations(R.anim.smoothsetup_enter_right, R.anim.smoothsetup_exit_left, R.anim.smoothsetup_enter_left,
-								R.anim.smoothsetup_exit_right);
-						}
-						transaction.replace(R.id.wizards, mWizardStep.fragment(WizardActivity.this));
-						if (intent.getBooleanExtra(BroadcastWizardController.EXTRA_CAN_RETURN, true))
-						{
-							transaction.addToBackStack(null);
-						}
-						else
-						{
-							// if we don't change the back stack we have to make sure the title is still set up correctly.
-							CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-							collapsingToolbar.setTitle(mWizardStep.title(WizardActivity.this));
-						}
-						transaction.commit();
-					}
-					else if (BroadcastWizardController.RESTART_ACTION.equals(intent.getAction()))
-					{
-						mWizardStep = ((WizardStep) intent.getParcelableExtra(BroadcastWizardController.EXTRA_WIZARDSTEP));
-
-						while (mFragmentManager.popBackStackImmediate())
-						{
-						}
-						FragmentTransaction transaction = mFragmentManager.beginTransaction();
-						if (intent.getBooleanExtra(BroadcastWizardController.EXTRA_IS_AUTOMATIC, false))
-						{
-							transaction.setCustomAnimations(R.anim.smoothsetup_fade_in, R.anim.smoothsetup_fade_out);
-						}
-						else
-						{
-							transaction.setCustomAnimations(R.anim.smoothsetup_enter_left, R.anim.smoothsetup_exit_right);
-						}
-						transaction.replace(R.id.wizards, mWizardStep.fragment(WizardActivity.this));
-
-						// if we don't change the back stack we have to make sure the title is still set up correctly.
-						CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-						collapsingToolbar.setTitle(mWizardStep.title(WizardActivity.this));
-
-						transaction.commit();
-					}
-					else if (BroadcastWizardController.PREV_STEP_ACTION.equals(intent.getAction()))
-					{
-						onBackPressed();
+						// not all transitions affect the back stack so make sure we still update the actionbar.
+						updateActionBar();
 					}
 				}
 			});
@@ -210,7 +161,23 @@ public final class WizardActivity extends AppCompatActivity implements FragmentM
 	@Override
 	public void onBackStackChanged()
 	{
-		// the backstack has changed, update the UI if the fragment is a wizard fragment
+		if (mFragmentManager.getBackStackEntryCount() < bsdepth)
+		{
+			// the user went back, make sure we skip all skipable steps.
+			if (mFragmentManager.getBackStackEntryCount() > 0
+				&& "skip".equals(mFragmentManager.getBackStackEntryAt(mFragmentManager.getBackStackEntryCount() - 1).getName()))
+			{
+				mFragmentManager.popBackStackImmediate("skip", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+			}
+		}
+		bsdepth = mFragmentManager.getBackStackEntryCount();
+
+		updateActionBar();
+	}
+
+
+	private void updateActionBar()
+	{
 		Fragment fragment = mFragmentManager.findFragmentById(R.id.wizards);
 		Bundle arguments = fragment.getArguments();
 		if (arguments == null)

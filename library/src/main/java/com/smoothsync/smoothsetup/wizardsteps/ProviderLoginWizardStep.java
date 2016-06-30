@@ -68,6 +68,13 @@ public final class ProviderLoginWizardStep implements WizardStep
 
 
 	@Override
+	public boolean skipOnBack()
+	{
+		return false;
+	}
+
+
+	@Override
 	public Fragment fragment(Context context)
 	{
 		return LoginFragment.newInstance(this, new ProviderLoginFormAdapterFactory(mProvider), mAccount);
@@ -104,7 +111,7 @@ public final class ProviderLoginWizardStep implements WizardStep
 		}
 	};
 
-	private static class ProviderLoginFormAdapterFactory implements LoginFragment.LoginFormAdapterFactory
+	private final static class ProviderLoginFormAdapterFactory implements LoginFragment.LoginFormAdapterFactory
 	{
 		private final Provider mProvider;
 

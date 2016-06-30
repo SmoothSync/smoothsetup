@@ -25,53 +25,43 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Button;
 
 import com.smoothsync.smoothsetup.R;
-import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.model.WizardStep;
-
-import org.dmfs.httpclient.exceptions.ProtocolException;
+import com.smoothsync.smoothsetup.wizardtransitions.BackWizardTransition;
 
 
 /**
- * A WizardStep that prompts the user to enter a password after Account has been chosen.
- *
- * @author Marten Gajda <marten@dmfs.org>
+ * A WizardStep shows an error message with an option to retry.
  */
-public final class PasswordWizardStep implements WizardStep
+public final class ErrorRetryWizardStep implements WizardStep
 {
-	private final static String ARG_ACCOUNT = "account";
 
-	private final Account mAccount;
-
-
-	public PasswordWizardStep(Account account)
+	public ErrorRetryWizardStep()
 	{
-		mAccount = account;
 	}
 
 
 	@Override
 	public String title(Context context)
 	{
-		return context.getString(R.string.smoothsetup_wizard_title_enter_password);
+		return context.getString(R.string.smoothsetup_error);
 	}
 
 
 	@Override
 	public boolean skipOnBack()
 	{
-		return false;
+		return true;
 	}
 
 
 	@Override
 	public Fragment fragment(Context context)
 	{
-		Fragment result = new PasswordFragment();
+		Fragment result = new ErrorFragment();
 		Bundle arguments = new Bundle();
-		arguments.putParcelable(ARG_ACCOUNT, mAccount);
 		arguments.putParcelable(ARG_WIZARD_STEP, this);
 		result.setArguments(arguments);
 		return result;
@@ -88,50 +78,44 @@ public final class PasswordWizardStep implements WizardStep
 	@Override
 	public void writeToParcel(Parcel dest, int flags)
 	{
-		dest.writeParcelable(mAccount, flags);
 	}
 
-	public final static Creator<PasswordWizardStep> CREATOR = new Creator<PasswordWizardStep>()
+	public final static Creator<ErrorRetryWizardStep> CREATOR = new Creator<ErrorRetryWizardStep>()
 	{
 		@Override
-		public PasswordWizardStep createFromParcel(Parcel source)
+		public ErrorRetryWizardStep createFromParcel(Parcel source)
 		{
-			return new PasswordWizardStep((Account) source.readParcelable(getClass().getClassLoader()));
+			return new ErrorRetryWizardStep();
 		}
 
 
 		@Override
-		public PasswordWizardStep[] newArray(int size)
+		public ErrorRetryWizardStep[] newArray(int size)
 		{
-			return new PasswordWizardStep[0];
+			return new ErrorRetryWizardStep[size];
 		}
 	};
 
 	/**
-	 * A Fragment that prompts the user for his or her password.
+	 * A Fragment that shows an error with an option to retry.
 	 */
-	public final static class PasswordFragment extends Fragment
+	public static class ErrorFragment extends Fragment implements View.OnClickListener
 	{
 
 		@Nullable
 		@Override
 		public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
 		{
-			View result = inflater.inflate(R.layout.smoothsetup_wizard_fragment_password, container, false);
-
-			Account account = getArguments().getParcelable(ARG_ACCOUNT);
-
-			try
-			{
-				((TextView) result.findViewById(android.R.id.message))
-					.setText(getContext().getString(R.string.smoothsetup_enter_password_prompt, account.provider().name()));
-			}
-			catch (ProtocolException e)
-			{
-				throw new RuntimeException("can't get provider name", e);
-			}
+			View result = inflater.inflate(R.layout.smoothsetup_wizard_fragment_error, container, false);
+			((Button) result.findViewById(android.R.id.button1)).setOnClickListener(this);
 			return result;
 		}
 
+
+		@Override
+		public void onClick(View v)
+		{
+			new BackWizardTransition().execute(getContext());
+		}
 	}
 }

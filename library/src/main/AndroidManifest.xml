@@ -16,10 +16,6 @@
             android:excludeFromRecents="true"
             android:exported="true"
             android:theme="@android:style/Theme.NoDisplay">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"></action>
-                <category android:name="android.intent.category.LAUNCHER"></category>
-            </intent-filter>
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW"></action>
 
@@ -32,10 +28,6 @@
                     android:scheme="https"/>
 
             </intent-filter>
-
-            <meta-data
-                android:name="com.smoothsync.PROVIDERx"
-                android:value="136f0ab6eac14fde9211ecfee33cb73e"/>
         </activity>
 
         <receiver

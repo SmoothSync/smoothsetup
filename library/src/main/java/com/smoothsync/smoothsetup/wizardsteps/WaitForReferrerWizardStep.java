@@ -32,7 +32,7 @@ import android.view.ViewGroup;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.SmoothSetupDispatchActivity;
 import com.smoothsync.smoothsetup.model.WizardStep;
-import com.smoothsync.smoothsetup.wizardcontroller.BroadcastWizardController;
+import com.smoothsync.smoothsetup.wizardtransitions.AutomaticWizardTransition;
 
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-public final class WaitForBroadcastWizardStep implements WizardStep
+public final class WaitForReferrerWizardStep implements WizardStep
 {
 
 	@Override
@@ -53,9 +53,20 @@ public final class WaitForBroadcastWizardStep implements WizardStep
 
 
 	@Override
+	public boolean skipOnBack()
+	{
+		return true;
+	}
+
+
+	@Override
 	public Fragment fragment(Context context)
 	{
-		return new WaitForReferrerFragment();
+		Fragment result = new WaitForReferrerFragment();
+		Bundle arguments = new Bundle();
+		arguments.putParcelable(ARG_WIZARD_STEP, this);
+		result.setArguments(arguments);
+		return result;
 	}
 
 
@@ -75,16 +86,16 @@ public final class WaitForBroadcastWizardStep implements WizardStep
 	public final static Creator CREATOR = new Creator()
 	{
 		@Override
-		public WaitForBroadcastWizardStep createFromParcel(Parcel source)
+		public WaitForReferrerWizardStep createFromParcel(Parcel source)
 		{
-			return new WaitForBroadcastWizardStep();
+			return new WaitForReferrerWizardStep();
 		}
 
 
 		@Override
-		public WaitForBroadcastWizardStep[] newArray(int size)
+		public WaitForReferrerWizardStep[] newArray(int size)
 		{
-			return new WaitForBroadcastWizardStep[0];
+			return new WaitForReferrerWizardStep[size];
 		}
 	};
 
@@ -148,8 +159,8 @@ public final class WaitForBroadcastWizardStep implements WizardStep
 				return;
 			}
 
-			new BroadcastWizardController(getActivity()).forward(new ProviderLoadWizardStep(uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_PROVIDER),
-				uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_ACCOUNT)), false /* no return */, true /* automatic */);
+			new AutomaticWizardTransition(new ProviderLoadWizardStep(uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_PROVIDER),
+				uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_ACCOUNT))).execute(getContext());
 		}
 
 		/**
@@ -164,7 +175,7 @@ public final class WaitForBroadcastWizardStep implements WizardStep
 				mPreferences.edit().putString("referrer", "").apply();
 
 				// move on
-				new BroadcastWizardController(getActivity()).forward(new GenericProviderWizardStep(), false /* no return */, true /* automatic */);
+				new AutomaticWizardTransition(new GenericProviderWizardStep()).execute(getContext());
 			}
 		};
 	}
