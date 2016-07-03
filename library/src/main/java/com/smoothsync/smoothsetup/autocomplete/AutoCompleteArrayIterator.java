@@ -17,12 +17,12 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
+import java.util.Iterator;
+
 import org.dmfs.iterators.ArrayIterator;
 import org.dmfs.iterators.ConvertedIterator;
 import org.dmfs.iterators.FilteredIterator;
 import org.dmfs.iterators.filters.NonNull;
-
-import java.util.Iterator;
 
 
 /**

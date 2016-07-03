@@ -17,19 +17,21 @@
 
 package com.smoothsync.smoothsetup.setupbuttons;
 
-import android.support.v4.util.LruCache;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import java.util.Collections;
+import java.util.List;
+
+import org.dmfs.httpclient.exceptions.ProtocolException;
 
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
+import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
+import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
-import org.dmfs.httpclient.exceptions.ProtocolException;
-
-import java.util.Collections;
-import java.util.List;
+import android.support.v4.util.LruCache;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 
 /**
@@ -105,13 +107,20 @@ public final class ApiSmoothSetupAdapter extends AbstractSmoothSetupAdapter
 
 	public void update(String value)
 	{
-		new ProviderSearchTask(mApi, new ProviderSearchTask.LoaderCallback()
+		new ProviderSearchTask(mApi, new ThrowingAsyncTask.OnLoadCallback<List<Provider>>()
 		{
 			@Override
-			public void onLoad(List<Provider> providers)
+			public void onLoad(AsyncTaskResult<List<Provider>> result)
 			{
-				mProviders = providers;
-				notifyDataSetChanged();
+				try
+				{
+					mProviders = result.value();
+					notifyDataSetChanged();
+				}
+				catch (Exception e)
+				{
+					// ignore
+				}
 			}
 		}).execute(value);
 	}

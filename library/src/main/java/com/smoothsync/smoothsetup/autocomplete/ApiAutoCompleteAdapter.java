@@ -17,16 +17,16 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
-import android.util.LruCache;
-import android.widget.Filter;
-
-import com.smoothsync.api.SmoothSyncApi;
-import com.smoothsync.api.model.AutoCompleteResult;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import com.smoothsync.api.SmoothSyncApi;
+import com.smoothsync.api.model.AutoCompleteResult;
+
+import android.util.LruCache;
+import android.widget.Filter;
 
 
 /**
@@ -103,7 +103,16 @@ public final class ApiAutoCompleteAdapter extends AbstractAutoCompleteAdapter
 			String localPart = prefixStr.substring(0, atPos);
 			String domainPart = prefixStr.substring(atPos + 1);
 
+			// fetch the auto-complete result
 			AutoCompleteResult autoCompleteResult = mResultCache.get(domainPart);
+
+			if (domainPart.length() < 2)
+			{
+				// require at least two characters of the domain before presenting auto-completion results.
+				// note: we still run the request with a single char prior to this check, to cache the result as early as possible
+				return results;
+			}
+
 			if (autoCompleteResult == null)
 			{
 				// no result, no results either

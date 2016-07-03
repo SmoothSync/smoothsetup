@@ -32,9 +32,20 @@ public interface ButtonViewHolder
 	 * Update the text of the button.
 	 * 
 	 * @param text
-	 *            The new butotn text.
+	 *            The new button text.
 	 */
 	public void updateText(String text);
+
+
+	/**
+	 * Update the text of the button.
+	 *
+	 * @param stringResourceId
+	 *            A string resource id.
+	 * @param parameters
+	 *            Positional parameters.
+	 */
+	public void updateText(int stringResourceId, Object... parameters);
 
 
 	/**

@@ -19,6 +19,7 @@ package com.smoothsync.smoothsetup.wizardsteps;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcel;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -33,6 +34,8 @@ import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.ProvidersLoadTask;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.WizardStep;
+import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
+import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 import com.smoothsync.smoothsetup.wizardtransitions.AutomaticWizardTransition;
 
 import org.dmfs.httpclient.HttpRequestExecutor;
@@ -120,14 +123,22 @@ public final class ProvidersLoadWizardStep implements WizardStep
 		}
 	};
 
-	public static class LoadFragment extends Fragment implements ProvidersLoadTask.LoaderCallback
+	public static class LoadFragment extends Fragment implements ThrowingAsyncTask.OnLoadCallback<List<Provider>>
 	{
+		private final static int DELAY_WAIT_MESSAGE = 2500;
+
+		private View mWaitMessage;
+		private Handler mHandler = new Handler();
+
 
 		@Nullable
 		@Override
 		public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
 		{
-			return inflater.inflate(R.layout.smoothsetup_wizard_fragment_loading, container, false);
+			View result = inflater.inflate(R.layout.smoothsetup_wizard_fragment_loading, container, false);
+			mWaitMessage = result.findViewById(android.R.id.message);
+			mHandler.postDelayed(mShowWaitMessage, DELAY_WAIT_MESSAGE);
+			return result;
 		}
 
 
@@ -149,20 +160,38 @@ public final class ProvidersLoadWizardStep implements WizardStep
 
 
 		@Override
-		public void onLoad(final List<Provider> providers)
+		public void onDetach()
+		{
+			mHandler.removeCallbacks(mShowWaitMessage);
+			super.onDetach();
+		}
+
+
+		@Override
+		public void onLoad(final AsyncTaskResult<List<Provider>> result)
 		{
 			if (isAdded())
 			{
-				if (providers == null)
+				try
 				{
-					new AutomaticWizardTransition(new ErrorRetryWizardStep()).execute(getContext());
-				}
-				else
-				{
+					List<Provider> providers = result.value();
 					new AutomaticWizardTransition(
 						new ChooseProviderStep(providers.toArray(new Provider[providers.size()]), getArguments().getString(ARG_ACCOUNT))).execute(getContext());
 				}
+				catch (Exception e)
+				{
+					new AutomaticWizardTransition(new ErrorRetryWizardStep()).execute(getContext());
+				}
 			}
 		}
+
+		private final Runnable mShowWaitMessage = new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				mWaitMessage.animate().alpha(1f).start();
+			}
+		};
 	}
 }

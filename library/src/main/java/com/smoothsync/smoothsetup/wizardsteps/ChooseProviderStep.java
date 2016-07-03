@@ -24,6 +24,7 @@ import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +35,7 @@ import com.smoothsync.smoothsetup.model.BasicAccount;
 import com.smoothsync.smoothsetup.model.ParcelableProvider;
 import com.smoothsync.smoothsetup.model.WizardStep;
 import com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter;
-import com.smoothsync.smoothsetup.wizardtransitions.RegularWizardTransition;
+import com.smoothsync.smoothsetup.wizardtransitions.ForwardWizardTransition;
 
 import org.dmfs.httpclient.exceptions.ProtocolException;
 
@@ -182,7 +183,15 @@ public final class ChooseProviderStep implements WizardStep
 		@Override
 		public void onProviderSelected(Provider provider)
 		{
-			new RegularWizardTransition(new PasswordWizardStep(new BasicAccount(getArguments().getString(ARG_ACCOUNT), provider))).execute(getContext());
+			String account = getArguments().getString(ARG_ACCOUNT);
+			if (TextUtils.isEmpty(account))
+			{
+				new ForwardWizardTransition((new ProviderLoginWizardStep(provider, ""))).execute(getContext());
+			}
+			else
+			{
+				new ForwardWizardTransition(new PasswordWizardStep(new BasicAccount(account, provider))).execute(getContext());
+			}
 		}
 	}
 }

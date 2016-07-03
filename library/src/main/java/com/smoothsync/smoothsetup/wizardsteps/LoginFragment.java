@@ -42,7 +42,7 @@ import com.smoothsync.smoothsetup.model.WizardStep;
 import com.smoothsync.smoothsetup.setupbuttons.AbstractSmoothSetupAdapter;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter;
-import com.smoothsync.smoothsetup.wizardtransitions.RegularWizardTransition;
+import com.smoothsync.smoothsetup.wizardtransitions.ForwardWizardTransition;
 
 import org.dmfs.httpclient.exceptions.ProtocolException;
 
@@ -152,6 +152,6 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
 	@Override
 	public void onProviderSelected(Provider provider)
 	{
-		new RegularWizardTransition(new PasswordWizardStep(new BasicAccount(mLogin.getText().toString(), provider))).execute(getContext());
+		new ForwardWizardTransition(new PasswordWizardStep(new BasicAccount(mLogin.getText().toString(), provider))).execute(getContext());
 	}
 }

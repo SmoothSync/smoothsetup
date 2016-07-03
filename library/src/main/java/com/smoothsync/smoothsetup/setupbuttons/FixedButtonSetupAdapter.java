@@ -17,149 +17,125 @@
 
 package com.smoothsync.smoothsetup.setupbuttons;
 
+import org.dmfs.httpclient.exceptions.ProtocolException;
+
+import com.smoothsync.smoothsetup.R;
+import com.smoothsync.smoothsetup.wizardsteps.ProvidersLoadWizardStep;
+import com.smoothsync.smoothsetup.wizardtransitions.ForwardWizardTransition;
+
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.smoothsync.smoothsetup.R;
-import com.smoothsync.smoothsetup.wizardsteps.ProvidersLoadWizardStep;
-import com.smoothsync.smoothsetup.wizardtransitions.RegularWizardTransition;
-
-import org.dmfs.httpclient.exceptions.ProtocolException;
-
 
 /**
  * Created by marten on 12.06.16.
  */
-public final class FixedButtonSetupAdapter extends AbstractSmoothSetupAdapter
-{
+public final class FixedButtonSetupAdapter extends AbstractSmoothSetupAdapter {
 
-	private final AbstractSmoothSetupAdapter mDecorated;
-	private final RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver()
-	{
-		@Override
-		public void onItemRangeChanged(int positionStart, int itemCount)
-		{
-			notifyItemChanged(positionStart, itemCount);
-		}
+    private final AbstractSmoothSetupAdapter mDecorated;
+    private final RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
+        @Override
+        public void onItemRangeChanged(int positionStart, int itemCount) {
+            notifyItemChanged(positionStart, itemCount);
+        }
 
 
-		@Override
-		public void onItemRangeChanged(int positionStart, int itemCount, Object payload)
-		{
-			notifyItemRangeChanged(positionStart, itemCount, payload);
-		}
+        @Override
+        public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
+            notifyItemRangeChanged(positionStart, itemCount, payload);
+        }
 
 
-		@Override
-		public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount)
-		{
-			for (int i = 0; i < itemCount; ++i)
-			{
-				notifyItemMoved(fromPosition + i, toPosition + i);
-			}
-		}
+        @Override
+        public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+            for (int i = 0; i < itemCount; ++i) {
+                notifyItemMoved(fromPosition + i, toPosition + i);
+            }
+        }
 
 
-		@Override
-		public void onItemRangeInserted(int positionStart, int itemCount)
-		{
-			notifyItemRangeInserted(positionStart, itemCount);
-			notifyItemChanged(getItemCount() - 1);
-		}
+        @Override
+        public void onItemRangeInserted(int positionStart, int itemCount) {
+            notifyItemRangeInserted(positionStart, itemCount);
+            notifyItemChanged(getItemCount() - 1);
+        }
 
 
-		@Override
-		public void onItemRangeRemoved(int positionStart, int itemCount)
-		{
-			notifyItemRangeRemoved(positionStart, itemCount);
-			notifyItemChanged(getItemCount() - 1);
-		}
+        @Override
+        public void onItemRangeRemoved(int positionStart, int itemCount) {
+            notifyItemRangeRemoved(positionStart, itemCount);
+            notifyItemChanged(getItemCount() - 1);
+        }
 
 
-		@Override
-		public void onChanged()
-		{
-			notifyDataSetChanged();
-		}
-	};
+        @Override
+        public void onChanged() {
+            notifyDataSetChanged();
+        }
+    };
 
 
-	public FixedButtonSetupAdapter(AbstractSmoothSetupAdapter decorated, OnProviderSelectListener listener)
-	{
-		super(listener);
-		mDecorated = decorated;
-		mDecorated.registerAdapterDataObserver(mDataObserver);
-	}
+    public FixedButtonSetupAdapter(AbstractSmoothSetupAdapter decorated, OnProviderSelectListener listener) {
+        super(listener);
+        mDecorated = decorated;
+        mDecorated.registerAdapterDataObserver(mDataObserver);
+    }
 
 
-	@Override
-	public int getItemViewType(int position)
-	{
-		if (position == getItemCount() - 1)
-		{
-			return -1;
-		}
-		return mDecorated.getItemViewType(position);
-	}
+    @Override
+    public int getItemViewType(int position) {
+        if (position == getItemCount() - 1) {
+            return -1;
+        }
+        return mDecorated.getItemViewType(position);
+    }
 
 
-	@Override
-	public BasicButtonViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-	{
-		if (viewType == -1)
-		{
-			View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.smoothsetup_fixed_button, parent, false);
-			return new BasicButtonViewHolder(itemView);
-		}
-		return mDecorated.onCreateViewHolder(parent, viewType);
-	}
+    @Override
+    public BasicButtonViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == -1) {
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.smoothsetup_fixed_button, parent, false);
+            return new BasicButtonViewHolder(itemView);
+        }
+        return mDecorated.onCreateViewHolder(parent, viewType);
+    }
 
 
-	@Override
-	public long getItemId(int position)
-	{
-		if (position == getItemCount() - 1)
-		{
-			// return an id that (most likely) won't conflict with any other id
-			return System.identityHashCode(this) | 0x100000000L;
-		}
-		return mDecorated.getItemId(position);
-	}
+    @Override
+    public long getItemId(int position) {
+        if (position == getItemCount() - 1) {
+            // return an id that (most likely) won't conflict with any other id
+            return System.identityHashCode(this) | 0x100000000L;
+        }
+        return mDecorated.getItemId(position);
+    }
 
 
-	@Override
-	public void onBindViewHolder(BasicButtonViewHolder holder, int position)
-	{
-		if (position == getItemCount() - 1)
-		{
-			holder.updateText(getItemCount() > 1 ? "Other provider" : "Select provider");
-			holder.updateOnClickListener(new View.OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-					new RegularWizardTransition(new ProvidersLoadWizardStep("")).execute(v.getContext());
-				}
-			});
-		}
-		else
-		{
-			mDecorated.onBindViewHolder(holder, position);
-		}
-	}
+    @Override
+    public void onBindViewHolder(BasicButtonViewHolder holder, int position) {
+        if (position == getItemCount() - 1) {
+            holder.updateText(getItemCount() > 1 ? R.string.smoothsetup_button_other_provider : R.string.smoothsetup_button_choose_provider);
+            holder.updateOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new ForwardWizardTransition(new ProvidersLoadWizardStep("")).execute(v.getContext());
+                }
+            });
+        } else {
+            mDecorated.onBindViewHolder(holder, position);
+        }
+    }
 
 
-	@Override
-	public int getItemCount()
-	{
-		return mDecorated.getItemCount() + 1;
-	}
+    @Override
+    public int getItemCount() {
+        return mDecorated.getItemCount() + 1;
+    }
 
 
-	public void update(String domain) throws ProtocolException
-	{
-		mDecorated.update(domain);
-	}
+    public void update(String domain) throws ProtocolException {
+        mDecorated.update(domain);
+    }
 }

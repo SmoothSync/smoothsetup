@@ -17,10 +17,10 @@
 
 package com.smoothsync.smoothsetup.model;
 
+import com.smoothsync.api.model.Provider;
+
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import com.smoothsync.api.model.Provider;
 
 
 /**

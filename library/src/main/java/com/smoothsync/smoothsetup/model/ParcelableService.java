@@ -17,12 +17,12 @@
 
 package com.smoothsync.smoothsetup.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import java.net.URI;
 
 import com.smoothsync.api.model.Service;
 
-import java.net.URI;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 
 /**

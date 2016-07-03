@@ -28,7 +28,7 @@ import android.support.v4.content.LocalBroadcastManager;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-public abstract class AbstractBroadcastWizardTransition implements WizardTransition, Parcelable
+public abstract class AbstractWizardTransition implements WizardTransition, Parcelable
 {
 	/**
 	 * The broadcast action that this transition uses.

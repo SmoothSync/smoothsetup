@@ -22,8 +22,12 @@ import android.os.AsyncTask;
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.api.requests.ProvidersRequest;
+import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
-import java.lang.ref.WeakReference;
+import org.dmfs.httpclient.exceptions.ProtocolError;
+import org.dmfs.httpclient.exceptions.ProtocolException;
+
+import java.io.IOException;
 import java.util.List;
 
 
@@ -32,45 +36,22 @@ import java.util.List;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-public final class ProvidersLoadTask extends AsyncTask<String, Void, List<Provider>>
+public final class ProvidersLoadTask extends ThrowingAsyncTask<String, Void, List<Provider>>
 {
-	public interface LoaderCallback
-	{
-		public void onLoad(List<Provider> providers);
-	}
 
-	private final WeakReference<LoaderCallback> mLoaderReference;
 	private final SmoothSyncApi mApi;
 
 
-	public ProvidersLoadTask(SmoothSyncApi api, LoaderCallback loader)
+	public ProvidersLoadTask(SmoothSyncApi api, OnLoadCallback callback)
 	{
+		super(callback);
 		mApi = api;
-		mLoaderReference = new WeakReference<LoaderCallback>(loader);
 	}
 
 
 	@Override
-	protected List<Provider> doInBackground(String... params)
+	protected List<Provider> doInBackgroundWithException(String... params) throws ProtocolException, ProtocolError, IOException
 	{
-		try
-		{
-			return mApi.resultOf(new ProvidersRequest());
-		}
-		catch (Exception e)
-		{
-			return null;
-		}
-	}
-
-
-	@Override
-	protected void onPostExecute(List<Provider> providers)
-	{
-		LoaderCallback loader = mLoaderReference.get();
-		if (loader != null)
-		{
-			loader.onLoad(providers);
-		}
+		return mApi.resultOf(new ProvidersRequest());
 	}
 }

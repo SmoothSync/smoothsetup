@@ -17,13 +17,7 @@
 
 package com.smoothsync.smoothsetup.setupbuttons;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.smoothsync.api.model.Provider;
-import com.smoothsync.smoothsetup.R;
-import com.smoothsync.smoothsetup.autocomplete.DomainExpansionConverter;
+import java.util.Iterator;
 
 import org.dmfs.httpclient.exceptions.ProtocolException;
 import org.dmfs.iterators.ArrayIterator;
@@ -31,7 +25,13 @@ import org.dmfs.iterators.ConvertedIterator;
 import org.dmfs.iterators.FilteredIterator;
 import org.dmfs.iterators.filters.NonNull;
 
-import java.util.Iterator;
+import com.smoothsync.api.model.Provider;
+import com.smoothsync.smoothsetup.R;
+import com.smoothsync.smoothsetup.autocomplete.DomainExpansionConverter;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 
 /**

@@ -29,7 +29,7 @@ import com.smoothsync.smoothsetup.model.WizardStep;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-public final class BackWizardTransition extends AbstractBroadcastWizardTransition
+public final class BackWizardTransition extends AbstractWizardTransition
 {
 
 	/**

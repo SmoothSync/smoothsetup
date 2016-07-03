@@ -17,61 +17,41 @@
 
 package com.smoothsync.smoothsetup.setupbuttons;
 
-import android.os.AsyncTask;
-
-import com.smoothsync.api.SmoothSyncApi;
-import com.smoothsync.api.model.Provider;
-import com.smoothsync.api.requests.ProviderSearchRequest;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.List;
 
 import org.dmfs.httpclient.exceptions.ProtocolError;
 import org.dmfs.httpclient.exceptions.ProtocolException;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.util.Collections;
-import java.util.List;
+import com.smoothsync.api.SmoothSyncApi;
+import com.smoothsync.api.model.Provider;
+import com.smoothsync.api.requests.ProviderSearchRequest;
+import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
 
 /**
- * Created by marten on 12.06.16.
+ * An ThrowingAsyncTask that searches providers by their domain.
+ *
+ * @author Marten Gajda <marten@dmfs.org>
  */
-public final class ProviderSearchTask extends AsyncTask<String, Void, List<Provider>>
+public final class ProviderSearchTask extends ThrowingAsyncTask<String, Void, List<Provider>>
 {
-	public interface LoaderCallback
-	{
-		public void onLoad(List<Provider> providers);
-	}
-
-	private final LoaderCallback mLoader;
 	private final SmoothSyncApi mApi;
 
 
-	public ProviderSearchTask(SmoothSyncApi api, LoaderCallback loader)
+	public ProviderSearchTask(SmoothSyncApi api, OnLoadCallback callback)
 	{
+		super(callback);
 		mApi = api;
-		mLoader = loader;
 	}
 
 
 	@Override
-	protected List<Provider> doInBackground(String... params)
+	protected List<Provider> doInBackgroundWithException(String... params) throws IOException, ProtocolException, ProtocolError
 	{
-		try
-		{
-			// don't try to hit the API if we can't resolve the hostname
-			InetAddress address = InetAddress.getByName(params[0]);
-			return mApi.resultOf(new ProviderSearchRequest(params[0]));
-		}
-		catch (IOException | ProtocolException | ProtocolError e)
-		{
-			return Collections.EMPTY_LIST;
-		}
-	}
-
-
-	@Override
-	protected void onPostExecute(List<Provider> providers)
-	{
-		mLoader.onLoad(providers);
+		// don't try to hit the API if we can't resolve the hostname
+		InetAddress address = InetAddress.getByName(params[0]);
+		return mApi.resultOf(new ProviderSearchRequest(params[0]));
 	}
 }

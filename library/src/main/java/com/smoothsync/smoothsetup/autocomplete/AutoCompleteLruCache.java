@@ -17,16 +17,16 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
-import android.util.LruCache;
+import java.io.IOException;
+
+import org.dmfs.httpclient.exceptions.ProtocolError;
+import org.dmfs.httpclient.exceptions.ProtocolException;
 
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.AutoCompleteResult;
 import com.smoothsync.api.requests.AutoCompleteRequest;
 
-import org.dmfs.httpclient.exceptions.ProtocolError;
-import org.dmfs.httpclient.exceptions.ProtocolException;
-
-import java.io.IOException;
+import android.util.LruCache;
 
 
 /**

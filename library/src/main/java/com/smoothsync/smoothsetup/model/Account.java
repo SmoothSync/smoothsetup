@@ -17,9 +17,9 @@
 
 package com.smoothsync.smoothsetup.model;
 
-import android.os.Parcelable;
-
 import com.smoothsync.api.model.Provider;
+
+import android.os.Parcelable;
 
 
 /**

@@ -17,12 +17,7 @@
 
 package com.smoothsync.smoothsetup.wizardsteps;
 
-import android.content.Context;
-import android.os.Parcel;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
-import android.widget.Adapter;
-import android.widget.Filterable;
+import org.dmfs.httpclient.exceptions.ProtocolException;
 
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
@@ -32,7 +27,12 @@ import com.smoothsync.smoothsetup.model.WizardStep;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.ProviderSmoothSetupAdapter;
 
-import org.dmfs.httpclient.exceptions.ProtocolException;
+import android.content.Context;
+import android.os.Parcel;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
+import android.widget.Adapter;
+import android.widget.Filterable;
 
 
 /**

@@ -17,10 +17,10 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
-import org.dmfs.iterators.FilteredIterator;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+
+import org.dmfs.iterators.FilteredIterator;
 
 
 /**

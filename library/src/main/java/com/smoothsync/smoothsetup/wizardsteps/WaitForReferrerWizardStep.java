@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * A {@link WizardStep} that waits for a moment if there is an INSTALL_REFERRER broadcast coming in.
+ * A {@link WizardStep} that waits for a moment for any INSTALL_REFERRER broadcast coming in.
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
@@ -114,9 +114,9 @@ public final class WaitForReferrerWizardStep implements WizardStep
 
 
 		@Override
-		public void onStart()
+		public void onResume()
 		{
-			super.onStart();
+			super.onResume();
 			mPreferences = getActivity().getSharedPreferences("com.smoothsync.smoothsetup.prefs", 0);
 			mPreferences.registerOnSharedPreferenceChangeListener(this);
 			if (mPreferences.contains(SmoothSetupDispatchActivity.PREF_REFERRER))
@@ -128,11 +128,11 @@ public final class WaitForReferrerWizardStep implements WizardStep
 
 
 		@Override
-		public void onStop()
+		public void onPause()
 		{
 			mHandler.removeCallbacks(mMoveOn);
 			mPreferences.unregisterOnSharedPreferenceChangeListener(this);
-			super.onStop();
+			super.onPause();
 		}
 
 
@@ -146,7 +146,7 @@ public final class WaitForReferrerWizardStep implements WizardStep
 			}
 
 			String referrer = sharedPreferences.getString(SmoothSetupDispatchActivity.PREF_REFERRER, null);
-			if (referrer == null)
+			if (referrer == null || referrer.isEmpty())
 			{
 				// referrer is null
 				return;
@@ -159,6 +159,7 @@ public final class WaitForReferrerWizardStep implements WizardStep
 				return;
 			}
 
+			mHandler.removeCallbacks(mMoveOn);
 			new AutomaticWizardTransition(new ProviderLoadWizardStep(uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_PROVIDER),
 				uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_ACCOUNT))).execute(getContext());
 		}
@@ -171,6 +172,8 @@ public final class WaitForReferrerWizardStep implements WizardStep
 			@Override
 			public void run()
 			{
+				mPreferences.unregisterOnSharedPreferenceChangeListener(WaitForReferrerFragment.this);
+
 				// make sure we won't wait for the broadcast again
 				mPreferences.edit().putString("referrer", "").apply();
 

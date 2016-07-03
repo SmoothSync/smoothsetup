@@ -31,7 +31,7 @@ import com.smoothsync.smoothsetup.model.WizardStep;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-public final class AutomaticWizardTransition extends AbstractBroadcastWizardTransition
+public final class AutomaticWizardTransition extends AbstractWizardTransition
 {
 	private final WizardStep mNextStep;
 

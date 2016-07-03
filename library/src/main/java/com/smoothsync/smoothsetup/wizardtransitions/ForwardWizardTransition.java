@@ -31,12 +31,12 @@ import com.smoothsync.smoothsetup.model.WizardStep;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-public final class RegularWizardTransition extends AbstractBroadcastWizardTransition
+public final class ForwardWizardTransition extends AbstractWizardTransition
 {
 	private final WizardStep mNextStep;
 
 
-	public RegularWizardTransition(WizardStep nextStep)
+	public ForwardWizardTransition(WizardStep nextStep)
 	{
 		this.mNextStep = nextStep;
 	}
@@ -70,19 +70,19 @@ public final class RegularWizardTransition extends AbstractBroadcastWizardTransi
 		dest.writeParcelable(mNextStep, flags);
 	}
 
-	public final static Creator<RegularWizardTransition> CREATOR = new Creator<RegularWizardTransition>()
+	public final static Creator<ForwardWizardTransition> CREATOR = new Creator<ForwardWizardTransition>()
 	{
 		@Override
-		public RegularWizardTransition createFromParcel(Parcel source)
+		public ForwardWizardTransition createFromParcel(Parcel source)
 		{
-			return new RegularWizardTransition((WizardStep) source.readParcelable(getClass().getClassLoader()));
+			return new ForwardWizardTransition((WizardStep) source.readParcelable(getClass().getClassLoader()));
 		}
 
 
 		@Override
-		public RegularWizardTransition[] newArray(int size)
+		public ForwardWizardTransition[] newArray(int size)
 		{
-			return new RegularWizardTransition[size];
+			return new ForwardWizardTransition[size];
 		}
 	};
 }

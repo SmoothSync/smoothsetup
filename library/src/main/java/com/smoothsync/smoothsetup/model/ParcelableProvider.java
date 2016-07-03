@@ -17,16 +17,16 @@
 
 package com.smoothsync.smoothsetup.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import com.smoothsync.api.model.Provider;
-import com.smoothsync.api.model.Service;
+import java.util.Iterator;
 
 import org.dmfs.httpclient.exceptions.ProtocolException;
 import org.dmfs.httpclient.types.Link;
 
-import java.util.Iterator;
+import com.smoothsync.api.model.Provider;
+import com.smoothsync.api.model.Service;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 
 /**

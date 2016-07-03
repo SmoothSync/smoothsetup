@@ -17,16 +17,16 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
-import android.widget.Filter;
-
-import com.smoothsync.api.model.Provider;
-
-import org.dmfs.httpclient.exceptions.ProtocolException;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import org.dmfs.httpclient.exceptions.ProtocolException;
+
+import com.smoothsync.api.model.Provider;
+
+import android.widget.Filter;
 
 
 /**

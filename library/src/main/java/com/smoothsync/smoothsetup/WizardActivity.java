@@ -33,7 +33,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.smoothsync.smoothsetup.model.WizardStep;
-import com.smoothsync.smoothsetup.wizardtransitions.AbstractBroadcastWizardTransition;
+import com.smoothsync.smoothsetup.wizardtransitions.AbstractWizardTransition;
 
 
 /**
@@ -102,11 +102,11 @@ public final class WizardActivity extends AppCompatActivity implements FragmentM
 	@Override
 	protected void onResume()
 	{
-		super.onResume();
 		// set up wizard controller
 		IntentFilter filter = new IntentFilter();
-		filter.addAction(AbstractBroadcastWizardTransition.ACTION_WIZARD_TRANSITION);
+		filter.addAction(AbstractWizardTransition.ACTION_WIZARD_TRANSITION);
 		LocalBroadcastManager.getInstance(this).registerReceiver(mWizardTransactionReceiver, filter);
+		super.onResume();
 	}
 
 
@@ -129,10 +129,9 @@ public final class WizardActivity extends AppCompatActivity implements FragmentM
 				@Override
 				public void run()
 				{
-					if (AbstractBroadcastWizardTransition.ACTION_WIZARD_TRANSITION.equals(intent.getAction()))
+					if (AbstractWizardTransition.ACTION_WIZARD_TRANSITION.equals(intent.getAction()))
 					{
-						AbstractBroadcastWizardTransition wizardTransition = intent
-							.getParcelableExtra(AbstractBroadcastWizardTransition.EXTRA_WIZARD_TRANSITION);
+						AbstractWizardTransition wizardTransition = intent.getParcelableExtra(AbstractWizardTransition.EXTRA_WIZARD_TRANSITION);
 						wizardTransition.apply(WizardActivity.this, mFragmentManager,
 							(WizardStep) mFragmentManager.findFragmentById(R.id.wizards).getArguments().getParcelable(WizardStep.ARG_WIZARD_STEP));
 						mFragmentManager.executePendingTransactions();

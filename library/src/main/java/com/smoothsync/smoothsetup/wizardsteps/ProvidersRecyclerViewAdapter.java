@@ -17,19 +17,19 @@
 
 package com.smoothsync.smoothsetup.wizardsteps;
 
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import java.util.List;
+
+import org.dmfs.httpclient.exceptions.ProtocolException;
 
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter;
 
-import org.dmfs.httpclient.exceptions.ProtocolException;
-
-import java.util.List;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 
 /**

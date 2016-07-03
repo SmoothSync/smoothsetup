@@ -17,9 +17,9 @@
 
 package com.smoothsync.smoothsetup.setupbuttons;
 
-import com.smoothsync.api.model.Provider;
-
 import org.dmfs.httpclient.exceptions.ProtocolException;
+
+import com.smoothsync.api.model.Provider;
 
 
 /**
