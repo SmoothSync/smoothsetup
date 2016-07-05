@@ -73,6 +73,7 @@ public final class ErrorResetWizardStep implements WizardStep
 		arguments.putParcelable(ARG_RESET_STEP, mRetryStep);
 		arguments.putParcelable(ARG_WIZARD_STEP, this);
 		result.setArguments(arguments);
+		result.setRetainInstance(true);
 		return result;
 	}
 

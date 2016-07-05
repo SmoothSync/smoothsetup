@@ -17,12 +17,6 @@
 
 package com.smoothsync.smoothsetup.wizardsteps;
 
-import org.dmfs.httpclient.exceptions.ProtocolException;
-
-import com.smoothsync.smoothsetup.R;
-import com.smoothsync.smoothsetup.model.Account;
-import com.smoothsync.smoothsetup.model.WizardStep;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -32,6 +26,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.smoothsync.smoothsetup.R;
+import com.smoothsync.smoothsetup.model.Account;
+import com.smoothsync.smoothsetup.model.WizardStep;
+
+import org.dmfs.httpclient.exceptions.ProtocolException;
 
 
 /**
@@ -74,6 +74,7 @@ public final class PasswordWizardStep implements WizardStep
 		arguments.putParcelable(ARG_ACCOUNT, mAccount);
 		arguments.putParcelable(ARG_WIZARD_STEP, this);
 		result.setArguments(arguments);
+		result.setRetainInstance(true);
 		return result;
 	}
 

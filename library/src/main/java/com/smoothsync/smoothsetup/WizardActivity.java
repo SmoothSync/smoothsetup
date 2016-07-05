@@ -45,13 +45,13 @@ import com.smoothsync.smoothsetup.wizardtransitions.AbstractWizardTransition;
  */
 public final class WizardActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener
 {
-
 	private final static String KEY_INITIAL_WIZARD_STEP = "INITIAL_STEP";
 	private final static String KEY_CONFIG = "com.smoothsync.ACTIVITY_CONFIG";
 
+	private CollapsingToolbarLayout mCollapsingToolbar;
+	private ActionBar mActionBar;
 	private FragmentManager mFragmentManager;
 	private final Handler mHandler = new Handler();
-	private WizardStep mWizardStep;
 	private int bsdepth = 0;
 
 
@@ -75,22 +75,23 @@ public final class WizardActivity extends AppCompatActivity implements FragmentM
 		// set up content
 		setContentView(R.layout.smoothsetup_wizard_activity);
 
-		CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-		setSupportActionBar((Toolbar) collapsingToolbar.findViewById(R.id.toolbar));
+		mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+		setSupportActionBar((Toolbar) mCollapsingToolbar.findViewById(R.id.toolbar));
+		mActionBar = getSupportActionBar();
 
 		// set up wizard
 		Intent intent = getIntent();
 		Bundle config = intent.getBundleExtra(KEY_CONFIG);
 
 		mFragmentManager = getSupportFragmentManager();
-		mWizardStep = config.getParcelable(KEY_INITIAL_WIZARD_STEP);
+		WizardStep wizardStep = config.getParcelable(KEY_INITIAL_WIZARD_STEP);
 
 		getSupportFragmentManager().addOnBackStackChangedListener(this);
 
 		if (savedInstanceState == null)
 		{
-			getSupportActionBar().setTitle(mWizardStep.title(WizardActivity.this));
-			mFragmentManager.beginTransaction().add(R.id.wizards, mWizardStep.fragment(this)).commit();
+			mActionBar.setTitle(wizardStep.title(WizardActivity.this));
+			mFragmentManager.beginTransaction().add(R.id.wizards, wizardStep.fragment(this)).commit();
 		}
 		else
 		{
@@ -190,13 +191,10 @@ public final class WizardActivity extends AppCompatActivity implements FragmentM
 			throw new RuntimeException("Fragment doesn't have a WizardStep");
 		}
 
-		CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-		collapsingToolbar.setTitle(wizardStep.title(this));
+		mCollapsingToolbar.setTitle(wizardStep.title(this));
 
-		ActionBar actionBar = getSupportActionBar();
-
-		actionBar.setTitle(wizardStep.title(this));
-		actionBar.setDisplayHomeAsUpEnabled(mFragmentManager.getBackStackEntryCount() > 0);
-		actionBar.setDisplayShowHomeEnabled(mFragmentManager.getBackStackEntryCount() > 0);
+		mActionBar.setTitle(wizardStep.title(this));
+		mActionBar.setDisplayHomeAsUpEnabled(mFragmentManager.getBackStackEntryCount() > 0);
+		mActionBar.setDisplayShowHomeEnabled(mFragmentManager.getBackStackEntryCount() > 0);
 	}
 }

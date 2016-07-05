@@ -80,6 +80,7 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
 		arguments.putParcelable(ARG_LOGIN_FORM_ADAPTER_FACTORY, loginFormAdapterFactory);
 		arguments.putString(ARG_ACCOUNT, account);
 		result.setArguments(arguments);
+		result.setRetainInstance(true);
 		return result;
 	}
 

@@ -10,8 +10,8 @@
         <activity
             android:name="com.smoothsync.smoothsetup.SmoothSetupDispatchActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"></action>
-                <category android:name="android.intent.category.LAUNCHER"></category>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
 
             <meta-data
@@ -19,6 +19,13 @@
                 android:value="136f0ab6eac14fde9211ecfee33cb73e"/>
         </activity>
 
+        <service
+            android:name=".SmoothSyncApiService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.smoothsync.action.BIND_API"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

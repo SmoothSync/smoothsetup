@@ -66,6 +66,7 @@ public final class WaitForReferrerWizardStep implements WizardStep
 		Bundle arguments = new Bundle();
 		arguments.putParcelable(ARG_WIZARD_STEP, this);
 		result.setArguments(arguments);
+		result.setRetainInstance(true);
 		return result;
 	}
 

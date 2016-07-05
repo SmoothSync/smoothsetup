@@ -111,6 +111,7 @@ public final class ChooseProviderStep implements WizardStep
 		arguments.putParcelable(ARG_WIZARD_STEP, this);
 		arguments.putString(ProviderListFragment.ARG_ACCOUNT, mAccount);
 		result.setArguments(arguments);
+		result.setRetainInstance(true);
 		return result;
 	}
 
@@ -157,17 +158,6 @@ public final class ChooseProviderStep implements WizardStep
 		public final static String ARG_ACCOUNT = "account";
 
 		private RecyclerView mView;
-
-
-		// TODO: Customize parameter initialization
-		@SuppressWarnings("unused")
-		public static ProviderListFragment newInstance(int columnCount)
-		{
-			ProviderListFragment fragment = new ProviderListFragment();
-			Bundle args = new Bundle();
-			fragment.setArguments(args);
-			return fragment;
-		}
 
 
 		@Override

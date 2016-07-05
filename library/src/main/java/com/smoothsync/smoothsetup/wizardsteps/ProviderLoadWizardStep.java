@@ -94,6 +94,7 @@ public final class ProviderLoadWizardStep implements WizardStep
 		args.putString(ARG_ACCOUNT, mAccount);
 		args.putParcelable(ARG_WIZARD_STEP, this);
 		result.setArguments(args);
+		result.setRetainInstance(true);
 		return result;
 	}
 
