@@ -18,6 +18,7 @@
 package com.smoothsync.smoothsetup.wizardsteps;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
@@ -27,25 +28,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.smoothsync.api.ProductionApi;
-import com.smoothsync.api.ProductionApiClient;
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.ProviderLoadTask;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.WizardStep;
+import com.smoothsync.smoothsetup.services.BasicFutureServiceConnection;
+import com.smoothsync.smoothsetup.services.FutureServiceConnection;
+import com.smoothsync.smoothsetup.services.SmoothSyncApiProxy;
 import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 import com.smoothsync.smoothsetup.wizardtransitions.AutomaticWizardTransition;
 
-import org.dmfs.httpclient.HttpRequestExecutor;
-import org.dmfs.httpclient.httpurlconnection.HttpUrlConnectionExecutor;
-import org.dmfs.oauth2.client.BasicOAuth2ClientCredentials;
-import org.dmfs.oauth2.client.OAuth2ClientCredentials;
-
 
 /**
  * A {@link WizardStep} that loads a provider by its id, before moving on to a setup step.
+ * 
+ * @author Marten Gajda <marten@dmfs.org>
  */
 public final class ProviderLoadWizardStep implements WizardStep
 {
@@ -135,6 +134,7 @@ public final class ProviderLoadWizardStep implements WizardStep
 
 		private View mWaitMessage;
 		private Handler mHandler = new Handler();
+		private FutureServiceConnection<SmoothSyncApi> mApiService;
 
 
 		@Nullable
@@ -149,19 +149,13 @@ public final class ProviderLoadWizardStep implements WizardStep
 
 
 		@Override
-		public void onResume()
+		public void onCreate(@Nullable Bundle savedInstanceState)
 		{
-			super.onResume();
-			HttpRequestExecutor executor = new HttpUrlConnectionExecutor();
-
-			OAuth2ClientCredentials clientCreds = new BasicOAuth2ClientCredentials("c5afc71ab8d046229d05275f0f01c03a",
-				"c1b7aa8d571c4975b6a4e8099ca052c05c239015a24845f7bf7f4c8221cfafa3");
-
-			ProductionApiClient client = new ProductionApiClient(clientCreds);
-
-			SmoothSyncApi api = new ProductionApi(executor, client);
-
-			new ProviderLoadTask(api, this).execute(getArguments().getString(ARG_PROVIDER_ID));
+			super.onCreate(savedInstanceState);
+			Context context = getContext();
+			mApiService = new BasicFutureServiceConnection<SmoothSyncApi>(context,
+				new Intent("com.smoothsync.action.BIND_API").setPackage(context.getPackageName()));
+			new ProviderLoadTask(new SmoothSyncApiProxy(mApiService), this).execute(getArguments().getString(ARG_PROVIDER_ID));
 		}
 
 

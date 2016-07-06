@@ -18,6 +18,7 @@
 package com.smoothsync.smoothsetup.wizardsteps;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
@@ -34,11 +35,15 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Filterable;
 import android.widget.TextView;
 
+import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.AbstractAutoCompleteAdapter;
 import com.smoothsync.smoothsetup.model.BasicAccount;
 import com.smoothsync.smoothsetup.model.WizardStep;
+import com.smoothsync.smoothsetup.services.BasicFutureServiceConnection;
+import com.smoothsync.smoothsetup.services.SmoothSyncApiProxy;
+import com.smoothsync.smoothsetup.services.FutureServiceConnection;
 import com.smoothsync.smoothsetup.setupbuttons.AbstractSmoothSetupAdapter;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter;
@@ -59,17 +64,18 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
 
 	public interface LoginFormAdapterFactory extends Parcelable
 	{
-		public <T extends Adapter & Filterable> T autoCompleteAdapter(Context context);
+		public <T extends Adapter & Filterable> T autoCompleteAdapter(Context context, SmoothSyncApi api);
 
 
 		public <T extends RecyclerView.Adapter<BasicButtonViewHolder>, SetupButtonAdapter> T setupButtonAdapter(Context context,
-			com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter.OnProviderSelectListener providerSelectListener);
+			com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter.OnProviderSelectListener providerSelectListener, SmoothSyncApi api);
 
 
 		public String promptText(Context context);
 	}
 
-	AutoCompleteTextView mLogin;
+	private AutoCompleteTextView mLogin;
+	private FutureServiceConnection<SmoothSyncApi> mApiService;
 
 
 	public static Fragment newInstance(WizardStep wizardStep, LoginFormAdapterFactory loginFormAdapterFactory, String account)
@@ -85,6 +91,16 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
 	}
 
 
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		Context context = getContext();
+		mApiService = new BasicFutureServiceConnection<SmoothSyncApi>(context,
+			new Intent("com.smoothsync.action.BIND_API").setPackage(context.getPackageName()));
+	}
+
+
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
@@ -94,7 +110,7 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
 		mLogin = (AutoCompleteTextView) result.findViewById(android.R.id.input);
 
 		LoginFormAdapterFactory loginFormAdapterFactory = (LoginFormAdapterFactory) getArguments().getParcelable(ARG_LOGIN_FORM_ADAPTER_FACTORY);
-		AbstractAutoCompleteAdapter autoCompleteAdapter = loginFormAdapterFactory.autoCompleteAdapter(getContext());
+		AbstractAutoCompleteAdapter autoCompleteAdapter = loginFormAdapterFactory.autoCompleteAdapter(getContext(), new SmoothSyncApiProxy(mApiService));
 		mLogin.setAdapter(autoCompleteAdapter);
 
 		RecyclerView list = (RecyclerView) result.findViewById(android.R.id.list);
@@ -104,7 +120,7 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
 		llm.setOrientation(LinearLayoutManager.VERTICAL);
 		list.setLayoutManager(llm);
 
-		final AbstractSmoothSetupAdapter adapter = loginFormAdapterFactory.setupButtonAdapter(getContext(), this);
+		final AbstractSmoothSetupAdapter adapter = loginFormAdapterFactory.setupButtonAdapter(getContext(), this, new SmoothSyncApiProxy(mApiService));
 		list.setAdapter(adapter);
 
 		mLogin.addTextChangedListener(new TextWatcher()
@@ -147,6 +163,14 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
 		((TextView) result.findViewById(android.R.id.message)).setText(loginFormAdapterFactory.promptText(getContext()));
 
 		return result;
+	}
+
+
+	@Override
+	public void onDestroy()
+	{
+		mApiService.disconnect();
+		super.onDestroy();
 	}
 
 

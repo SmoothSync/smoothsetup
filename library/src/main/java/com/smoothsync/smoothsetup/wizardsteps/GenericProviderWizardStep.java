@@ -24,8 +24,6 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.Adapter;
 import android.widget.Filterable;
 
-import com.smoothsync.api.ProductionApi;
-import com.smoothsync.api.ProductionApiClient;
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.ApiAutoCompleteAdapter;
@@ -33,9 +31,6 @@ import com.smoothsync.smoothsetup.model.WizardStep;
 import com.smoothsync.smoothsetup.setupbuttons.ApiSmoothSetupAdapter;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.FixedButtonSetupAdapter;
-
-import org.dmfs.httpclient.httpurlconnection.HttpUrlConnectionExecutor;
-import org.dmfs.oauth2.client.BasicOAuth2ClientCredentials;
 
 
 /**
@@ -99,28 +94,18 @@ public final class GenericProviderWizardStep implements WizardStep
 
 	private static class ApiLoginFormAdapterFactory implements LoginFragment.LoginFormAdapterFactory
 	{
-		private final SmoothSyncApi mApi;
-
-
-		public ApiLoginFormAdapterFactory()
-		{
-			mApi = new ProductionApi(new HttpUrlConnectionExecutor(), new ProductionApiClient(
-				new BasicOAuth2ClientCredentials("c5afc71ab8d046229d05275f0f01c03a", "c1b7aa8d571c4975b6a4e8099ca052c05c239015a24845f7bf7f4c8221cfafa3")));
-		}
-
-
 		@Override
 		public <T extends RecyclerView.Adapter<BasicButtonViewHolder>, SetupButtonAdapter> T setupButtonAdapter(Context context,
-			com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter.OnProviderSelectListener providerSelectListener)
+			com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter.OnProviderSelectListener providerSelectListener, SmoothSyncApi api)
 		{
-			return (T) new FixedButtonSetupAdapter(new ApiSmoothSetupAdapter(mApi, providerSelectListener), providerSelectListener);
+			return (T) new FixedButtonSetupAdapter(new ApiSmoothSetupAdapter(api, providerSelectListener), providerSelectListener);
 		}
 
 
 		@Override
-		public <T extends Adapter & Filterable> T autoCompleteAdapter(Context context)
+		public <T extends Adapter & Filterable> T autoCompleteAdapter(Context context, SmoothSyncApi api)
 		{
-			return (T) new ApiAutoCompleteAdapter(mApi);
+			return (T) new ApiAutoCompleteAdapter(api);
 		}
 
 

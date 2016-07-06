@@ -17,8 +17,14 @@
 
 package com.smoothsync.smoothsetup.wizardsteps;
 
-import org.dmfs.httpclient.exceptions.ProtocolException;
+import android.content.Context;
+import android.os.Parcel;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
+import android.widget.Adapter;
+import android.widget.Filterable;
 
+import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.ProviderAutoCompleteAdapter;
@@ -27,12 +33,7 @@ import com.smoothsync.smoothsetup.model.WizardStep;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.ProviderSmoothSetupAdapter;
 
-import android.content.Context;
-import android.os.Parcel;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
-import android.widget.Adapter;
-import android.widget.Filterable;
+import org.dmfs.httpclient.exceptions.ProtocolException;
 
 
 /**
@@ -124,14 +125,14 @@ public final class ProviderLoginWizardStep implements WizardStep
 
 		@Override
 		public <T extends RecyclerView.Adapter<BasicButtonViewHolder>, SetupButtonAdapter> T setupButtonAdapter(Context context,
-			com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter.OnProviderSelectListener providerSelectListener)
+			com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter.OnProviderSelectListener providerSelectListener, SmoothSyncApi api)
 		{
 			return (T) new ProviderSmoothSetupAdapter(mProvider, providerSelectListener);
 		}
 
 
 		@Override
-		public <T extends Adapter & Filterable> T autoCompleteAdapter(Context context)
+		public <T extends Adapter & Filterable> T autoCompleteAdapter(Context context, SmoothSyncApi api)
 		{
 			return (T) new ProviderAutoCompleteAdapter(mProvider);
 		}

@@ -95,6 +95,7 @@ public final class WizardActivity extends AppCompatActivity implements FragmentM
 		}
 		else
 		{
+			bsdepth = mFragmentManager.getBackStackEntryCount();
 			updateActionBar();
 		}
 	}
