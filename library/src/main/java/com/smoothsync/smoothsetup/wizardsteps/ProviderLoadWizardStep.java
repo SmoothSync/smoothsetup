@@ -168,6 +168,14 @@ public final class ProviderLoadWizardStep implements WizardStep
 
 
 		@Override
+		public void onDestroy()
+		{
+			mApiService.disconnect();
+			super.onDestroy();
+		}
+
+
+		@Override
 		public void onLoad(final AsyncTaskResult<Provider> result)
 		{
 			if (isAdded())
