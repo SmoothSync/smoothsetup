@@ -32,7 +32,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-public class BasicFutureServiceConnection<T> implements FutureServiceConnection<T>, ServiceConnection
+public final class BasicFutureServiceConnection<T> implements FutureServiceConnection<T>, ServiceConnection
 {
 	private final Context mContext;
 	private boolean mIsConnected;
