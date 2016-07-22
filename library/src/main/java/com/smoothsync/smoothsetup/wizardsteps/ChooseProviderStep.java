@@ -37,7 +37,7 @@ import com.smoothsync.smoothsetup.model.WizardStep;
 import com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter;
 import com.smoothsync.smoothsetup.wizardtransitions.ForwardWizardTransition;
 
-import org.dmfs.httpclient.exceptions.ProtocolException;
+import org.dmfs.httpessentials.exceptions.ProtocolException;
 
 import java.util.Arrays;
 import java.util.Comparator;

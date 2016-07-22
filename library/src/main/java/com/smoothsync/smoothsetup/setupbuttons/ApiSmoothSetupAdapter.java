@@ -17,10 +17,10 @@
 
 package com.smoothsync.smoothsetup.setupbuttons;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.dmfs.httpclient.exceptions.ProtocolException;
+import android.support.v4.util.LruCache;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
@@ -28,10 +28,10 @@ import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
-import android.support.v4.util.LruCache;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import org.dmfs.httpessentials.exceptions.ProtocolException;
+
+import java.util.Collections;
+import java.util.List;
 
 
 /**

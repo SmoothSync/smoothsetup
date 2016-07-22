@@ -33,7 +33,7 @@ import com.smoothsync.smoothsetup.model.WizardStep;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.ProviderSmoothSetupAdapter;
 
-import org.dmfs.httpclient.exceptions.ProtocolException;
+import org.dmfs.httpessentials.exceptions.ProtocolException;
 
 
 /**

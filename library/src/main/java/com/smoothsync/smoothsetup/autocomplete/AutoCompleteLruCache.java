@@ -17,16 +17,16 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
-import java.io.IOException;
-
-import org.dmfs.httpclient.exceptions.ProtocolError;
-import org.dmfs.httpclient.exceptions.ProtocolException;
+import android.util.LruCache;
 
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.AutoCompleteResult;
-import com.smoothsync.api.requests.AutoCompleteRequest;
+import com.smoothsync.api.requests.AutoComplete;
 
-import android.util.LruCache;
+import org.dmfs.httpessentials.exceptions.ProtocolError;
+import org.dmfs.httpessentials.exceptions.ProtocolException;
+
+import java.io.IOException;
 
 
 /**
@@ -65,7 +65,7 @@ public final class AutoCompleteLruCache extends LruCache<String, AutoCompleteRes
 			{
 				return get(key.substring(0, key.length() - 1));
 			}
-			return mApi.resultOf(new AutoCompleteRequest(key));
+			return mApi.resultOf(new AutoComplete(key));
 		}
 		catch (IOException | ProtocolException | ProtocolError e)
 		{

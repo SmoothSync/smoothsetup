@@ -42,14 +42,14 @@ import com.smoothsync.smoothsetup.autocomplete.AbstractAutoCompleteAdapter;
 import com.smoothsync.smoothsetup.model.BasicAccount;
 import com.smoothsync.smoothsetup.model.WizardStep;
 import com.smoothsync.smoothsetup.services.BasicFutureServiceConnection;
-import com.smoothsync.smoothsetup.services.SmoothSyncApiProxy;
 import com.smoothsync.smoothsetup.services.FutureServiceConnection;
+import com.smoothsync.smoothsetup.services.SmoothSyncApiProxy;
 import com.smoothsync.smoothsetup.setupbuttons.AbstractSmoothSetupAdapter;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter;
 import com.smoothsync.smoothsetup.wizardtransitions.ForwardWizardTransition;
 
-import org.dmfs.httpclient.exceptions.ProtocolException;
+import org.dmfs.httpessentials.exceptions.ProtocolException;
 
 
 /**

@@ -17,17 +17,17 @@
 
 package com.smoothsync.smoothsetup.setupbuttons;
 
+import com.smoothsync.api.SmoothSyncApi;
+import com.smoothsync.api.model.Provider;
+import com.smoothsync.api.requests.ProviderSearch;
+import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
+
+import org.dmfs.httpessentials.exceptions.ProtocolError;
+import org.dmfs.httpessentials.exceptions.ProtocolException;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
-
-import org.dmfs.httpclient.exceptions.ProtocolError;
-import org.dmfs.httpclient.exceptions.ProtocolException;
-
-import com.smoothsync.api.SmoothSyncApi;
-import com.smoothsync.api.model.Provider;
-import com.smoothsync.api.requests.ProviderSearchRequest;
-import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
 
 /**
@@ -52,6 +52,6 @@ public final class ProviderSearchTask extends ThrowingAsyncTask<String, Void, Li
 	{
 		// don't try to hit the API if we can't resolve the hostname
 		InetAddress address = InetAddress.getByName(params[0]);
-		return mApi.resultOf(new ProviderSearchRequest(params[0]));
+		return mApi.resultOf(new ProviderSearch(params[0]));
 	}
 }

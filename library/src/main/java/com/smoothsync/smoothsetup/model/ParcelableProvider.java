@@ -17,16 +17,16 @@
 
 package com.smoothsync.smoothsetup.model;
 
-import java.util.Iterator;
-
-import org.dmfs.httpclient.exceptions.ProtocolException;
-import org.dmfs.httpclient.types.Link;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.api.model.Service;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import org.dmfs.httpessentials.exceptions.ProtocolException;
+import org.dmfs.httpessentials.types.Link;
+
+import java.util.Iterator;
 
 
 /**
@@ -68,14 +68,14 @@ public final class ParcelableProvider implements Provider, Parcelable
 	@Override
 	public Iterator<Link> links() throws ProtocolException
 	{
-		return null;
+		return mDecorated.links();
 	}
 
 
 	@Override
 	public Iterator<Service> services() throws ProtocolException
 	{
-		return null;
+		return mDecorated.services();
 	}
 
 

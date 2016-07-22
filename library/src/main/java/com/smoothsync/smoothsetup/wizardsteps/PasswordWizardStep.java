@@ -31,7 +31,7 @@ import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.model.WizardStep;
 
-import org.dmfs.httpclient.exceptions.ProtocolException;
+import org.dmfs.httpessentials.exceptions.ProtocolException;
 
 
 /**

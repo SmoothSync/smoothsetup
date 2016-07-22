@@ -24,8 +24,8 @@ import com.smoothsync.api.ProductionApiClient;
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.smoothsetup.services.AbstractSmoothSyncApiService;
 
-import org.dmfs.httpclient.HttpRequestExecutor;
-import org.dmfs.httpclient.httpurlconnection.HttpUrlConnectionExecutor;
+import org.dmfs.httpessentials.client.HttpRequestExecutor;
+import org.dmfs.httpessentials.httpurlconnection.HttpUrlConnectionExecutor;
 import org.dmfs.oauth2.client.BasicOAuth2ClientCredentials;
 import org.dmfs.oauth2.client.OAuth2ClientCredentials;
 

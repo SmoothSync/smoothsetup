@@ -20,8 +20,8 @@ package com.smoothsync.smoothsetup.services;
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.SmoothSyncApiRequest;
 
-import org.dmfs.httpclient.exceptions.ProtocolError;
-import org.dmfs.httpclient.exceptions.ProtocolException;
+import org.dmfs.httpessentials.exceptions.ProtocolError;
+import org.dmfs.httpessentials.exceptions.ProtocolException;
 
 import java.io.IOException;
 

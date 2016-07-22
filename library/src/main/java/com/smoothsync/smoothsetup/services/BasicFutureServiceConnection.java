@@ -32,11 +32,38 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-public final class BasicFutureServiceConnection<T> implements FutureServiceConnection<T>, ServiceConnection
+public final class BasicFutureServiceConnection<T> implements FutureServiceConnection<T>
 {
 	private final Context mContext;
 	private boolean mIsConnected;
 	private T mService;
+
+	private final ServiceConnection mConnection = new ServiceConnection()
+	{
+
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service)
+		{
+			synchronized (this)
+			{
+				mIsConnected = true;
+				mService = (T) service;
+				notify();
+			}
+		}
+
+
+		@Override
+		public void onServiceDisconnected(ComponentName name)
+		{
+			synchronized (this)
+			{
+				mIsConnected = false;
+				mService = null;
+				notify();
+			}
+		}
+	};
 
 
 	/**
@@ -50,7 +77,7 @@ public final class BasicFutureServiceConnection<T> implements FutureServiceConne
 	public BasicFutureServiceConnection(Context context, Intent intent)
 	{
 		mContext = context.getApplicationContext();
-		mContext.bindService(intent, this, Context.BIND_AUTO_CREATE);
+		mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 	}
 
 
@@ -78,7 +105,7 @@ public final class BasicFutureServiceConnection<T> implements FutureServiceConne
 	@Override
 	public T service(long timeout) throws TimeoutException, InterruptedException
 	{
-		synchronized (this)
+		synchronized (mConnection)
 		{
 			if (mIsConnected)
 			{
@@ -89,7 +116,7 @@ public final class BasicFutureServiceConnection<T> implements FutureServiceConne
 			long end = now + timeout;
 			while (now < end)
 			{
-				wait(end - now);
+				mConnection.wait(end - now);
 				if (mIsConnected)
 				{
 					return mService;
@@ -104,30 +131,7 @@ public final class BasicFutureServiceConnection<T> implements FutureServiceConne
 	@Override
 	public void disconnect()
 	{
-		mContext.unbindService(this);
+		mContext.unbindService(mConnection);
 	}
 
-
-	@Override
-	public void onServiceConnected(ComponentName name, IBinder service)
-	{
-		synchronized (this)
-		{
-			mIsConnected = true;
-			mService = (T) service;
-			notify();
-		}
-	}
-
-
-	@Override
-	public void onServiceDisconnected(ComponentName name)
-	{
-		synchronized (this)
-		{
-			mIsConnected = false;
-			mService = null;
-			notify();
-		}
-	}
 }

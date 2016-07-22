@@ -17,17 +17,17 @@
 
 package com.smoothsync.smoothsetup;
 
-import java.io.IOException;
-
-import org.dmfs.httpclient.exceptions.ProtocolError;
-import org.dmfs.httpclient.exceptions.ProtocolException;
+import android.os.AsyncTask;
 
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
-import com.smoothsync.api.requests.ProviderRequest;
+import com.smoothsync.api.requests.ProviderGet;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
-import android.os.AsyncTask;
+import org.dmfs.httpessentials.exceptions.ProtocolError;
+import org.dmfs.httpessentials.exceptions.ProtocolException;
+
+import java.io.IOException;
 
 
 /**
@@ -51,6 +51,6 @@ public final class ProviderLoadTask extends ThrowingAsyncTask<String, Void, Prov
 	@Override
 	protected Provider doInBackgroundWithException(String... params) throws ProtocolException, ProtocolError, IOException
 	{
-		return mApi.resultOf(new ProviderRequest(params[0]));
+		return mApi.resultOf(new ProviderGet(params[0]));
 	}
 }
