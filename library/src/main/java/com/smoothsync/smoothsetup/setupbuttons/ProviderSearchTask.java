@@ -40,7 +40,7 @@ public final class ProviderSearchTask extends ThrowingAsyncTask<String, Void, Li
 	private final SmoothSyncApi mApi;
 
 
-	public ProviderSearchTask(SmoothSyncApi api, OnLoadCallback callback)
+	public ProviderSearchTask(SmoothSyncApi api, OnResultCallback callback)
 	{
 		super(callback);
 		mApi = api;

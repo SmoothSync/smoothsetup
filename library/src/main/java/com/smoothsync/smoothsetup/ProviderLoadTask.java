@@ -41,7 +41,7 @@ public final class ProviderLoadTask extends ThrowingAsyncTask<String, Void, Prov
 	private final SmoothSyncApi mApi;
 
 
-	public ProviderLoadTask(SmoothSyncApi api, OnLoadCallback callback)
+	public ProviderLoadTask(SmoothSyncApi api, OnResultCallback callback)
 	{
 		super(callback);
 		mApi = api;

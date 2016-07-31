@@ -33,7 +33,7 @@ import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.ProvidersLoadTask;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.WizardStep;
-import com.smoothsync.smoothsetup.services.BasicFutureServiceConnection;
+import com.smoothsync.smoothsetup.services.FutureLocalServiceConnection;
 import com.smoothsync.smoothsetup.services.FutureServiceConnection;
 import com.smoothsync.smoothsetup.services.SmoothSyncApiProxy;
 import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
@@ -123,7 +123,7 @@ public final class ProvidersLoadWizardStep implements WizardStep
 		}
 	};
 
-	public static class LoadFragment extends Fragment implements ThrowingAsyncTask.OnLoadCallback<List<Provider>>
+	public static class LoadFragment extends Fragment implements ThrowingAsyncTask.OnResultCallback<List<Provider>>
 	{
 		private final static int DELAY_WAIT_MESSAGE = 2500;
 
@@ -148,7 +148,7 @@ public final class ProvidersLoadWizardStep implements WizardStep
 		{
 			super.onCreate(savedInstanceState);
 			Context context = getContext();
-			mApiService = new BasicFutureServiceConnection<SmoothSyncApi>(context,
+			mApiService = new FutureLocalServiceConnection<SmoothSyncApi>(context,
 				new Intent("com.smoothsync.action.BIND_API").setPackage(context.getPackageName()));
 			new ProvidersLoadTask(new SmoothSyncApiProxy(mApiService), this).execute();
 		}
@@ -171,7 +171,7 @@ public final class ProvidersLoadWizardStep implements WizardStep
 
 
 		@Override
-		public void onLoad(final AsyncTaskResult<List<Provider>> result)
+		public void onResult(final AsyncTaskResult<List<Provider>> result)
 		{
 			if (isAdded())
 			{
@@ -183,7 +183,7 @@ public final class ProvidersLoadWizardStep implements WizardStep
 				}
 				catch (Exception e)
 				{
-					new AutomaticWizardTransition(new ErrorRetryWizardStep()).execute(getContext());
+					new AutomaticWizardTransition(new ErrorRetryWizardStep(getString(R.string.smoothsetup_load_provider_error))).execute(getContext());
 				}
 			}
 		}

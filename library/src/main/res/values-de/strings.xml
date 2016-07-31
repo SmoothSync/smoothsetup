@@ -1,0 +1,21 @@
+<resources>
+    <string name="smoothsetup_default_login_hint">E-Mail-Adresse</string>
+    <string name="smoothsetup_loading">Lade …</string>
+    <string name="smoothsetup_authenticating">Anmeldung …</string>
+    <string name="smoothsetup_error">Fehler</string>
+    <string name="smoothsetup_hint_password">Passwort</string>
+    <string name="smoothsetup_load_provider_error">Konnte Providerdaten nicht laden.\n\nBitte prüfe die Internetverbindung oder versuche es später noch einmal.</string>
+    <string name="smoothsetup_retry_now">Erneut versuchen</string>
+    <string name="smoothsetup_login_prompt">Gib deine E-Mail-Adresse ein und wähle deinen Provider</string>
+    <string name="smoothsetup_login_prompt_branded">Gib deine %1$s Adresse ein</string>
+    <string name="smoothsetup_enter_password_prompt">Gib dein %1$s Passwort ein</string>
+    <string name="smoothsetup_wizard_title_enter_password">Passwort eingeben</string>
+    <string name="smoothsetup_wizard_title_choose_provider">Provider wählen</string>
+    <string name="smoothsetup_wizard_title_login">Anmeldung</string>
+    <string name="smoothsetup_wizard_sign_in">Anmelden</string>
+    <string name="smoothsetup_please_wait_message">Dies kann bis zu 2 Minuten dauern.</string>
+    <string name="smoothsetup_button_choose_provider">Provider wählen</string>
+    <string name="smoothsetup_button_other_provider">Anderer Provider</string>
+    <string name="smoothsetup_authentication_error">Anmeldung fehlgeschlagen.\n\nBitte prüfe dein Passwort und versuche es erneut.</string>
+    <string name="smoothsetup_completing_setup">Fertigstellen …</string>
+</resources>

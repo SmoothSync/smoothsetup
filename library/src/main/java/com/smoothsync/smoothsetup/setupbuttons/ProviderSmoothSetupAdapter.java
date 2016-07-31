@@ -119,9 +119,10 @@ public final class ProviderSmoothSetupAdapter extends AbstractSmoothSetupAdapter
 				return;
 			}
 		}
-		if (mEnable)
+		if (!mEnable)
 		{
-			mEnable = false;
+			// this should depend on whether the provider supports arbitrary domains or not
+			mEnable = true;
 			notifyItemChanged(0);
 		}
 	}

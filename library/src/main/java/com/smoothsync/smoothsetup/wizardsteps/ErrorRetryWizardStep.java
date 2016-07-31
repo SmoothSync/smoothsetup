@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.WizardStep;
@@ -33,20 +34,46 @@ import com.smoothsync.smoothsetup.wizardtransitions.BackWizardTransition;
 
 
 /**
- * A WizardStep shows an error message with an option to retry.
+ * A WizardStep that shows an error message and a button to return to the previous step.
+ *
+ * @author Marten Gajda <marten@dmfs.org>
  */
 public final class ErrorRetryWizardStep implements WizardStep
 {
 
-	public ErrorRetryWizardStep()
+	private final static String ARG_TITLE = "title";
+	private final static String ARG_ERROR_MESSAGE = "error";
+	private final static String ARG_BUTTON_TEXT = "button";
+
+	private final String mTitle;
+	private final String mError;
+	private final String mButtonText;
+
+
+	public ErrorRetryWizardStep(String error)
 	{
+		this(error, null, null);
+	}
+
+
+	public ErrorRetryWizardStep(String error, String buttonText)
+	{
+		this(error, buttonText, null);
+	}
+
+
+	public ErrorRetryWizardStep(String error, String buttonText, String title)
+	{
+		mError = error;
+		mButtonText = buttonText;
+		mTitle = title;
 	}
 
 
 	@Override
 	public String title(Context context)
 	{
-		return context.getString(R.string.smoothsetup_error);
+		return mTitle == null ? context.getString(R.string.smoothsetup_error) : mTitle;
 	}
 
 
@@ -63,6 +90,9 @@ public final class ErrorRetryWizardStep implements WizardStep
 		Fragment result = new ErrorFragment();
 		Bundle arguments = new Bundle();
 		arguments.putParcelable(ARG_WIZARD_STEP, this);
+		arguments.putString(ARG_TITLE, mTitle);
+		arguments.putString(ARG_ERROR_MESSAGE, mError);
+		arguments.putString(ARG_BUTTON_TEXT, mButtonText);
 		result.setArguments(arguments);
 		result.setRetainInstance(true);
 		return result;
@@ -79,6 +109,9 @@ public final class ErrorRetryWizardStep implements WizardStep
 	@Override
 	public void writeToParcel(Parcel dest, int flags)
 	{
+		dest.writeString(mError);
+		dest.writeString(mButtonText);
+		dest.writeString(mTitle);
 	}
 
 	public final static Creator<ErrorRetryWizardStep> CREATOR = new Creator<ErrorRetryWizardStep>()
@@ -86,7 +119,7 @@ public final class ErrorRetryWizardStep implements WizardStep
 		@Override
 		public ErrorRetryWizardStep createFromParcel(Parcel source)
 		{
-			return new ErrorRetryWizardStep();
+			return new ErrorRetryWizardStep(source.readString(), source.readString(), source.readString());
 		}
 
 
@@ -98,7 +131,7 @@ public final class ErrorRetryWizardStep implements WizardStep
 	};
 
 	/**
-	 * A Fragment that shows an error with an option to retry.
+	 * A Fragment that shows an error and a button to return to the previous step.
 	 */
 	public static class ErrorFragment extends Fragment implements View.OnClickListener
 	{
@@ -108,7 +141,18 @@ public final class ErrorRetryWizardStep implements WizardStep
 		public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
 		{
 			View result = inflater.inflate(R.layout.smoothsetup_wizard_fragment_error, container, false);
-			((Button) result.findViewById(android.R.id.button1)).setOnClickListener(this);
+
+			((TextView) result.findViewById(android.R.id.message)).setText(getArguments().getString(ARG_ERROR_MESSAGE));
+
+			Button button = ((Button) result.findViewById(android.R.id.button1));
+			button.setOnClickListener(this);
+
+			String buttonText = getArguments().getString(ARG_BUTTON_TEXT);
+			if (buttonText != null)
+			{
+				button.setText(buttonText);
+			}
+
 			return result;
 		}
 

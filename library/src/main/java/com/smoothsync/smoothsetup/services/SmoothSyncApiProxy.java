@@ -24,6 +24,7 @@ import org.dmfs.httpessentials.exceptions.ProtocolError;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 
 /**
@@ -47,12 +48,16 @@ public final class SmoothSyncApiProxy implements SmoothSyncApi
 	{
 		try
 		{
-			return mConnection.service().resultOf(smoothSyncApiRequest);
+			return mConnection.service(365L * 24L * 3600L * 1000L).resultOf(smoothSyncApiRequest);
 		}
 		catch (InterruptedException e)
 		{
 			Thread.currentThread().interrupt();
 			throw new IOException();
+		}
+		catch (TimeoutException e)
+		{
+			throw new RuntimeException("Couldn't connect to SmoothSyncApiService within a reasonable time.", e);
 		}
 	}
 }

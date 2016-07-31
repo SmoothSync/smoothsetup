@@ -25,11 +25,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.Account;
+import com.smoothsync.smoothsetup.model.BasicHttpAuthorizationFactory;
 import com.smoothsync.smoothsetup.model.WizardStep;
+import com.smoothsync.smoothsetup.wizardtransitions.ForwardWizardTransition;
 
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 
@@ -111,8 +114,12 @@ public final class PasswordWizardStep implements WizardStep
 	/**
 	 * A Fragment that prompts the user for his or her password.
 	 */
-	public final static class PasswordFragment extends Fragment
+	public final static class PasswordFragment extends Fragment implements View.OnClickListener
 	{
+
+		private Account mAccount;
+		private EditText mPassword;
+
 
 		@Nullable
 		@Override
@@ -120,19 +127,38 @@ public final class PasswordWizardStep implements WizardStep
 		{
 			View result = inflater.inflate(R.layout.smoothsetup_wizard_fragment_password, container, false);
 
-			Account account = getArguments().getParcelable(ARG_ACCOUNT);
+			mAccount = getArguments().getParcelable(ARG_ACCOUNT);
 
 			try
 			{
 				((TextView) result.findViewById(android.R.id.message))
-					.setText(getContext().getString(R.string.smoothsetup_enter_password_prompt, account.provider().name()));
+					.setText(getContext().getString(R.string.smoothsetup_enter_password_prompt, mAccount.provider().name()));
 			}
 			catch (ProtocolException e)
 			{
 				throw new RuntimeException("can't get provider name", e);
 			}
+
+			result.findViewById(R.id.button).setOnClickListener(this);
+
+			mPassword = (EditText) result.findViewById(android.R.id.input);
+
 			return result;
 		}
 
+
+		@Override
+		public void onClick(View v)
+		{
+			if (v.getId() == R.id.button)
+			{
+				// verify entered password
+				new ForwardWizardTransition(
+					(new ApproveAuthorizationWizardStep(mAccount, new BasicHttpAuthorizationFactory(mAccount.accountId(), mPassword.getText().toString()))))
+						.execute(getContext());
+			}
+		}
+
 	}
+
 }

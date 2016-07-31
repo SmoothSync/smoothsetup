@@ -41,7 +41,7 @@ import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.AbstractAutoCompleteAdapter;
 import com.smoothsync.smoothsetup.model.BasicAccount;
 import com.smoothsync.smoothsetup.model.WizardStep;
-import com.smoothsync.smoothsetup.services.BasicFutureServiceConnection;
+import com.smoothsync.smoothsetup.services.FutureLocalServiceConnection;
 import com.smoothsync.smoothsetup.services.FutureServiceConnection;
 import com.smoothsync.smoothsetup.services.SmoothSyncApiProxy;
 import com.smoothsync.smoothsetup.setupbuttons.AbstractSmoothSetupAdapter;
@@ -96,7 +96,7 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
 	{
 		super.onCreate(savedInstanceState);
 		Context context = getContext();
-		mApiService = new BasicFutureServiceConnection<SmoothSyncApi>(context,
+		mApiService = new FutureLocalServiceConnection<SmoothSyncApi>(context,
 			new Intent("com.smoothsync.action.BIND_API").setPackage(context.getPackageName()));
 	}
 

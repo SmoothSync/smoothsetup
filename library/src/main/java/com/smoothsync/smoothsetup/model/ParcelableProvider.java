@@ -26,7 +26,10 @@ import com.smoothsync.api.model.Service;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.httpessentials.types.Link;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -89,10 +92,30 @@ public final class ParcelableProvider implements Provider, Parcelable
 	@Override
 	public void writeToParcel(Parcel dest, int flags)
 	{
-		// dest.writeString(id());
-		// dest.writeString(name());
-		// dest.writeStringArray(domains());
-		// dest.writeParcelableArray();
+		try
+		{
+			dest.writeString(mDecorated.id());
+			dest.writeString(mDecorated.name());
+			dest.writeStringArray(mDecorated.domains());
+			Iterator<Service> iterator = mDecorated.services();
+			while (iterator.hasNext())
+			{
+				Service service = iterator.next();
+				if (service instanceof Parcelable)
+				{
+					dest.writeParcelable((Parcelable) service, 0);
+				}
+				else
+				{
+					dest.writeParcelable(new ParcelableService(service), 0);
+				}
+			}
+			dest.writeParcelable(null, 0);
+		}
+		catch (ProtocolException e)
+		{
+
+		}
 	}
 
 	public final static Creator<Provider> CREATOR = new Creator<Provider>()
@@ -100,7 +123,19 @@ public final class ParcelableProvider implements Provider, Parcelable
 		@Override
 		public Provider createFromParcel(Parcel source)
 		{
-			return null;
+			String id = source.readString();
+			String name = source.readString();
+			String[] domains = source.createStringArray();
+			List<Service> services = new ArrayList<Service>();
+			ClassLoader classLoader = getClass().getClassLoader();
+			Service service = source.readParcelable(classLoader);
+			while (service != null)
+			{
+				services.add(service);
+				service = source.readParcelable(classLoader);
+			}
+
+			return new UnparcelledProvider(id, name, domains, services);
 		}
 
 
@@ -110,4 +145,90 @@ public final class ParcelableProvider implements Provider, Parcelable
 			return new Provider[size];
 		}
 	};
+
+	private final static class UnparcelledProvider implements Provider, Parcelable
+	{
+
+		private final String mId;
+		private final String mName;
+		private final String[] mDomains;
+		private final List<Service> mServices;
+
+
+		public UnparcelledProvider(String id, String name, String[] domains, List<Service> services)
+		{
+			mId = id;
+			mName = name;
+			mDomains = domains;
+			mServices = services;
+		}
+
+
+		@Override
+		public String id() throws ProtocolException
+		{
+			return mId;
+		}
+
+
+		@Override
+		public String name() throws ProtocolException
+		{
+			return mName;
+		}
+
+
+		@Override
+		public String[] domains() throws ProtocolException
+		{
+			return mDomains.clone();
+		}
+
+
+		@Override
+		public Iterator<Link> links() throws ProtocolException
+		{
+			return Collections.<Link> emptyList().iterator();
+		}
+
+
+		@Override
+		public Iterator<Service> services() throws ProtocolException
+		{
+			return Collections.unmodifiableList(mServices).iterator();
+		}
+
+
+		@Override
+		public int describeContents()
+		{
+			return 0;
+		}
+
+
+		@Override
+		public void writeToParcel(Parcel dest, int flags)
+		{
+			dest.writeString(mId);
+			dest.writeString(mName);
+			dest.writeStringArray(mDomains);
+			Iterator<Service> iterator = mServices.iterator();
+			while (iterator.hasNext())
+			{
+				Service service = iterator.next();
+				if (service instanceof Parcelable)
+				{
+					dest.writeParcelable((Parcelable) service, 0);
+				}
+				else
+				{
+					dest.writeParcelable(new ParcelableService(service), 0);
+				}
+			}
+			dest.writeParcelable(null, 0);
+		}
+
+		public final static Creator<Provider> CREATOR = ParcelableProvider.CREATOR;
+	}
+
 }

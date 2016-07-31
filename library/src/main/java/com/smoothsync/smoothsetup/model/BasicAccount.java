@@ -17,10 +17,10 @@
 
 package com.smoothsync.smoothsetup.model;
 
-import com.smoothsync.api.model.Provider;
-
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.smoothsync.api.model.Provider;
 
 
 /**
@@ -76,20 +76,20 @@ public final class BasicAccount implements Account
 		}
 	}
 
-	public final static Creator<Account> CREATOR = new Creator<Account>()
+	public final static Creator<BasicAccount> CREATOR = new Creator<BasicAccount>()
 	{
 
 		@Override
-		public Account createFromParcel(Parcel source)
+		public BasicAccount createFromParcel(Parcel source)
 		{
 			return new BasicAccount(source.readString(), (Provider) source.readParcelable(getClass().getClassLoader()));
 		}
 
 
 		@Override
-		public Account[] newArray(int size)
+		public BasicAccount[] newArray(int size)
 		{
-			return new Account[0];
+			return new BasicAccount[0];
 		}
 	};
 }

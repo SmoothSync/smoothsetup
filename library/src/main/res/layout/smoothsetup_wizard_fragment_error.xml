@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:gravity="center_horizontal"
               android:orientation="vertical"
     >
 
@@ -10,13 +9,13 @@
         android:id="@android:id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="48dp"
-        android:text="@string/smoothsetup_general_error"/>
+        android:padding="48dp"/>
 
     <Button
         android:id="@android:id/button1"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:text="@string/smoothsetup_retry_now"/>
 </LinearLayout>

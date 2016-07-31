@@ -15,24 +15,27 @@
  *
  */
 
-package com.smoothsync.smoothsetup.services;
+package com.smoothsync.smoothsetup.model;
 
-import java.util.concurrent.TimeoutException;
+import android.os.Parcelable;
+
+import org.dmfs.httpessentials.client.HttpRequest;
 
 
 /**
- * Interface of an object that holds a {@link android.content.ServiceConnection}.
+ * An interface of a class that knows how to authenticate an HttpRequest.
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-public interface FutureServiceConnection<T>
+public interface HttpAuthorizationFactory extends Parcelable
 {
-
-	public boolean isConnected();
-
-
-	public T service(long timeout) throws TimeoutException, InterruptedException;
-
-
-	public void disconnect();
+	/**
+	 * Authenticate the given HttpRequest.
+	 * 
+	 * @param request
+	 *            The HttpRequest to authenticate.
+	 * @param <T>
+	 * @return An authentcated HttpRequest.
+	 */
+	public <T> HttpRequest<T> authenticate(HttpRequest<T> request);
 }

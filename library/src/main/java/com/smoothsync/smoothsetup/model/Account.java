@@ -17,13 +17,15 @@
 
 package com.smoothsync.smoothsetup.model;
 
-import com.smoothsync.api.model.Provider;
-
 import android.os.Parcelable;
+
+import com.smoothsync.api.model.Provider;
 
 
 /**
  * Holds information about the account to set up, including the login (account-id) and the provider.
+ *
+ * @author Marten Gajda <mrten@dmfs.org>
  */
 public interface Account extends Parcelable
 {

@@ -107,10 +107,10 @@ public final class ApiSmoothSetupAdapter extends AbstractSmoothSetupAdapter
 
 	public void update(String value)
 	{
-		new ProviderSearchTask(mApi, new ThrowingAsyncTask.OnLoadCallback<List<Provider>>()
+		new ProviderSearchTask(mApi, new ThrowingAsyncTask.OnResultCallback<List<Provider>>()
 		{
 			@Override
-			public void onLoad(AsyncTaskResult<List<Provider>> result)
+			public void onResult(AsyncTaskResult<List<Provider>> result)
 			{
 				try
 				{

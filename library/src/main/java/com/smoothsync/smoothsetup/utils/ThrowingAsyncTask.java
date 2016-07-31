@@ -29,17 +29,17 @@ import java.lang.ref.WeakReference;
  */
 public abstract class ThrowingAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, AsyncTaskResult<Result>>
 {
-	public interface OnLoadCallback<Result>
+	public interface OnResultCallback<Result>
 	{
-		public void onLoad(AsyncTaskResult<Result> result);
+		public void onResult(AsyncTaskResult<Result> result);
 	}
 
-	private final WeakReference<OnLoadCallback<Result>> mCallbackReference;
+	private final WeakReference<OnResultCallback<Result>> mCallbackReference;
 
 
-	public ThrowingAsyncTask(OnLoadCallback<Result> callback)
+	public ThrowingAsyncTask(OnResultCallback<Result> callback)
 	{
-		mCallbackReference = new WeakReference<OnLoadCallback<Result>>(callback);
+		mCallbackReference = new WeakReference<OnResultCallback<Result>>(callback);
 	}
 
 
@@ -63,10 +63,10 @@ public abstract class ThrowingAsyncTask<Params, Progress, Result> extends AsyncT
 	@Override
 	protected final void onPostExecute(AsyncTaskResult<Result> asyncTaskResult)
 	{
-		OnLoadCallback<Result> callback = mCallbackReference.get();
+		OnResultCallback<Result> callback = mCallbackReference.get();
 		if (callback != null)
 		{
-			callback.onLoad(asyncTaskResult);
+			callback.onResult(asyncTaskResult);
 		}
 	}
 }

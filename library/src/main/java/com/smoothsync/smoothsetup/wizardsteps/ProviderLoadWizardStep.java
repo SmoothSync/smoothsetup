@@ -33,7 +33,7 @@ import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.ProviderLoadTask;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.WizardStep;
-import com.smoothsync.smoothsetup.services.BasicFutureServiceConnection;
+import com.smoothsync.smoothsetup.services.FutureLocalServiceConnection;
 import com.smoothsync.smoothsetup.services.FutureServiceConnection;
 import com.smoothsync.smoothsetup.services.SmoothSyncApiProxy;
 import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
@@ -128,7 +128,7 @@ public final class ProviderLoadWizardStep implements WizardStep
 		}
 	};
 
-	public static class LoadFragment extends Fragment implements ThrowingAsyncTask.OnLoadCallback<Provider>
+	public static class LoadFragment extends Fragment implements ThrowingAsyncTask.OnResultCallback<Provider>
 	{
 		private final static int DELAY_WAIT_MESSAGE = 2500;
 
@@ -153,7 +153,7 @@ public final class ProviderLoadWizardStep implements WizardStep
 		{
 			super.onCreate(savedInstanceState);
 			Context context = getContext();
-			mApiService = new BasicFutureServiceConnection<SmoothSyncApi>(context,
+			mApiService = new FutureLocalServiceConnection<SmoothSyncApi>(context,
 				new Intent("com.smoothsync.action.BIND_API").setPackage(context.getPackageName()));
 			new ProviderLoadTask(new SmoothSyncApiProxy(mApiService), this).execute(getArguments().getString(ARG_PROVIDER_ID));
 		}
@@ -176,7 +176,7 @@ public final class ProviderLoadWizardStep implements WizardStep
 
 
 		@Override
-		public void onLoad(final AsyncTaskResult<Provider> result)
+		public void onResult(final AsyncTaskResult<Provider> result)
 		{
 			if (isAdded())
 			{

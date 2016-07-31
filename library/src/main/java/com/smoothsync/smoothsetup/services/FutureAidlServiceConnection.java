@@ -23,18 +23,39 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 
 /**
- * A basic implementation of {@link FutureServiceConnection}.
+ * An implementation of {@link FutureServiceConnection} to connect aidl based services.
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-public final class BasicFutureServiceConnection<T> implements FutureServiceConnection<T>
+public final class FutureAidlServiceConnection<T extends android.os.IInterface> implements FutureServiceConnection<T>
 {
+	public interface StubProxy<T extends android.os.IInterface>
+	{
+		/**
+		 * Returns a stub object that connects to the service.
+		 *
+		 * This method needs to contain only one line like:
+		 * 
+		 * <pre>
+		 * <code>
+		 * return &lt;T>.Stub.asInterface(service);
+		 * </code>
+		 * </pre>
+		 * 
+		 * Where &lt;T> is the interface of the service.
+		 *
+		 * @param service
+		 * @return
+		 */
+		T asInterface(IBinder service);
+	}
+
 	private final Context mContext;
+	private final StubProxy<T> mStubProxy;
 	private boolean mIsConnected;
 	private T mService;
 
@@ -47,7 +68,7 @@ public final class BasicFutureServiceConnection<T> implements FutureServiceConne
 			synchronized (this)
 			{
 				mIsConnected = true;
-				mService = (T) service;
+				mService = mStubProxy.asInterface(service);
 				notify();
 			}
 		}
@@ -68,16 +89,19 @@ public final class BasicFutureServiceConnection<T> implements FutureServiceConne
 
 	/**
 	 * Binds the service identified by the given Intent.
-	 * 
+	 *
 	 * @param context
 	 *            A {@link Context}.
 	 * @param intent
 	 *            The {@link Intent} to bind the service.
+	 * @param stubProxy
+	 *            A StubProxy to convert the IBinder to the service interface.
 	 */
-	public BasicFutureServiceConnection(Context context, Intent intent)
+	public FutureAidlServiceConnection(Context context, Intent intent, StubProxy<T> stubProxy)
 	{
 		mContext = context.getApplicationContext();
 		mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+		mStubProxy = stubProxy;
 	}
 
 
@@ -85,20 +109,6 @@ public final class BasicFutureServiceConnection<T> implements FutureServiceConne
 	public boolean isConnected()
 	{
 		return mIsConnected;
-	}
-
-
-	@Override
-	public T service() throws InterruptedException
-	{
-		try
-		{
-			return service(TimeUnit.DAYS.toMillis(100000));
-		}
-		catch (TimeoutException e)
-		{
-			throw new RuntimeException("");
-		}
 	}
 
 
