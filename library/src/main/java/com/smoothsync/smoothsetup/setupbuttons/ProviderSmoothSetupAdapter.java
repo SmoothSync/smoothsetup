@@ -41,7 +41,13 @@ public final class ProviderSmoothSetupAdapter extends AbstractSmoothSetupAdapter
 {
 
 	private Provider mProvider;
-	private boolean mEnable;
+
+	/**
+	 * Indicates whether the button is enabled or not. At present we default to "true" which means we always have it enabled
+	 *
+	 * TODO: change this one the API supports a way to indicate if the provider supports logins without domain.
+	 */
+	private boolean mEnable = true;
 
 
 	public ProviderSmoothSetupAdapter(Provider provider, OnProviderSelectListener listener)

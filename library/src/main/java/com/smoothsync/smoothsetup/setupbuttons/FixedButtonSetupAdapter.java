@@ -23,8 +23,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.smoothsync.smoothsetup.R;
-import com.smoothsync.smoothsetup.wizardsteps.ProvidersLoadWizardStep;
-import com.smoothsync.smoothsetup.wizardtransitions.ForwardWizardTransition;
 
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 
@@ -84,6 +82,7 @@ public final class FixedButtonSetupAdapter extends AbstractSmoothSetupAdapter
 			notifyDataSetChanged();
 		}
 	};
+	private final OnProviderSelectListener mListener;
 
 
 	public FixedButtonSetupAdapter(AbstractSmoothSetupAdapter decorated, OnProviderSelectListener listener)
@@ -91,6 +90,7 @@ public final class FixedButtonSetupAdapter extends AbstractSmoothSetupAdapter
 		super(listener);
 		mDecorated = decorated;
 		mDecorated.registerAdapterDataObserver(mDataObserver);
+		mListener = listener;
 	}
 
 
@@ -140,7 +140,7 @@ public final class FixedButtonSetupAdapter extends AbstractSmoothSetupAdapter
 				@Override
 				public void onClick(View v)
 				{
-					new ForwardWizardTransition(new ProvidersLoadWizardStep("")).execute(v.getContext());
+					mListener.onOtherSelected();
 				}
 			});
 		}

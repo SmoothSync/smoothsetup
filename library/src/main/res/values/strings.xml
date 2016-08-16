@@ -1,12 +1,12 @@
 <resources>
-    <string name="smoothsetup_default_login_hint">Email address</string>
+    <string name="smoothsetup_default_login_hint">Email address or login</string>
     <string name="smoothsetup_loading">Loading …</string>
     <string name="smoothsetup_authenticating">Authenticating …</string>
     <string name="smoothsetup_error">Error</string>
     <string name="smoothsetup_hint_password">Password</string>
     <string name="smoothsetup_load_provider_error">Couldn\'t load provider data.\n\nPlease check your internet connection or retry later.</string>
     <string name="smoothsetup_retry_now">Retry now</string>
-    <string name="smoothsetup_login_prompt">Enter your email address and choose your provider</string>
+    <string name="smoothsetup_login_prompt">Enter your email address or login and choose your provider</string>
     <string name="smoothsetup_login_prompt_branded">Enter your %1$s email address</string>
     <string name="smoothsetup_enter_password_prompt">Enter your %1$s password</string>
     <string name="smoothsetup_wizard_title_enter_password">Enter password</string>

@@ -1,12 +1,12 @@
 <resources>
-    <string name="smoothsetup_default_login_hint">E-Mail-Adresse</string>
+    <string name="smoothsetup_default_login_hint">E-Mail-Adresse oder Benutzername</string>
     <string name="smoothsetup_loading">Lade …</string>
     <string name="smoothsetup_authenticating">Anmeldung …</string>
     <string name="smoothsetup_error">Fehler</string>
     <string name="smoothsetup_hint_password">Passwort</string>
     <string name="smoothsetup_load_provider_error">Konnte Providerdaten nicht laden.\n\nBitte prüfe die Internetverbindung oder versuche es später noch einmal.</string>
     <string name="smoothsetup_retry_now">Erneut versuchen</string>
-    <string name="smoothsetup_login_prompt">Gib deine E-Mail-Adresse ein und wähle deinen Provider</string>
+    <string name="smoothsetup_login_prompt">Gib deine E-Mail-Adresse oder Benutzernamen ein und wähle deinen Provider</string>
     <string name="smoothsetup_login_prompt_branded">Gib deine %1$s Adresse ein</string>
     <string name="smoothsetup_enter_password_prompt">Gib dein %1$s Passwort ein</string>
     <string name="smoothsetup_wizard_title_enter_password">Passwort eingeben</string>

@@ -179,4 +179,11 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
 	{
 		new ForwardWizardTransition(new PasswordWizardStep(new BasicAccount(mLogin.getText().toString(), provider))).execute(getContext());
 	}
+
+
+	@Override
+	public void onOtherSelected()
+	{
+		new ForwardWizardTransition(new ProvidersLoadWizardStep(mLogin.getText().toString())).execute(getContext());
+	}
 }
