@@ -100,8 +100,8 @@ public final class FutureAidlServiceConnection<T extends android.os.IInterface> 
 	public FutureAidlServiceConnection(Context context, Intent intent, StubProxy<T> stubProxy)
 	{
 		mContext = context.getApplicationContext();
-		mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 		mStubProxy = stubProxy;
+		mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 	}
 
 
