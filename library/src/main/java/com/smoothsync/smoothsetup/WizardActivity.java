@@ -31,6 +31,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.smoothsync.smoothsetup.model.WizardStep;
 import com.smoothsync.smoothsetup.wizardtransitions.AbstractWizardTransition;
@@ -137,6 +139,15 @@ public final class WizardActivity extends AppCompatActivity implements FragmentM
 						wizardTransition.apply(WizardActivity.this, mFragmentManager,
 							(WizardStep) mFragmentManager.findFragmentById(R.id.wizards).getArguments().getParcelable(WizardStep.ARG_WIZARD_STEP));
 						mFragmentManager.executePendingTransactions();
+
+						// close keyboard if necessary
+						// TODO: don't close the keyboard if the next step has input fields
+						View view = getCurrentFocus();
+						if (view != null)
+						{
+							InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+							inputManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+						}
 
 						// not all transitions affect the back stack so make sure we still update the actionbar.
 						updateActionBar();

@@ -33,7 +33,11 @@
             android:id="@android:id/input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textEmailAddress"/>
+            android:imeOptions="actionGo"
+            android:inputType="textEmailAddress">
+
+            <requestFocus/>
+        </AutoCompleteTextView>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.v7.widget.RecyclerView

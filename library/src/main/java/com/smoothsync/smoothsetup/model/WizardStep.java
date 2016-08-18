@@ -30,7 +30,7 @@ public interface WizardStep extends Parcelable
 	/**
 	 * The Fragment argument that contains the WizardStep that a Fragment belongs to. This must be set on a wizard fragment.
 	 */
-	public final static String ARG_WIZARD_STEP = "WIZARD_STEP";
+	String ARG_WIZARD_STEP = "WIZARD_STEP";
 
 
 	/**
@@ -40,7 +40,7 @@ public interface WizardStep extends Parcelable
 	 *            A {@link Context}.
 	 * @return The localized wizard step title.
 	 */
-	public String title(Context context);
+	String title(Context context);
 
 
 	/**
@@ -50,7 +50,7 @@ public interface WizardStep extends Parcelable
 	 *            A {@link Context}.
 	 * @return A {@link Fragment}.
 	 */
-	public Fragment fragment(Context context);
+	Fragment fragment(Context context);
 
 
 	/**
@@ -58,5 +58,6 @@ public interface WizardStep extends Parcelable
 	 * 
 	 * @return
 	 */
-	public boolean skipOnBack();
+	boolean skipOnBack();
+
 }
