@@ -141,12 +141,12 @@ public final class WizardActivity extends AppCompatActivity implements FragmentM
 						mFragmentManager.executePendingTransactions();
 
 						// close keyboard if necessary
-						// TODO: don't close the keyboard if the next step has input fields
 						View view = getCurrentFocus();
-						if (view != null)
+						if (view == null)
 						{
+							// no view is focused, close the keyboard
 							InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-							inputManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+							inputManager.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
 						}
 
 						// not all transitions affect the back stack so make sure we still update the actionbar.
