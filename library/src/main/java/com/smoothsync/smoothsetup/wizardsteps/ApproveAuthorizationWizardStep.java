@@ -46,9 +46,16 @@ import org.dmfs.httpessentials.client.HttpResponseHandler;
 import org.dmfs.httpessentials.entities.EmptyHttpRequestEntity;
 import org.dmfs.httpessentials.exceptions.ProtocolError;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
+import org.dmfs.httpessentials.executors.following.Following;
+import org.dmfs.httpessentials.executors.following.policies.FollowRedirectPolicy;
+import org.dmfs.httpessentials.executors.following.policies.Secure;
+import org.dmfs.httpessentials.executors.retrying.Retrying;
+import org.dmfs.httpessentials.executors.retrying.policies.DefaultRetryPolicy;
 import org.dmfs.httpessentials.headers.EmptyHeaders;
 import org.dmfs.httpessentials.headers.Headers;
 import org.dmfs.httpessentials.httpurlconnection.HttpUrlConnectionExecutor;
+import org.dmfs.httpessentials.httpurlconnection.factories.DefaultHttpUrlConnectionFactory;
+import org.dmfs.httpessentials.httpurlconnection.factories.decorators.Finite;
 import org.dmfs.httpessentials.responsehandlers.TrivialResponseHandler;
 import org.dmfs.iterators.AbstractFilteredIterator;
 import org.dmfs.iterators.FilteredIterator;
@@ -166,7 +173,10 @@ public final class ApproveAuthorizationWizardStep implements WizardStep
 				@Override
 				protected Boolean doInBackgroundWithException(Void[] params) throws Exception
 				{
-					HttpRequestExecutor executor = new HttpUrlConnectionExecutor();
+					HttpRequestExecutor executor = new Following(
+						new Retrying(new HttpUrlConnectionExecutor(new Finite(new DefaultHttpUrlConnectionFactory(), 10000, 30000)), new DefaultRetryPolicy(3)),
+						new Secure(new FollowRedirectPolicy(5)));
+
 					return executor.execute(new FilteredIterator<>(((Account) getArguments().getParcelable(ARG_ACCOUNT)).provider().services(),
 						new AbstractFilteredIterator.IteratorFilter<Service>()
 						{
