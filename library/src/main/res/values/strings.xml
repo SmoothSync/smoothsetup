@@ -12,10 +12,13 @@
     <string name="smoothsetup_wizard_title_enter_password">Enter password</string>
     <string name="smoothsetup_wizard_title_choose_provider">Choose Provider</string>
     <string name="smoothsetup_wizard_title_login">Log in</string>
+    <string name="smoothsetup_wizard_message_setup_completed">%1$s is now set up and synchronization will start shortly</string>
+    <string name="smoothsetup_wizard_title_setup_completed">Congratulations</string>
     <string name="smoothsetup_wizard_sign_in">Sign in</string>
     <string name="smoothsetup_please_wait_message">This can take up to 2 minutes.</string>
     <string name="smoothsetup_button_choose_provider">Choose provider</string>
     <string name="smoothsetup_button_other_provider">Other</string>
     <string name="smoothsetup_authentication_error">Authentication failed.\n\nPlease verify your password and retry.</string>
     <string name="smoothsetup_completing_setup">Finishing…</string>
+    <string name="smoothsync_dismiss_setup">Get started</string>
 </resources>

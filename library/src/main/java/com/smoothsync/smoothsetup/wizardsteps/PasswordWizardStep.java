@@ -22,9 +22,12 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -119,6 +122,7 @@ public final class PasswordWizardStep implements WizardStep
 
 		private Account mAccount;
 		private EditText mPassword;
+		private Button mButton;
 
 
 		@Nullable
@@ -139,10 +143,34 @@ public final class PasswordWizardStep implements WizardStep
 				throw new RuntimeException("can't get provider name", e);
 			}
 
-			result.findViewById(R.id.button).setOnClickListener(this);
+			mButton = (Button) result.findViewById(R.id.button);
+			mButton.setOnClickListener(this);
 
 			mPassword = (EditText) result.findViewById(android.R.id.input);
+			mPassword.addTextChangedListener(new TextWatcher()
+			{
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count, int after)
+				{
+					// nothing to do
+				}
 
+
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count)
+				{
+					// nothing to do
+				}
+
+
+				@Override
+				public void afterTextChanged(Editable s)
+				{
+					mButton.setEnabled(!s.toString().isEmpty());
+				}
+			});
+
+			mButton.setEnabled(!mPassword.getText().toString().isEmpty());
 			return result;
 		}
 

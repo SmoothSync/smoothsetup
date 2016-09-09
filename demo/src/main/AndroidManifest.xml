@@ -26,6 +26,14 @@
                 <action android:name="com.smoothsync.action.BIND_API"/>
             </intent-filter>
         </service>
+
+        <service
+            android:name=".AccountService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.smoothsync.action.ACCOUNT_SERVICE"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

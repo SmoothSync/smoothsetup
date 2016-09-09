@@ -11,11 +11,14 @@
     <string name="smoothsetup_enter_password_prompt">Gib dein %1$s Passwort ein</string>
     <string name="smoothsetup_wizard_title_enter_password">Passwort eingeben</string>
     <string name="smoothsetup_wizard_title_choose_provider">Provider wählen</string>
-    <string name="smoothsetup_wizard_title_login">Anmeldung</string>
+    <string name="smoothsetup_wizard_title_login">Anmelden</string>
     <string name="smoothsetup_wizard_sign_in">Anmelden</string>
     <string name="smoothsetup_please_wait_message">Dies kann bis zu 2 Minuten dauern.</string>
     <string name="smoothsetup_button_choose_provider">Provider wählen</string>
     <string name="smoothsetup_button_other_provider">Anderer Provider</string>
     <string name="smoothsetup_authentication_error">Anmeldung fehlgeschlagen.\n\nBitte prüfe dein Passwort und versuche es erneut.</string>
     <string name="smoothsetup_completing_setup">Fertigstellen …</string>
+    <string name="smoothsync_dismiss_setup">Jetzt loslegen</string>
+    <string name="smoothsetup_wizard_title_setup_completed">Glückwunsch</string>
+    <string name="smoothsetup_wizard_message_setup_completed">%1$s ist jetzt eingerichtet und die Synchronisation beginnt in Kürze</string>
 </resources>

@@ -51,7 +51,8 @@ public final class ResetWizardTransition extends AbstractWizardTransition
 		}
 
 		FragmentTransaction transaction = fragmentManager.beginTransaction();
-		transaction.setCustomAnimations(R.anim.smoothsetup_fade_in, R.anim.smoothsetup_fade_out);
+		transaction.setCustomAnimations(R.anim.smoothsetup_enter_right, R.anim.smoothsetup_exit_left, R.anim.smoothsetup_enter_left,
+			R.anim.smoothsetup_exit_right);
 		transaction.replace(R.id.wizards, mNextStep.fragment(context));
 		transaction.commit();
 	}

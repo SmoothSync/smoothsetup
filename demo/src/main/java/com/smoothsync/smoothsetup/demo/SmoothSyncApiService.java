@@ -26,7 +26,8 @@ import com.smoothsync.smoothsetup.services.AbstractSmoothSyncApiService;
 
 import org.dmfs.httpessentials.client.HttpRequestExecutor;
 import org.dmfs.httpessentials.executors.following.Following;
-import org.dmfs.httpessentials.executors.following.policies.NeverFollowRedirectPolicy;
+import org.dmfs.httpessentials.executors.following.policies.FollowRedirectPolicy;
+import org.dmfs.httpessentials.executors.following.policies.Secure;
 import org.dmfs.httpessentials.executors.retrying.Retrying;
 import org.dmfs.httpessentials.executors.retrying.policies.DefaultRetryPolicy;
 import org.dmfs.httpessentials.httpurlconnection.HttpUrlConnectionExecutor;
@@ -52,7 +53,7 @@ public class SmoothSyncApiService extends AbstractSmoothSyncApiService
 			{
 				HttpRequestExecutor executor = new Following(
 					new Retrying(new HttpUrlConnectionExecutor(new Finite(new DefaultHttpUrlConnectionFactory(), 10000, 30000)), new DefaultRetryPolicy(3)),
-					new NeverFollowRedirectPolicy());
+					new Secure(new FollowRedirectPolicy(5)));
 
 				OAuth2ClientCredentials clientCreds = new BasicOAuth2ClientCredentials("c5afc71ab8d046229d05275f0f01c03a",
 					"c1b7aa8d571c4975b6a4e8099ca052c05c239015a24845f7bf7f4c8221cfafa3");

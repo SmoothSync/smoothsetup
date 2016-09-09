@@ -17,7 +17,6 @@
 
 package com.smoothsync.smoothsetup.wizardsteps;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -41,6 +40,7 @@ import com.smoothsync.smoothsetup.services.FutureServiceConnection;
 import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 import com.smoothsync.smoothsetup.wizardtransitions.AutomaticWizardTransition;
+import com.smoothsync.smoothsetup.wizardtransitions.ResetWizardTransition;
 
 
 /**
@@ -203,11 +203,14 @@ public final class CreateAccountWizardStep implements WizardStep
 		{
 			if (isAdded())
 			{
+				Context context = getContext();
 				try
 				{
-					result.value();
-					getActivity().setResult(Activity.RESULT_OK);
-					getActivity().finish();
+					// the account has been created, wipe any temporary branding
+					context.getSharedPreferences("com.smoothsync.smoothsetup.prefs", 0).edit().putString("referrer", null).apply();
+
+					// Go to the next step, but reset the back stack, so there is no way back.
+					new ResetWizardTransition(new SetupCompleteWizardStep()).execute(context);
 				}
 				catch (Exception e)
 				{
