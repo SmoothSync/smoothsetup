@@ -48,7 +48,7 @@ public final class WaitForReferrerWizardStep implements WizardStep
 	@Override
 	public String title(Context context)
 	{
-		return context.getString(R.string.smoothsetup_loading);
+		return context.getString(R.string.smoothsetup_wizard_title_loading);
 	}
 
 

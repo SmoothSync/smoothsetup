@@ -15,7 +15,7 @@
         android:layout_marginRight="36dp"
         android:layout_marginStart="36dp"
         android:padding="12dp"
-        android:text="@string/smoothsetup_login_prompt"
+        android:text="@string/smoothsetup_prompt_login"
         android:textAppearance="?android:attr/textAppearanceMedium"/>
 
     <android.support.design.widget.TextInputLayout

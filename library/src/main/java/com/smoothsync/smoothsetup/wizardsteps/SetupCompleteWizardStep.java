@@ -113,7 +113,7 @@ public final class SetupCompleteWizardStep implements WizardStep
 			View result = inflater.inflate(R.layout.smoothsetup_wizard_fragment_setup_completed, container, false);
 
 			((TextView) result.findViewById(android.R.id.message))
-				.setText(getString(R.string.smoothsetup_wizard_message_setup_completed, getString(getContext().getApplicationInfo().labelRes)));
+				.setText(getString(R.string.smoothsetup_message_setup_completed, getString(getContext().getApplicationInfo().labelRes)));
 
 			Button button = ((Button) result.findViewById(android.R.id.button1));
 			button.setOnClickListener(this);

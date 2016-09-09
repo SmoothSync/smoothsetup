@@ -112,7 +112,7 @@ public final class GenericProviderWizardStep implements WizardStep
 		@Override
 		public String promptText(Context context)
 		{
-			return context.getString(R.string.smoothsetup_login_prompt);
+			return context.getString(R.string.smoothsetup_prompt_login);
 		}
 
 

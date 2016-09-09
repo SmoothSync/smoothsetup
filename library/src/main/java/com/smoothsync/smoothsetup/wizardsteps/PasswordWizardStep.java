@@ -136,7 +136,7 @@ public final class PasswordWizardStep implements WizardStep
 			try
 			{
 				((TextView) result.findViewById(android.R.id.message))
-					.setText(getContext().getString(R.string.smoothsetup_enter_password_prompt, mAccount.provider().name()));
+					.setText(getContext().getString(R.string.smoothsetup_prompt_enter_password, mAccount.provider().name()));
 			}
 			catch (ProtocolException e)
 			{

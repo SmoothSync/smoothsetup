@@ -19,5 +19,5 @@
         android:layout_height="wrap_content"
         android:alpha="0"
         android:padding="48dp"
-        android:text="@string/smoothsetup_please_wait_message"/>
+        android:text="@string/smoothsetup_message_please_wait"/>
 </LinearLayout>

@@ -87,7 +87,7 @@ public final class ApproveAuthorizationWizardStep implements WizardStep
 	@Override
 	public String title(Context context)
 	{
-		return context.getString(R.string.smoothsetup_authenticating);
+		return context.getString(R.string.smoothsetup_wizard_title_authenticating);
 	}
 
 
@@ -241,12 +241,12 @@ public final class ApproveAuthorizationWizardStep implements WizardStep
 					}
 					else
 					{
-						new AutomaticWizardTransition(new ErrorRetryWizardStep(getString(R.string.smoothsetup_authentication_error))).execute(getContext());
+						new AutomaticWizardTransition(new ErrorRetryWizardStep(getString(R.string.smoothsetup_error_authentication))).execute(getContext());
 					}
 				}
 				catch (Exception e)
 				{
-					new AutomaticWizardTransition(new ErrorRetryWizardStep(getString(R.string.smoothsetup_authentication_error))).execute(getContext());
+					new AutomaticWizardTransition(new ErrorRetryWizardStep(getString(R.string.smoothsetup_error_authentication))).execute(getContext());
 				}
 			}
 		}

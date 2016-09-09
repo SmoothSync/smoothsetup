@@ -73,7 +73,7 @@ public final class ErrorRetryWizardStep implements WizardStep
 	@Override
 	public String title(Context context)
 	{
-		return mTitle == null ? context.getString(R.string.smoothsetup_error) : mTitle;
+		return mTitle == null ? context.getString(R.string.smoothsetup_wizard_title_error) : mTitle;
 	}
 
 

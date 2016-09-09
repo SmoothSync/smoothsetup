@@ -54,7 +54,7 @@ public final class ErrorResetWizardStep implements WizardStep
 	@Override
 	public String title(Context context)
 	{
-		return context.getString(R.string.smoothsetup_error);
+		return context.getString(R.string.smoothsetup_wizard_title_error);
 	}
 
 

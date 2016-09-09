@@ -70,7 +70,7 @@ public final class ProvidersLoadWizardStep implements WizardStep
 	@Override
 	public String title(Context context)
 	{
-		return context.getString(R.string.smoothsetup_loading);
+		return context.getString(R.string.smoothsetup_wizard_title_loading);
 	}
 
 
@@ -183,7 +183,7 @@ public final class ProvidersLoadWizardStep implements WizardStep
 				}
 				catch (Exception e)
 				{
-					new AutomaticWizardTransition(new ErrorRetryWizardStep(getString(R.string.smoothsetup_load_provider_error))).execute(getContext());
+					new AutomaticWizardTransition(new ErrorRetryWizardStep(getString(R.string.smoothsetup_error_load_provider))).execute(getContext());
 				}
 			}
 		}

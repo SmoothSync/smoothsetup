@@ -143,7 +143,7 @@ public final class ProviderLoginWizardStep implements WizardStep
 		{
 			try
 			{
-				return context.getString(R.string.smoothsetup_login_prompt_branded, mProvider.name());
+				return context.getString(R.string.smoothsetup_prompt_login_at_provider, mProvider.name());
 			}
 			catch (ProtocolException e)
 			{

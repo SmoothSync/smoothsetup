@@ -75,7 +75,7 @@ public final class ProviderSmoothSetupAdapter extends AbstractSmoothSetupAdapter
 	@Override
 	public void onBindViewHolder(BasicButtonViewHolder holder, int position)
 	{
-		holder.updateText("Next");
+		holder.updateText(R.string.smoothsetup_button_login_next);
 		holder.updateEnabled(mEnable);
 		holder.updateOnClickListener(new View.OnClickListener()
 		{

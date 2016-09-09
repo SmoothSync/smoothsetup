@@ -67,7 +67,7 @@ public final class CreateAccountWizardStep implements WizardStep
 	@Override
 	public String title(Context context)
 	{
-		return context.getString(R.string.smoothsetup_completing_setup);
+		return context.getString(R.string.smoothsetup_wizard_title_completing_setup);
 	}
 
 

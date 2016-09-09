@@ -1,24 +1,150 @@
 <resources>
-    <string name="smoothsetup_default_login_hint">Email address or login</string>
-    <string name="smoothsetup_loading">Loading …</string>
-    <string name="smoothsetup_authenticating">Authenticating …</string>
-    <string name="smoothsetup_error">Error</string>
-    <string name="smoothsetup_hint_password">Password</string>
-    <string name="smoothsetup_load_provider_error">Couldn\'t load provider data.\n\nPlease check your internet connection or retry later.</string>
-    <string name="smoothsetup_retry_now">Retry now</string>
-    <string name="smoothsetup_login_prompt">Enter your email address or login and choose your provider</string>
-    <string name="smoothsetup_login_prompt_branded">Enter your %1$s email address</string>
-    <string name="smoothsetup_enter_password_prompt">Enter your %1$s password</string>
-    <string name="smoothsetup_wizard_title_enter_password">Enter password</string>
-    <string name="smoothsetup_wizard_title_choose_provider">Choose Provider</string>
+
+    <!-- Wizard titles - all these strings have to fit on a single title line in an large font, so they should not exceed ~16 characters -->
+
+    <!--
+    Title of the wizard step that's shown while the app loads data from the SmoothSync service.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_loading">Loading …</string>
+
+    <!--
+    Title of the wizard step that asks the user to enter his/her user name.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
     <string name="smoothsetup_wizard_title_login">Log in</string>
-    <string name="smoothsetup_wizard_message_setup_completed">%1$s is now set up and synchronization will start shortly</string>
+
+    <!--
+    Title of the wizard step that asks the user to select a provider.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_choose_provider">Choose Provider</string>
+
+    <!--
+    Title of the wizard step that asks the user to enter his/her password.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_enter_password">Enter password</string>
+
+    <!--
+    Title of the wizard step that's shown while the credentials verification is in progress.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_authenticating">Authenticating …</string>
+
+    <!--
+    Title of the wizard step that's shown while the app prepares the account on the device.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_completing_setup">Finishing …</string>
+
+    <!--
+    Title of the wizard step that's shown after the account setup has been completed.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
     <string name="smoothsetup_wizard_title_setup_completed">Congratulations</string>
-    <string name="smoothsetup_wizard_sign_in">Sign in</string>
-    <string name="smoothsetup_please_wait_message">This can take up to 2 minutes.</string>
+
+    <!--
+    Title of a wizard step that presents an error to the user.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_error">Error</string>
+
+
+    <!-- Prompts -->
+
+    <!--
+    Message that prompts the user to enter his/her username or email address for the provider to set up
+    and to select the provider afterwards.
+    -->
+    <string name="smoothsetup_prompt_login">Enter your email address or login and choose your provider</string>
+
+    <!--
+    Message that prompts the user to enter his/her username or email address for a specific provider.
+    %1$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_prompt_login_at_provider">Enter your %1$s login</string>
+
+    <!--
+    Message that prompts the user to enter his/her password for a specific provider.
+    %1$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_prompt_enter_password">Enter your %1$s password</string>
+
+
+    <!-- Buttons -->
+
+    <!--
+    Text on a button that allows the user to select a provider from a list.
+    Shown if no other provider matches the login name.
+    -->
     <string name="smoothsetup_button_choose_provider">Choose provider</string>
+
+    <!--
+    Text on a button that allows the user to select a provider from a list.
+    Shown if the login name matches a specific provider.
+    -->
     <string name="smoothsetup_button_other_provider">Other</string>
-    <string name="smoothsetup_authentication_error">Authentication failed.\n\nPlease verify your password and retry.</string>
-    <string name="smoothsetup_completing_setup">Finishing…</string>
-    <string name="smoothsync_dismiss_setup">Get started</string>
+
+    <!--
+    Text on a button that proceeds to the password prompt after entering the login name.
+    -->
+    <string name="smoothsetup_button_login_next">Next</string>
+
+    <!--
+    Text on a button that starts the credentials verification after entering a password.
+    -->
+    <string name="smoothsetup_button_sign_in">Sign in</string>
+
+    <!--
+    Text on a button to close the activity after a successful account setup.
+    -->
+    <string name="smoothsetup_button_finish_setup">Finish setup</string>
+
+    <!--
+    Text on the button under an error page that takes the user back to the previous step.
+    -->
+    <string name="smoothsetup_button_retry_now">Retry now</string>
+
+
+    <!-- Messages -->
+
+    <!--
+    Message that's shown to the user when everything worked out an the setup has been completed successfully.
+    %1$s will be replaced with the app name.
+    -->
+    <string name="smoothsetup_message_setup_completed">%1$s is now set up and synchronization will start shortly</string>
+
+    <!--
+    Message that's faded in if a blocking operation (usually a network operation) takes longer than ~2 seconds.
+    -->
+    <string name="smoothsetup_message_please_wait">This can take up to 2 minutes.</string>
+
+
+    <!-- Error Messages -->
+
+    <!--
+    Error message that's shown when no provider data (for one or multiple providers) could be loaded (due to any kind of error).
+    -->
+    <string name="smoothsetup_error_load_provider">Couldn\'t load provider data.\n\nPlease check your internet connection or retry later.</string>
+
+    <!--
+    Error message that's shown when the user's credentials were not accepted by the provider.
+    -->
+    <string name="smoothsetup_error_authentication">Authentication failed.\n\nPlease verify your password and retry.</string>
+
+
+    <!-- EditText hints -->
+
+    <!--
+    Hint text in the field that takes the user's email address or login name.
+    -->
+    <string name="smoothsetup_default_login_hint">Email address or login</string>
+
+    <!--
+    Hint text on a password input field.
+    -->
+    <string name="smoothsetup_hint_password">Password</string>
+
+
 </resources>
