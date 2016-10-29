@@ -71,6 +71,18 @@
     -->
     <string name="smoothsetup_prompt_enter_password">Enter your %1$s password</string>
 
+    <!--
+    Message that prompts the user to enter his/her password or app-specific password for a specific provider.
+    %1$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_prompt_enter_password_or_app_specific_password">Enter your %1$s password or your app-specific %1$s password</string>
+
+    <!--
+    Message that prompts the user to enter his/her app-specific password for a specific provider.
+    %1$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_prompt_enter_app_specific_password">Enter your app-specific %1$s password</string>
+
 
     <!-- Buttons -->
 
@@ -116,7 +128,7 @@
     <string name="smoothsetup_message_setup_completed">%1$s is now set up and synchronization will start shortly</string>
 
     <!--
-    Message that's faded in if a blocking operation (usually a network operation) takes longer than ~2 seconds.
+    Message that's faded in if a blocking operation (usually a network operation) takes longer than a few seconds.
     -->
     <string name="smoothsetup_message_please_wait">This can take up to 2 minutes.</string>
 
@@ -133,6 +145,11 @@
     -->
     <string name="smoothsetup_error_authentication">Authentication failed.\n\nPlease verify your password and retry.</string>
 
+    <!--
+    Generic network error message that's shown when there was any sort of connection issue.
+    -->
+    <string name="smoothsetup_error_network">Connection failed.\n\nPlease check your internet connection or retry later.</string>
+
 
     <!-- EditText hints -->
 
@@ -147,4 +164,32 @@
     <string name="smoothsetup_hint_password">Password</string>
 
 
+    <!-- Links -->
+
+    <!--
+    Text of a link that will be shown on the login screen if a service provides a sign up link.
+    -->
+    <string name="smoothsetup_sign_up_now">No account yet? <b>Sign up now.</b></string>
+
+    <!--
+    Text of a link that will be shown underneath the password dialog if a service provides a password recovery link.
+    -->
+    <string name="smoothsetup_forgot_password">Forgot your password?</string>
+
+    <!--
+    Text of a link that will be shown underneath the password dialog if a service provides a link to create app specific passwords.
+    -->
+    <string name="smoothsetup_create_app_specific_password">Create app-specific password</string>
+
+    <!--
+    Text of a link that opens a privacy policy when clicked.
+    %1$s wil be replaced either with the app name or the provider name.
+    -->
+    <string name="smoothsetup_privacy_policy">%1$s Privacy Policy</string>
+
+    <!--
+    Text of a link that opens terms & conditions when clicked.
+    %1$s wil be replaced either with the app name or the provider name.
+    -->
+    <string name="smoothsetup_terms_and_conditions">%1$s Terms and Conditions</string>
 </resources>
