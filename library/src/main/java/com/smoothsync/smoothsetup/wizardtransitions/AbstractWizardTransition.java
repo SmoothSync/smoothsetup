@@ -30,22 +30,22 @@ import android.support.v4.content.LocalBroadcastManager;
  */
 public abstract class AbstractWizardTransition implements WizardTransition, Parcelable
 {
-	/**
-	 * The broadcast action that this transition uses.
-	 */
-	public final static String ACTION_WIZARD_TRANSITION = "action-wizard-transition";
+    /**
+     * The broadcast action that this transition uses.
+     */
+    public final static String ACTION_WIZARD_TRANSITION = "action-wizard-transition";
 
-	/**
-	 * The name of the Parcelable extra that contains this transition.
-	 */
-	public final static String EXTRA_WIZARD_TRANSITION = "wizard-transition";
+    /**
+     * The name of the Parcelable extra that contains this transition.
+     */
+    public final static String EXTRA_WIZARD_TRANSITION = "wizard-transition";
 
 
-	@Override
-	public final void execute(Context context)
-	{
-		Intent intent = new Intent(ACTION_WIZARD_TRANSITION);
-		intent.putExtra(EXTRA_WIZARD_TRANSITION, this);
-		LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-	}
+    @Override
+    public final void execute(Context context)
+    {
+        Intent intent = new Intent(ACTION_WIZARD_TRANSITION);
+        intent.putExtra(EXTRA_WIZARD_TRANSITION, this);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
 }

@@ -17,12 +17,12 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
-import java.util.Iterator;
-
 import org.dmfs.iterators.ArrayIterator;
 import org.dmfs.iterators.ConvertedIterator;
 import org.dmfs.iterators.FilteredIterator;
 import org.dmfs.iterators.filters.NonNull;
+
+import java.util.Iterator;
 
 
 /**
@@ -33,34 +33,34 @@ import org.dmfs.iterators.filters.NonNull;
 public final class AutoCompleteArrayIterator implements Iterator<String>
 {
 
-	private final Iterator<String> mIterator;
+    private final Iterator<String> mIterator;
 
 
-	public AutoCompleteArrayIterator(String[] autoCompleteDomains, String localPart, String domainPart)
-	{
-		mIterator = new ConvertedIterator<String, String>(new FilteredIterator<String>(new FilteredIterator<String>(
-			new ConvertedIterator<String, String>(new ArrayIterator<String>(autoCompleteDomains), new DomainExpansionConverter(domainPart)),
-			NonNull.<String> instance()), DomainFilter.INSTANCE), new LocalPartConverter(localPart));
-	}
+    public AutoCompleteArrayIterator(String[] autoCompleteDomains, String localPart, String domainPart)
+    {
+        mIterator = new ConvertedIterator<String, String>(new FilteredIterator<String>(new FilteredIterator<String>(
+                new ConvertedIterator<String, String>(new ArrayIterator<String>(autoCompleteDomains), new DomainExpansionConverter(domainPart)),
+                NonNull.<String>instance()), DomainFilter.INSTANCE), new LocalPartConverter(localPart));
+    }
 
 
-	@Override
-	public boolean hasNext()
-	{
-		return mIterator.hasNext();
-	}
+    @Override
+    public boolean hasNext()
+    {
+        return mIterator.hasNext();
+    }
 
 
-	@Override
-	public String next()
-	{
-		return mIterator.next();
-	}
+    @Override
+    public String next()
+    {
+        return mIterator.next();
+    }
 
 
-	@Override
-	public void remove()
-	{
-		mIterator.remove();
-	}
+    @Override
+    public void remove()
+    {
+        mIterator.remove();
+    }
 }

@@ -29,13 +29,14 @@ import org.dmfs.httpessentials.client.HttpRequest;
  */
 public interface HttpAuthorizationFactory extends Parcelable
 {
-	/**
-	 * Authenticate the given HttpRequest.
-	 * 
-	 * @param request
-	 *            The HttpRequest to authenticate.
-	 * @param <T>
-	 * @return An authentcated HttpRequest.
-	 */
-	public <T> HttpRequest<T> authenticate(HttpRequest<T> request);
+    /**
+     * Authenticate the given HttpRequest.
+     *
+     * @param request
+     *         The HttpRequest to authenticate.
+     * @param <T>
+     *
+     * @return An authentcated HttpRequest.
+     */
+    public <T> HttpRequest<T> authenticate(HttpRequest<T> request);
 }

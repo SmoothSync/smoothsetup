@@ -29,44 +29,45 @@ import java.lang.ref.WeakReference;
  */
 public abstract class ThrowingAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, AsyncTaskResult<Result>>
 {
-	public interface OnResultCallback<Result>
-	{
-		public void onResult(AsyncTaskResult<Result> result);
-	}
-
-	private final WeakReference<OnResultCallback<Result>> mCallbackReference;
+    public interface OnResultCallback<Result>
+    {
+        public void onResult(AsyncTaskResult<Result> result);
+    }
 
 
-	public ThrowingAsyncTask(OnResultCallback<Result> callback)
-	{
-		mCallbackReference = new WeakReference<OnResultCallback<Result>>(callback);
-	}
+    private final WeakReference<OnResultCallback<Result>> mCallbackReference;
 
 
-	@Override
-	protected final AsyncTaskResult<Result> doInBackground(Params... params)
-	{
-		try
-		{
-			return new ValueAsyncTaskResult<Result>(doInBackgroundWithException(params));
-		}
-		catch (Exception e)
-		{
-			return new ThrowingAsyncTaskResult<Result>(e);
-		}
-	}
+    public ThrowingAsyncTask(OnResultCallback<Result> callback)
+    {
+        mCallbackReference = new WeakReference<OnResultCallback<Result>>(callback);
+    }
 
 
-	protected abstract Result doInBackgroundWithException(Params... params) throws Exception;
+    @Override
+    protected final AsyncTaskResult<Result> doInBackground(Params... params)
+    {
+        try
+        {
+            return new ValueAsyncTaskResult<Result>(doInBackgroundWithException(params));
+        }
+        catch (Exception e)
+        {
+            return new ThrowingAsyncTaskResult<Result>(e);
+        }
+    }
 
 
-	@Override
-	protected final void onPostExecute(AsyncTaskResult<Result> asyncTaskResult)
-	{
-		OnResultCallback<Result> callback = mCallbackReference.get();
-		if (callback != null)
-		{
-			callback.onResult(asyncTaskResult);
-		}
-	}
+    protected abstract Result doInBackgroundWithException(Params... params) throws Exception;
+
+
+    @Override
+    protected final void onPostExecute(AsyncTaskResult<Result> asyncTaskResult)
+    {
+        OnResultCallback<Result> callback = mCallbackReference.get();
+        if (callback != null)
+        {
+            callback.onResult(asyncTaskResult);
+        }
+    }
 }

@@ -15,32 +15,21 @@
  *
  */
 
-package com.smoothsync.smoothsetup.setupbuttons;
-
-import android.support.v7.widget.RecyclerView;
+package com.smoothsync.smoothsetup.services;
 
 import com.smoothsync.api.model.Provider;
+import com.smoothsync.api.model.Service;
+import com.smoothsync.smoothsetup.model.HttpAuthorizationFactory;
 
 
 /**
- * Created by marten on 12.06.16.
+ * An Android service that verifies access to a specific {@link Service}.
+ *
+ * @author Marten Gajda <marten@dmfs.org>
  */
-public abstract class AbstractSmoothSetupAdapter extends RecyclerView.Adapter<BasicButtonViewHolder> implements SetupButtonAdapter
+public interface VerificationService
 {
-    private final OnProviderSelectListener mListener;
+    String ACTION = "com.smoothsync.SERVICE_TEST_SERVICE";
 
-
-    public AbstractSmoothSetupAdapter(OnProviderSelectListener listener)
-    {
-        this.mListener = listener;
-    }
-
-
-    protected void notifyProviderSeleteced(Provider provider)
-    {
-        if (mListener != null)
-        {
-            mListener.onProviderSelected(provider);
-        }
-    }
+    boolean verify(Provider provider, HttpAuthorizationFactory authorizationFactory) throws Exception;
 }

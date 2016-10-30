@@ -33,115 +33,117 @@ import java.util.concurrent.TimeoutException;
  */
 public final class FutureAidlServiceConnection<T extends android.os.IInterface> implements FutureServiceConnection<T>
 {
-	public interface StubProxy<T extends android.os.IInterface>
-	{
-		/**
-		 * Returns a stub object that connects to the service.
-		 *
-		 * This method needs to contain only one line like:
-		 * 
-		 * <pre>
-		 * <code>
-		 * return &lt;T>.Stub.asInterface(service);
-		 * </code>
-		 * </pre>
-		 * 
-		 * Where &lt;T> is the interface of the service.
-		 *
-		 * @param service
-		 * @return
-		 */
-		T asInterface(IBinder service);
-	}
-
-	private final Context mContext;
-	private final StubProxy<T> mStubProxy;
-	private boolean mIsConnected;
-	private T mService;
-
-	private final ServiceConnection mConnection = new ServiceConnection()
-	{
-
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service)
-		{
-			synchronized (this)
-			{
-				mIsConnected = true;
-				mService = mStubProxy.asInterface(service);
-				notify();
-			}
-		}
+    public interface StubProxy<T extends android.os.IInterface>
+    {
+        /**
+         * Returns a stub object that connects to the service.
+         * <p>
+         * This method needs to contain only one line like:
+         * <p>
+         * <pre>
+         * <code>
+         * return &lt;T>.Stub.asInterface(service);
+         * </code>
+         * </pre>
+         * <p>
+         * Where &lt;T> is the interface of the service.
+         *
+         * @param service
+         *
+         * @return
+         */
+        T asInterface(IBinder service);
+    }
 
 
-		@Override
-		public void onServiceDisconnected(ComponentName name)
-		{
-			synchronized (this)
-			{
-				mIsConnected = false;
-				mService = null;
-				notify();
-			}
-		}
-	};
+    private final Context mContext;
+    private final StubProxy<T> mStubProxy;
+    private boolean mIsConnected;
+    private T mService;
+
+    private final ServiceConnection mConnection = new ServiceConnection()
+    {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service)
+        {
+            synchronized (this)
+            {
+                mIsConnected = true;
+                mService = mStubProxy.asInterface(service);
+                notify();
+            }
+        }
 
 
-	/**
-	 * Binds the service identified by the given Intent.
-	 *
-	 * @param context
-	 *            A {@link Context}.
-	 * @param intent
-	 *            The {@link Intent} to bind the service.
-	 * @param stubProxy
-	 *            A StubProxy to convert the IBinder to the service interface.
-	 */
-	public FutureAidlServiceConnection(Context context, Intent intent, StubProxy<T> stubProxy)
-	{
-		mContext = context.getApplicationContext();
-		mStubProxy = stubProxy;
-		mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-	}
+        @Override
+        public void onServiceDisconnected(ComponentName name)
+        {
+            synchronized (this)
+            {
+                mIsConnected = false;
+                mService = null;
+                notify();
+            }
+        }
+    };
 
 
-	@Override
-	public boolean isConnected()
-	{
-		return mIsConnected;
-	}
+    /**
+     * Binds the service identified by the given Intent.
+     *
+     * @param context
+     *         A {@link Context}.
+     * @param intent
+     *         The {@link Intent} to bind the service.
+     * @param stubProxy
+     *         A StubProxy to convert the IBinder to the service interface.
+     */
+    public FutureAidlServiceConnection(Context context, Intent intent, StubProxy<T> stubProxy)
+    {
+        mContext = context.getApplicationContext();
+        mStubProxy = stubProxy;
+        mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
 
 
-	@Override
-	public T service(long timeout) throws TimeoutException, InterruptedException
-	{
-		synchronized (mConnection)
-		{
-			if (mIsConnected)
-			{
-				return mService;
-			}
-
-			long now = System.currentTimeMillis();
-			long end = now + timeout;
-			while (now < end)
-			{
-				mConnection.wait(end - now);
-				if (mIsConnected)
-				{
-					return mService;
-				}
-				now = System.currentTimeMillis();
-			}
-		}
-		throw new TimeoutException();
-	}
+    @Override
+    public boolean isConnected()
+    {
+        return mIsConnected;
+    }
 
 
-	@Override
-	public void disconnect()
-	{
-		mContext.unbindService(mConnection);
-	}
+    @Override
+    public T service(long timeout) throws TimeoutException, InterruptedException
+    {
+        synchronized (mConnection)
+        {
+            if (mIsConnected)
+            {
+                return mService;
+            }
+
+            long now = System.currentTimeMillis();
+            long end = now + timeout;
+            while (now < end)
+            {
+                mConnection.wait(end - now);
+                if (mIsConnected)
+                {
+                    return mService;
+                }
+                now = System.currentTimeMillis();
+            }
+        }
+        throw new TimeoutException();
+    }
+
+
+    @Override
+    public void disconnect()
+    {
+        mContext.unbindService(mConnection);
+    }
 
 }

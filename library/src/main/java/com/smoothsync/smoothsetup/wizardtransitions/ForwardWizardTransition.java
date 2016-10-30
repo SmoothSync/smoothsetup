@@ -33,56 +33,57 @@ import com.smoothsync.smoothsetup.model.WizardStep;
  */
 public final class ForwardWizardTransition extends AbstractWizardTransition
 {
-	private final WizardStep mNextStep;
+    private final WizardStep mNextStep;
 
 
-	public ForwardWizardTransition(WizardStep nextStep)
-	{
-		this.mNextStep = nextStep;
-	}
+    public ForwardWizardTransition(WizardStep nextStep)
+    {
+        this.mNextStep = nextStep;
+    }
 
 
-	@Override
-	public void apply(Context context, FragmentManager fragmentManager, WizardStep previousStep)
-	{
-		FragmentTransaction transaction = fragmentManager.beginTransaction();
-		transaction.setCustomAnimations(R.anim.smoothsetup_enter_right, R.anim.smoothsetup_exit_left, R.anim.smoothsetup_enter_left,
-			R.anim.smoothsetup_exit_right);
-		transaction.replace(R.id.wizards, mNextStep.fragment(context));
-		if (fragmentManager.getBackStackEntryCount() > 0 || !previousStep.skipOnBack())
-		{
-			transaction.addToBackStack(mNextStep.skipOnBack() ? "skip" : null);
-		}
-		transaction.commit();
-	}
+    @Override
+    public void apply(Context context, FragmentManager fragmentManager, WizardStep previousStep)
+    {
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(R.anim.smoothsetup_enter_right, R.anim.smoothsetup_exit_left, R.anim.smoothsetup_enter_left,
+                R.anim.smoothsetup_exit_right);
+        transaction.replace(R.id.wizards, mNextStep.fragment(context));
+        if (fragmentManager.getBackStackEntryCount() > 0 || !previousStep.skipOnBack())
+        {
+            transaction.addToBackStack(mNextStep.skipOnBack() ? "skip" : null);
+        }
+        transaction.commit();
+    }
 
 
-	@Override
-	public int describeContents()
-	{
-		return 0;
-	}
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
 
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags)
-	{
-		dest.writeParcelable(mNextStep, flags);
-	}
-
-	public final static Creator<ForwardWizardTransition> CREATOR = new Creator<ForwardWizardTransition>()
-	{
-		@Override
-		public ForwardWizardTransition createFromParcel(Parcel source)
-		{
-			return new ForwardWizardTransition((WizardStep) source.readParcelable(getClass().getClassLoader()));
-		}
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeParcelable(mNextStep, flags);
+    }
 
 
-		@Override
-		public ForwardWizardTransition[] newArray(int size)
-		{
-			return new ForwardWizardTransition[size];
-		}
-	};
+    public final static Creator<ForwardWizardTransition> CREATOR = new Creator<ForwardWizardTransition>()
+    {
+        @Override
+        public ForwardWizardTransition createFromParcel(Parcel source)
+        {
+            return new ForwardWizardTransition((WizardStep) source.readParcelable(getClass().getClassLoader()));
+        }
+
+
+        @Override
+        public ForwardWizardTransition[] newArray(int size)
+        {
+            return new ForwardWizardTransition[size];
+        }
+    };
 }

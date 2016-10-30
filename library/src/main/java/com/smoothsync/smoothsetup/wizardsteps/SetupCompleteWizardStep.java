@@ -41,93 +41,95 @@ import com.smoothsync.smoothsetup.model.WizardStep;
 public final class SetupCompleteWizardStep implements WizardStep
 {
 
-	public SetupCompleteWizardStep()
-	{
-	}
+    public SetupCompleteWizardStep()
+    {
+    }
 
 
-	@Override
-	public String title(Context context)
-	{
-		return context.getString(R.string.smoothsetup_wizard_title_setup_completed);
-	}
+    @Override
+    public String title(Context context)
+    {
+        return context.getString(R.string.smoothsetup_wizard_title_setup_completed);
+    }
 
 
-	@Override
-	public boolean skipOnBack()
-	{
-		return false;
-	}
+    @Override
+    public boolean skipOnBack()
+    {
+        return false;
+    }
 
 
-	@Override
-	public Fragment fragment(Context context)
-	{
-		Fragment result = new MessageFragment();
-		Bundle arguments = new Bundle();
-		arguments.putParcelable(ARG_WIZARD_STEP, this);
-		result.setArguments(arguments);
-		result.setRetainInstance(true);
-		return result;
-	}
+    @Override
+    public Fragment fragment(Context context)
+    {
+        Fragment result = new MessageFragment();
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(ARG_WIZARD_STEP, this);
+        result.setArguments(arguments);
+        result.setRetainInstance(true);
+        return result;
+    }
 
 
-	@Override
-	public int describeContents()
-	{
-		return 0;
-	}
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
 
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags)
-	{
-	}
-
-	public final static Creator<SetupCompleteWizardStep> CREATOR = new Creator<SetupCompleteWizardStep>()
-	{
-		@Override
-		public SetupCompleteWizardStep createFromParcel(Parcel source)
-		{
-			return new SetupCompleteWizardStep();
-		}
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+    }
 
 
-		@Override
-		public SetupCompleteWizardStep[] newArray(int size)
-		{
-			return new SetupCompleteWizardStep[size];
-		}
-	};
-
-	/**
-	 * A Fragment that shows a message.
-	 */
-	public static class MessageFragment extends Fragment implements View.OnClickListener
-	{
-
-		@Nullable
-		@Override
-		public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
-		{
-			View result = inflater.inflate(R.layout.smoothsetup_wizard_fragment_setup_completed, container, false);
-
-			((TextView) result.findViewById(android.R.id.message))
-				.setText(getString(R.string.smoothsetup_message_setup_completed, getString(getContext().getApplicationInfo().labelRes)));
-
-			Button button = ((Button) result.findViewById(android.R.id.button1));
-			button.setOnClickListener(this);
-
-			return result;
-		}
+    public final static Creator<SetupCompleteWizardStep> CREATOR = new Creator<SetupCompleteWizardStep>()
+    {
+        @Override
+        public SetupCompleteWizardStep createFromParcel(Parcel source)
+        {
+            return new SetupCompleteWizardStep();
+        }
 
 
-		@Override
-		public void onClick(View v)
-		{
-			Activity activity = getActivity();
-			activity.setResult(Activity.RESULT_OK);
-			activity.finish();
-		}
-	}
+        @Override
+        public SetupCompleteWizardStep[] newArray(int size)
+        {
+            return new SetupCompleteWizardStep[size];
+        }
+    };
+
+
+    /**
+     * A Fragment that shows a message.
+     */
+    public static class MessageFragment extends Fragment implements View.OnClickListener
+    {
+
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+        {
+            View result = inflater.inflate(R.layout.smoothsetup_wizard_fragment_setup_completed, container, false);
+
+            ((TextView) result.findViewById(android.R.id.message))
+                    .setText(getString(R.string.smoothsetup_message_setup_completed, getString(getContext().getApplicationInfo().labelRes)));
+
+            Button button = ((Button) result.findViewById(android.R.id.button1));
+            button.setOnClickListener(this);
+
+            return result;
+        }
+
+
+        @Override
+        public void onClick(View v)
+        {
+            Activity activity = getActivity();
+            activity.setResult(Activity.RESULT_OK);
+            activity.finish();
+        }
+    }
 }

@@ -28,11 +28,9 @@ import java.util.concurrent.TimeoutException;
 public interface FutureServiceConnection<T>
 {
 
-	public boolean isConnected();
+    public boolean isConnected();
 
+    public T service(long timeout) throws TimeoutException, InterruptedException;
 
-	public T service(long timeout) throws TimeoutException, InterruptedException;
-
-
-	public void disconnect();
+    public void disconnect();
 }

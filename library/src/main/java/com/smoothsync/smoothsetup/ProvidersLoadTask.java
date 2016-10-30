@@ -39,19 +39,19 @@ import java.util.List;
 public final class ProvidersLoadTask extends ThrowingAsyncTask<String, Void, List<Provider>>
 {
 
-	private final SmoothSyncApi mApi;
+    private final SmoothSyncApi mApi;
 
 
-	public ProvidersLoadTask(SmoothSyncApi api, OnResultCallback callback)
-	{
-		super(callback);
-		mApi = api;
-	}
+    public ProvidersLoadTask(SmoothSyncApi api, OnResultCallback callback)
+    {
+        super(callback);
+        mApi = api;
+    }
 
 
-	@Override
-	protected List<Provider> doInBackgroundWithException(String... params) throws ProtocolException, ProtocolError, IOException
-	{
-		return mApi.resultOf(new ProviderMultiget());
-	}
+    @Override
+    protected List<Provider> doInBackgroundWithException(String... params) throws ProtocolException, ProtocolError, IOException
+    {
+        return mApi.resultOf(new ProviderMultiget());
+    }
 }

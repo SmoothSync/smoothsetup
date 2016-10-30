@@ -21,48 +21,40 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Bundle;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.support.annotation.Nullable;
 
-import com.smoothsync.smoothsetup.model.BasicAccount;
+import com.smoothsync.api.model.Provider;
+import com.smoothsync.smoothsetup.model.HttpAuthorizationFactory;
 
 
 /**
- * An abstract service that provides an AccountService interface.
+ * An abstract service that provides an {@link VerificationService} interface.
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-public abstract class AbstractAccountService extends Service
+public abstract class AbstractVerificationService extends Service
 {
 
     /**
-     * A {@link Binder} that gives access to the AccountService
+     * A {@link Binder} that gives access to the {@link VerificationService}
      */
-    private final static class AccountServiceBinder extends AccountService.Stub
+    private final static class AccountServiceBinder extends Binder implements VerificationService
     {
 
-        private final AccountService mAccountService;
+        private final VerificationService mVerificationService;
 
 
-        public AccountServiceBinder(AccountService accountService)
+        public AccountServiceBinder(VerificationService verificationService)
         {
-            this.mAccountService = accountService;
+            mVerificationService = verificationService;
         }
 
 
         @Override
-        public BasicAccount providerForAccount(android.accounts.Account account) throws RemoteException
+        public boolean verify(Provider provider, HttpAuthorizationFactory authorizationFactory) throws Exception
         {
-            return mAccountService.providerForAccount(account);
-        }
-
-
-        @Override
-        public void createAccount(Bundle bundle) throws RemoteException
-        {
-            mAccountService.createAccount(bundle);
+            return mVerificationService.verify(provider, authorizationFactory);
         }
     }
 
@@ -70,27 +62,27 @@ public abstract class AbstractAccountService extends Service
     /**
      * A factory that creates AccountService instances.
      */
-    public interface AccountServiceFactory
+    public interface VerificationServiceFactory
     {
         /**
-         * Create a new SmoothSyncApi.
+         * Create a new {@link VerificationService}.
          *
          * @param context
          *         A Context.
          *
          * @return
          */
-        public AccountService accountService(Context context);
+        VerificationService accountService(Context context);
     }
 
 
     private AccountServiceBinder mBinder;
-    private AccountServiceFactory mAccountServiceFactory;
+    private VerificationServiceFactory mVerificationServiceFactory;
 
 
-    public AbstractAccountService(AccountServiceFactory accountServiceFactory)
+    public AbstractVerificationService(VerificationServiceFactory verificationServiceFactory)
     {
-        mAccountServiceFactory = accountServiceFactory;
+        mVerificationServiceFactory = verificationServiceFactory;
     }
 
 
@@ -98,7 +90,7 @@ public abstract class AbstractAccountService extends Service
     public final void onCreate()
     {
         super.onCreate();
-        mBinder = new AccountServiceBinder(mAccountServiceFactory.accountService(this));
+        mBinder = new AccountServiceBinder(mVerificationServiceFactory.accountService(this));
     }
 
 

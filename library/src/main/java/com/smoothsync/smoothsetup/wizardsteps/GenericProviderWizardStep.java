@@ -40,108 +40,111 @@ import com.smoothsync.smoothsetup.setupbuttons.FixedButtonSetupAdapter;
  */
 public final class GenericProviderWizardStep implements WizardStep
 {
-	private final LoginFragment.LoginFormAdapterFactory loginFormAdapterFactory = new ApiLoginFormAdapterFactory();
+    private final LoginFragment.LoginFormAdapterFactory loginFormAdapterFactory = new ApiLoginFormAdapterFactory();
 
 
-	@Override
-	public String title(Context context)
-	{
-		return context.getString(R.string.smoothsetup_wizard_title_login);
-	}
+    @Override
+    public String title(Context context)
+    {
+        return context.getString(R.string.smoothsetup_wizard_title_login);
+    }
 
 
-	@Override
-	public boolean skipOnBack()
-	{
-		return false;
-	}
+    @Override
+    public boolean skipOnBack()
+    {
+        return false;
+    }
 
 
-	@Override
-	public Fragment fragment(Context context)
-	{
-		return LoginFragment.newInstance(this, loginFormAdapterFactory, "");
-	}
+    @Override
+    public Fragment fragment(Context context)
+    {
+        return LoginFragment.newInstance(this, loginFormAdapterFactory, "");
+    }
 
 
-	@Override
-	public int describeContents()
-	{
-		return 0;
-	}
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
 
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags)
-	{
-	}
-
-	public final static Creator CREATOR = new Creator()
-	{
-		@Override
-		public Object createFromParcel(Parcel source)
-		{
-			return new GenericProviderWizardStep();
-		}
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+    }
 
 
-		@Override
-		public Object[] newArray(int size)
-		{
-			return new GenericProviderWizardStep[size];
-		}
-	};
-
-	private static class ApiLoginFormAdapterFactory implements LoginFragment.LoginFormAdapterFactory
-	{
-		@Override
-		public <T extends RecyclerView.Adapter<BasicButtonViewHolder>, SetupButtonAdapter> T setupButtonAdapter(Context context,
-			com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter.OnProviderSelectListener providerSelectListener, SmoothSyncApi api)
-		{
-			return (T) new FixedButtonSetupAdapter(new ApiSmoothSetupAdapter(api, providerSelectListener), providerSelectListener);
-		}
+    public final static Creator CREATOR = new Creator()
+    {
+        @Override
+        public Object createFromParcel(Parcel source)
+        {
+            return new GenericProviderWizardStep();
+        }
 
 
-		@Override
-		public <T extends Adapter & Filterable> T autoCompleteAdapter(Context context, SmoothSyncApi api)
-		{
-			return (T) new ApiAutoCompleteAdapter(api);
-		}
+        @Override
+        public Object[] newArray(int size)
+        {
+            return new GenericProviderWizardStep[size];
+        }
+    };
 
 
-		@Override
-		public String promptText(Context context)
-		{
-			return context.getString(R.string.smoothsetup_prompt_login);
-		}
+    private static class ApiLoginFormAdapterFactory implements LoginFragment.LoginFormAdapterFactory
+    {
+        @Override
+        public <T extends RecyclerView.Adapter<BasicButtonViewHolder>, SetupButtonAdapter> T setupButtonAdapter(Context context,
+                                                                                                                com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter.OnProviderSelectListener providerSelectListener, SmoothSyncApi api)
+        {
+            return (T) new FixedButtonSetupAdapter(new ApiSmoothSetupAdapter(api, providerSelectListener), providerSelectListener);
+        }
 
 
-		@Override
-		public int describeContents()
-		{
-			return 0;
-		}
+        @Override
+        public <T extends Adapter & Filterable> T autoCompleteAdapter(Context context, SmoothSyncApi api)
+        {
+            return (T) new ApiAutoCompleteAdapter(api);
+        }
 
 
-		@Override
-		public void writeToParcel(Parcel dest, int flags)
-		{
-		}
-
-		public final static Creator<LoginFragment.LoginFormAdapterFactory> CREATOR = new Creator<LoginFragment.LoginFormAdapterFactory>()
-		{
-			@Override
-			public LoginFragment.LoginFormAdapterFactory createFromParcel(Parcel source)
-			{
-				return new ApiLoginFormAdapterFactory();
-			}
+        @Override
+        public String promptText(Context context)
+        {
+            return context.getString(R.string.smoothsetup_prompt_login);
+        }
 
 
-			@Override
-			public LoginFragment.LoginFormAdapterFactory[] newArray(int size)
-			{
-				return new ApiLoginFormAdapterFactory[size];
-			}
-		};
-	}
+        @Override
+        public int describeContents()
+        {
+            return 0;
+        }
+
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags)
+        {
+        }
+
+
+        public final static Creator<LoginFragment.LoginFormAdapterFactory> CREATOR = new Creator<LoginFragment.LoginFormAdapterFactory>()
+        {
+            @Override
+            public LoginFragment.LoginFormAdapterFactory createFromParcel(Parcel source)
+            {
+                return new ApiLoginFormAdapterFactory();
+            }
+
+
+            @Override
+            public LoginFragment.LoginFormAdapterFactory[] newArray(int size)
+            {
+                return new ApiLoginFormAdapterFactory[size];
+            }
+        };
+    }
 }

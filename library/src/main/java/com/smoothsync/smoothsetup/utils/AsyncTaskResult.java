@@ -21,5 +21,5 @@ package com.smoothsync.smoothsetup.utils;
  */
 public interface AsyncTaskResult<T>
 {
-	public T value() throws Exception;
+    public T value() throws Exception;
 }

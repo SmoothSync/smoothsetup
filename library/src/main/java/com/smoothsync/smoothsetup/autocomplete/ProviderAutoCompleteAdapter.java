@@ -36,110 +36,111 @@ import java.util.List;
  */
 public final class ProviderAutoCompleteAdapter extends AbstractAutoCompleteAdapter
 {
-	private final Provider mProvider;
-	private final List<String> mValues;
-	private final Filter mFilter = new ArrayFilter();
+    private final Provider mProvider;
+    private final List<String> mValues;
+    private final Filter mFilter = new ArrayFilter();
 
 
-	/**
-	 * Creates an auto-complete adapter that completes to the domains of the given provider.
-	 * 
-	 * @param provider
-	 */
-	public ProviderAutoCompleteAdapter(Provider provider)
-	{
-		mProvider = provider;
-		mValues = Collections.synchronizedList(new ArrayList<String>(16));
-	}
+    /**
+     * Creates an auto-complete adapter that completes to the domains of the given provider.
+     *
+     * @param provider
+     */
+    public ProviderAutoCompleteAdapter(Provider provider)
+    {
+        mProvider = provider;
+        mValues = Collections.synchronizedList(new ArrayList<String>(16));
+    }
 
 
-	@Override
-	public int getCount()
-	{
-		return mValues.size();
-	}
+    @Override
+    public int getCount()
+    {
+        return mValues.size();
+    }
 
 
-	@Override
-	public String getItem(int position)
-	{
-		return mValues.get(position);
-	}
+    @Override
+    public String getItem(int position)
+    {
+        return mValues.get(position);
+    }
 
 
-	@Override
-	public Filter getFilter()
-	{
-		return mFilter;
-	}
-
-	private final class ArrayFilter extends Filter
-	{
-		@Override
-		protected FilterResults performFiltering(CharSequence prefix)
-		{
-			FilterResults results = new FilterResults();
-			results.values = Collections.emptyList();
-			results.count = 0;
-
-			if (prefix == null || prefix.length() == 0)
-			{
-				// no prefix, no results
-				return results;
-			}
-
-			String prefixStr = prefix.toString();
-			final int atPos = prefixStr.indexOf('@');
-
-			if (atPos < 0)
-			{
-				// no prefix, no results
-				return results;
-			}
-
-			String localPart = prefixStr.substring(0, atPos);
-			String domainPart = prefixStr.substring(atPos + 1);
-
-			try
-			{
-				Iterator<String> domainIterator = new AutoCompleteArrayIterator(mProvider.domains(), localPart, domainPart);
-				List result = new ArrayList(mProvider.domains().length);
-				while (domainIterator.hasNext())
-				{
-					result.add(domainIterator.next());
-				}
-
-				if (result.size() == 1 && result.contains(prefixStr))
-				{
-					return results;
-				}
-
-				results.values = result;
-				results.count = result.size();
-			}
-			catch (ProtocolException e)
-			{
-				// no response, no results either
-				results.values = new String[0];
-				results.count = 0;
-				return results;
-			}
-
-			return results;
-		}
+    @Override
+    public Filter getFilter()
+    {
+        return mFilter;
+    }
 
 
-		@Override
-		protected void publishResults(CharSequence constraint, FilterResults results)
-		{
-			mValues.clear();
+    private final class ArrayFilter extends Filter
+    {
+        @Override
+        protected FilterResults performFiltering(CharSequence prefix)
+        {
+            FilterResults results = new FilterResults();
+            results.values = Collections.emptyList();
+            results.count = 0;
 
-			if (results != null && results.values != null)
-			{
-				mValues.addAll((List<String>) results.values);
-			}
+            if (prefix == null || prefix.length() == 0)
+            {
+                // no prefix, no results
+                return results;
+            }
 
-			notifyDataSetChanged();
-		}
-	}
+            String prefixStr = prefix.toString();
+            final int atPos = prefixStr.indexOf('@');
+
+            if (atPos < 0)
+            {
+                // no prefix, no results
+                return results;
+            }
+
+            String localPart = prefixStr.substring(0, atPos);
+            String domainPart = prefixStr.substring(atPos + 1);
+
+            try
+            {
+                Iterator<String> domainIterator = new AutoCompleteArrayIterator(mProvider.domains(), localPart, domainPart);
+                List result = new ArrayList(mProvider.domains().length);
+                while (domainIterator.hasNext())
+                {
+                    result.add(domainIterator.next());
+                }
+
+                if (result.size() == 1 && result.contains(prefixStr))
+                {
+                    return results;
+                }
+
+                results.values = result;
+                results.count = result.size();
+            }
+            catch (ProtocolException e)
+            {
+                // no response, no results either
+                results.values = new String[0];
+                results.count = 0;
+                return results;
+            }
+
+            return results;
+        }
+
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results)
+        {
+            mValues.clear();
+
+            if (results != null && results.values != null)
+            {
+                mValues.addAll((List<String>) results.values);
+            }
+
+            notifyDataSetChanged();
+        }
+    }
 }

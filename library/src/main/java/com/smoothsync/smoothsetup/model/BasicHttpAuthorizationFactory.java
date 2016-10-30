@@ -42,87 +42,88 @@ import java.io.IOException;
  */
 public class BasicHttpAuthorizationFactory implements HttpAuthorizationFactory
 {
-	private final String mAccountId;
-	private final String mPassword;
+    private final String mAccountId;
+    private final String mPassword;
 
 
-	public BasicHttpAuthorizationFactory(String accountId, String password)
-	{
-		this.mAccountId = accountId;
-		this.mPassword = password;
-	}
+    public BasicHttpAuthorizationFactory(String accountId, String password)
+    {
+        this.mAccountId = accountId;
+        this.mPassword = password;
+    }
 
 
-	@Override
-	public <T> HttpRequest<T> authenticate(final HttpRequest<T> request)
-	{
-		return new HttpRequest<T>()
-		{
-			@Override
-			public HttpMethod method()
-			{
-				return request.method();
-			}
+    @Override
+    public <T> HttpRequest<T> authenticate(final HttpRequest<T> request)
+    {
+        return new HttpRequest<T>()
+        {
+            @Override
+            public HttpMethod method()
+            {
+                return request.method();
+            }
 
 
-			@Override
-			public Headers headers()
-			{
-				try
-				{
-					return request.headers().withHeader(new BasicSingletonHeaderType<String>("Authorization", PlainStringHeaderConverter.INSTANCE)
-						.entity("Basic " + Base64.encodeBytes((mAccountId + ":" + mPassword).getBytes(), Base64.URL_SAFE)));
-				}
-				catch (IOException e)
-				{
-					throw new RuntimeException("Can't encode authorization header");
-				}
-			}
+            @Override
+            public Headers headers()
+            {
+                try
+                {
+                    return request.headers().withHeader(new BasicSingletonHeaderType<String>("Authorization", PlainStringHeaderConverter.INSTANCE)
+                            .entity("Basic " + Base64.encodeBytes((mAccountId + ":" + mPassword).getBytes(), Base64.URL_SAFE)));
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException("Can't encode authorization header");
+                }
+            }
 
 
-			@Override
-			public HttpRequestEntity requestEntity()
-			{
-				return request.requestEntity();
-			}
+            @Override
+            public HttpRequestEntity requestEntity()
+            {
+                return request.requestEntity();
+            }
 
 
-			@Override
-			public HttpResponseHandler<T> responseHandler(HttpResponse response) throws IOException, ProtocolError, ProtocolException
-			{
-				return request.responseHandler(response);
-			}
-		};
-	}
+            @Override
+            public HttpResponseHandler<T> responseHandler(HttpResponse response) throws IOException, ProtocolError, ProtocolException
+            {
+                return request.responseHandler(response);
+            }
+        };
+    }
 
 
-	@Override
-	public int describeContents()
-	{
-		return 0;
-	}
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
 
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags)
-	{
-		dest.writeString(mAccountId);
-		dest.writeString(mPassword);
-	}
-
-	public final static Creator<BasicHttpAuthorizationFactory> CREATOR = new Creator<BasicHttpAuthorizationFactory>()
-	{
-		@Override
-		public BasicHttpAuthorizationFactory createFromParcel(Parcel source)
-		{
-			return new BasicHttpAuthorizationFactory(source.readString(), source.readString());
-		}
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeString(mAccountId);
+        dest.writeString(mPassword);
+    }
 
 
-		@Override
-		public BasicHttpAuthorizationFactory[] newArray(int size)
-		{
-			return new BasicHttpAuthorizationFactory[size];
-		}
-	};
+    public final static Creator<BasicHttpAuthorizationFactory> CREATOR = new Creator<BasicHttpAuthorizationFactory>()
+    {
+        @Override
+        public BasicHttpAuthorizationFactory createFromParcel(Parcel source)
+        {
+            return new BasicHttpAuthorizationFactory(source.readString(), source.readString());
+        }
+
+
+        @Override
+        public BasicHttpAuthorizationFactory[] newArray(int size)
+        {
+            return new BasicHttpAuthorizationFactory[size];
+        }
+    };
 }

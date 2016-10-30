@@ -31,46 +31,45 @@ import java.io.IOException;
 
 /**
  * A {@link LruCache} of {@link AutoCompleteResult}s.
- *
+ * <p>
  * Note: The cache tries to reduce network traffic and thus may return responses that contain more results than they should. Make sure you always filter the
  * result unsing an {@link AutoCompleteArrayIterator}.
  */
 public final class AutoCompleteLruCache extends LruCache<String, AutoCompleteResult>
 {
-	private final SmoothSyncApi mApi;
+    private final SmoothSyncApi mApi;
 
 
-	/**
-	 * @param api
-	 *            A {@link SmoothSyncApi}.
-	 *
-	 * @param maxSize
-	 *            for caches that do not override {@link #sizeOf}, this is the maximum number of entries in the cache. For all other caches, this is the maximum
-	 *            sum of the sizes of the entries in this cache.
-	 */
-	public AutoCompleteLruCache(SmoothSyncApi api, int maxSize)
-	{
-		super(maxSize);
-		mApi = api;
-	}
+    /**
+     * @param api
+     *         A {@link SmoothSyncApi}.
+     * @param maxSize
+     *         for caches that do not override {@link #sizeOf}, this is the maximum number of entries in the cache. For all other caches, this is the maximum
+     *         sum of the sizes of the entries in this cache.
+     */
+    public AutoCompleteLruCache(SmoothSyncApi api, int maxSize)
+    {
+        super(maxSize);
+        mApi = api;
+    }
 
 
-	@Override
-	protected AutoCompleteResult create(String key)
-	{
-		try
-		{
-			// if the key doesn't have a . at the last position, we can use the result of the key minus one char and filter on the client
-			if (key.length() > 2 && key.charAt(key.length() - 1) != '.')
-			{
-				return get(key.substring(0, key.length() - 1));
-			}
-			return mApi.resultOf(new AutoComplete(key));
-		}
-		catch (IOException | ProtocolException | ProtocolError e)
-		{
-			// ignore any error and just don't auto-complete
-			return null;
-		}
-	}
+    @Override
+    protected AutoCompleteResult create(String key)
+    {
+        try
+        {
+            // if the key doesn't have a . at the last position, we can use the result of the key minus one char and filter on the client
+            if (key.length() > 2 && key.charAt(key.length() - 1) != '.')
+            {
+                return get(key.substring(0, key.length() - 1));
+            }
+            return mApi.resultOf(new AutoComplete(key));
+        }
+        catch (IOException | ProtocolException | ProtocolError e)
+        {
+            // ignore any error and just don't auto-complete
+            return null;
+        }
+    }
 }

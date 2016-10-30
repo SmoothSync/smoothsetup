@@ -48,138 +48,140 @@ import java.util.Comparator;
  */
 public final class ChooseProviderStep implements WizardStep
 {
-	private final ParcelableProvider[] mProviders;
-	private final String mAccount;
+    private final ParcelableProvider[] mProviders;
+    private final String mAccount;
 
 
-	public ChooseProviderStep(Provider[] providers, String account)
-	{
-		mProviders = new ParcelableProvider[providers.length];
-		for (int i = 0, count = providers.length; i < count; ++i)
-		{
-			Provider p = providers[i];
-			if (!(p instanceof Parcelable))
-			{
-				mProviders[i] = new ParcelableProvider(p);
-			}
-			else
-			{
-				mProviders[i] = (ParcelableProvider) p;
-			}
-		}
-		Arrays.sort(mProviders, new Comparator<ParcelableProvider>()
-		{
-			@Override
-			public int compare(ParcelableProvider lhs, ParcelableProvider rhs)
-			{
-				try
-				{
-					return lhs.name().compareToIgnoreCase(rhs.name());
-				}
-				catch (ProtocolException e)
-				{
-					throw new RuntimeException("can't read provider name ", e);
-				}
-			}
-		});
-		mAccount = account;
-	}
+    public ChooseProviderStep(Provider[] providers, String account)
+    {
+        mProviders = new ParcelableProvider[providers.length];
+        for (int i = 0, count = providers.length; i < count; ++i)
+        {
+            Provider p = providers[i];
+            if (!(p instanceof Parcelable))
+            {
+                mProviders[i] = new ParcelableProvider(p);
+            }
+            else
+            {
+                mProviders[i] = (ParcelableProvider) p;
+            }
+        }
+        Arrays.sort(mProviders, new Comparator<ParcelableProvider>()
+        {
+            @Override
+            public int compare(ParcelableProvider lhs, ParcelableProvider rhs)
+            {
+                try
+                {
+                    return lhs.name().compareToIgnoreCase(rhs.name());
+                }
+                catch (ProtocolException e)
+                {
+                    throw new RuntimeException("can't read provider name ", e);
+                }
+            }
+        });
+        mAccount = account;
+    }
 
 
-	@Override
-	public String title(Context context)
-	{
-		return context.getString(R.string.smoothsetup_wizard_title_choose_provider);
-	}
+    @Override
+    public String title(Context context)
+    {
+        return context.getString(R.string.smoothsetup_wizard_title_choose_provider);
+    }
 
 
-	@Override
-	public boolean skipOnBack()
-	{
-		return false;
-	}
+    @Override
+    public boolean skipOnBack()
+    {
+        return false;
+    }
 
 
-	@Override
-	public Fragment fragment(Context context)
-	{
-		Fragment result = new ProviderListFragment();
-		Bundle arguments = new Bundle();
-		arguments.putParcelableArray(ProviderListFragment.ARG_PROVIDERS, mProviders);
-		arguments.putParcelable(ARG_WIZARD_STEP, this);
-		arguments.putString(ProviderListFragment.ARG_ACCOUNT, mAccount);
-		result.setArguments(arguments);
-		result.setRetainInstance(true);
-		return result;
-	}
+    @Override
+    public Fragment fragment(Context context)
+    {
+        Fragment result = new ProviderListFragment();
+        Bundle arguments = new Bundle();
+        arguments.putParcelableArray(ProviderListFragment.ARG_PROVIDERS, mProviders);
+        arguments.putParcelable(ARG_WIZARD_STEP, this);
+        arguments.putString(ProviderListFragment.ARG_ACCOUNT, mAccount);
+        result.setArguments(arguments);
+        result.setRetainInstance(true);
+        return result;
+    }
 
 
-	@Override
-	public int describeContents()
-	{
-		return 0;
-	}
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
 
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags)
-	{
-		dest.writeParcelableArray(mProviders, flags);
-		dest.writeString(mAccount);
-	}
-
-	public final static Creator<ChooseProviderStep> CREATOR = new Creator<ChooseProviderStep>()
-	{
-		@Override
-		public ChooseProviderStep createFromParcel(Parcel source)
-		{
-			return new ChooseProviderStep((Provider[]) source.readParcelableArray(getClass().getClassLoader()), source.readString());
-		}
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeParcelableArray(mProviders, flags);
+        dest.writeString(mAccount);
+    }
 
 
-		@Override
-		public ChooseProviderStep[] newArray(int size)
-		{
-			return new ChooseProviderStep[size];
-		}
-	};
-
-	/**
-	 * A Fragment that shows a list of providers.
-	 *
-	 * @author Marten Gajda <marten@dmfs.org>
-	 */
-	public static final class ProviderListFragment extends Fragment implements SetupButtonAdapter.OnProviderSelectListener
-	{
-
-		public final static String ARG_PROVIDERS = "providers";
-		public final static String ARG_ACCOUNT = "account";
-
-		private RecyclerView mView;
+    public final static Creator<ChooseProviderStep> CREATOR = new Creator<ChooseProviderStep>()
+    {
+        @Override
+        public ChooseProviderStep createFromParcel(Parcel source)
+        {
+            return new ChooseProviderStep((Provider[]) source.readParcelableArray(getClass().getClassLoader()), source.readString());
+        }
 
 
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-		{
-			mView = (RecyclerView) inflater.inflate(R.layout.smoothsetup_wizard_fragment_provider_list, container, false);
-			mView.setLayoutManager(new LinearLayoutManager(getContext()));
-			mView.setAdapter(new ProvidersRecyclerViewAdapter(Arrays.<Provider> asList((Provider[]) getArguments().getParcelableArray(ARG_PROVIDERS)), this));
-			return mView;
-		}
+        @Override
+        public ChooseProviderStep[] newArray(int size)
+        {
+            return new ChooseProviderStep[size];
+        }
+    };
 
 
-		@Override
-		public void onProviderSelected(Provider provider)
-		{
-			String account = getArguments().getString(ARG_ACCOUNT);
-			new ForwardWizardTransition((new ProviderLoginWizardStep(provider, account))).execute(getContext());
-		}
+    /**
+     * A Fragment that shows a list of providers.
+     *
+     * @author Marten Gajda <marten@dmfs.org>
+     */
+    public static final class ProviderListFragment extends Fragment implements SetupButtonAdapter.OnProviderSelectListener
+    {
+
+        public final static String ARG_PROVIDERS = "providers";
+        public final static String ARG_ACCOUNT = "account";
+
+        private RecyclerView mView;
 
 
-		@Override
-		public void onOtherSelected()
-		{
-			// should not be called
-		}
-	}
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        {
+            mView = (RecyclerView) inflater.inflate(R.layout.smoothsetup_wizard_fragment_provider_list, container, false);
+            mView.setLayoutManager(new LinearLayoutManager(getContext()));
+            mView.setAdapter(new ProvidersRecyclerViewAdapter(Arrays.<Provider>asList((Provider[]) getArguments().getParcelableArray(ARG_PROVIDERS)), this));
+            return mView;
+        }
+
+
+        @Override
+        public void onProviderSelected(Provider provider)
+        {
+            String account = getArguments().getString(ARG_ACCOUNT);
+            new ForwardWizardTransition((new ProviderLoginWizardStep(provider, account))).execute(getContext());
+        }
+
+
+        @Override
+        public void onOtherSelected()
+        {
+            // should not be called
+        }
+    }
 }

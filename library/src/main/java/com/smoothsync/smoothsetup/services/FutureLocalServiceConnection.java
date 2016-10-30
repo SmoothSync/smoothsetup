@@ -33,90 +33,90 @@ import java.util.concurrent.TimeoutException;
  */
 public final class FutureLocalServiceConnection<T> implements FutureServiceConnection<T>
 {
-	private final Context mContext;
-	private boolean mIsConnected;
-	private T mService;
+    private final Context mContext;
+    private boolean mIsConnected;
+    private T mService;
 
-	private final ServiceConnection mConnection = new ServiceConnection()
-	{
+    private final ServiceConnection mConnection = new ServiceConnection()
+    {
 
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service)
-		{
-			synchronized (this)
-			{
-				mIsConnected = true;
-				mService = (T) service;
-				notify();
-			}
-		}
-
-
-		@Override
-		public void onServiceDisconnected(ComponentName name)
-		{
-			synchronized (this)
-			{
-				mIsConnected = false;
-				mService = null;
-				notify();
-			}
-		}
-	};
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service)
+        {
+            synchronized (this)
+            {
+                mIsConnected = true;
+                mService = (T) service;
+                notify();
+            }
+        }
 
 
-	/**
-	 * Binds the service identified by the given Intent.
-	 * 
-	 * @param context
-	 *            A {@link Context}.
-	 * @param intent
-	 *            The {@link Intent} to bind the service.
-	 */
-	public FutureLocalServiceConnection(Context context, Intent intent)
-	{
-		mContext = context.getApplicationContext();
-		mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-	}
+        @Override
+        public void onServiceDisconnected(ComponentName name)
+        {
+            synchronized (this)
+            {
+                mIsConnected = false;
+                mService = null;
+                notify();
+            }
+        }
+    };
 
 
-	@Override
-	public boolean isConnected()
-	{
-		return mIsConnected;
-	}
+    /**
+     * Binds the service identified by the given Intent.
+     *
+     * @param context
+     *         A {@link Context}.
+     * @param intent
+     *         The {@link Intent} to bind the service.
+     */
+    public FutureLocalServiceConnection(Context context, Intent intent)
+    {
+        mContext = context.getApplicationContext();
+        mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
 
 
-	@Override
-	public T service(long timeout) throws TimeoutException, InterruptedException
-	{
-		synchronized (mConnection)
-		{
-			if (mIsConnected)
-			{
-				return mService;
-			}
-
-			long now = System.currentTimeMillis();
-			long end = now + timeout;
-			while (now < end)
-			{
-				mConnection.wait(end - now);
-				if (mIsConnected)
-				{
-					return mService;
-				}
-				now = System.currentTimeMillis();
-			}
-		}
-		throw new TimeoutException();
-	}
+    @Override
+    public boolean isConnected()
+    {
+        return mIsConnected;
+    }
 
 
-	@Override
-	public void disconnect()
-	{
-		mContext.unbindService(mConnection);
-	}
+    @Override
+    public T service(long timeout) throws TimeoutException, InterruptedException
+    {
+        synchronized (mConnection)
+        {
+            if (mIsConnected)
+            {
+                return mService;
+            }
+
+            long now = System.currentTimeMillis();
+            long end = now + timeout;
+            while (now < end)
+            {
+                mConnection.wait(end - now);
+                if (mIsConnected)
+                {
+                    return mService;
+                }
+                now = System.currentTimeMillis();
+            }
+        }
+        throw new TimeoutException();
+    }
+
+
+    @Override
+    public void disconnect()
+    {
+        mContext.unbindService(mConnection);
+    }
 
 }

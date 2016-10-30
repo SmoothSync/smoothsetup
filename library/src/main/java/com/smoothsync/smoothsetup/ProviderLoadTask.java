@@ -38,19 +38,19 @@ import java.io.IOException;
 public final class ProviderLoadTask extends ThrowingAsyncTask<String, Void, Provider>
 {
 
-	private final SmoothSyncApi mApi;
+    private final SmoothSyncApi mApi;
 
 
-	public ProviderLoadTask(SmoothSyncApi api, OnResultCallback callback)
-	{
-		super(callback);
-		mApi = api;
-	}
+    public ProviderLoadTask(SmoothSyncApi api, OnResultCallback callback)
+    {
+        super(callback);
+        mApi = api;
+    }
 
 
-	@Override
-	protected Provider doInBackgroundWithException(String... params) throws ProtocolException, ProtocolError, IOException
-	{
-		return mApi.resultOf(new ProviderGet(params[0]));
-	}
+    @Override
+    protected Provider doInBackgroundWithException(String... params) throws ProtocolException, ProtocolError, IOException
+    {
+        return mApi.resultOf(new ProviderGet(params[0]));
+    }
 }

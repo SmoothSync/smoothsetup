@@ -47,146 +47,148 @@ import org.dmfs.httpessentials.exceptions.ProtocolException;
  */
 public final class PasswordWizardStep implements WizardStep
 {
-	private final static String ARG_ACCOUNT = "account";
+    private final static String ARG_ACCOUNT = "account";
 
-	private final Account mAccount;
-
-
-	public PasswordWizardStep(Account account)
-	{
-		mAccount = account;
-	}
+    private final Account mAccount;
 
 
-	@Override
-	public String title(Context context)
-	{
-		return context.getString(R.string.smoothsetup_wizard_title_enter_password);
-	}
+    public PasswordWizardStep(Account account)
+    {
+        mAccount = account;
+    }
 
 
-	@Override
-	public boolean skipOnBack()
-	{
-		return false;
-	}
+    @Override
+    public String title(Context context)
+    {
+        return context.getString(R.string.smoothsetup_wizard_title_enter_password);
+    }
 
 
-	@Override
-	public Fragment fragment(Context context)
-	{
-		Fragment result = new PasswordFragment();
-		Bundle arguments = new Bundle();
-		arguments.putParcelable(ARG_ACCOUNT, mAccount);
-		arguments.putParcelable(ARG_WIZARD_STEP, this);
-		result.setArguments(arguments);
-		result.setRetainInstance(true);
-		return result;
-	}
+    @Override
+    public boolean skipOnBack()
+    {
+        return false;
+    }
 
 
-	@Override
-	public int describeContents()
-	{
-		return 0;
-	}
+    @Override
+    public Fragment fragment(Context context)
+    {
+        Fragment result = new PasswordFragment();
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(ARG_ACCOUNT, mAccount);
+        arguments.putParcelable(ARG_WIZARD_STEP, this);
+        result.setArguments(arguments);
+        result.setRetainInstance(true);
+        return result;
+    }
 
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags)
-	{
-		dest.writeParcelable(mAccount, flags);
-	}
-
-	public final static Creator<PasswordWizardStep> CREATOR = new Creator<PasswordWizardStep>()
-	{
-		@Override
-		public PasswordWizardStep createFromParcel(Parcel source)
-		{
-			return new PasswordWizardStep((Account) source.readParcelable(getClass().getClassLoader()));
-		}
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
 
 
-		@Override
-		public PasswordWizardStep[] newArray(int size)
-		{
-			return new PasswordWizardStep[0];
-		}
-	};
-
-	/**
-	 * A Fragment that prompts the user for his or her password.
-	 */
-	public final static class PasswordFragment extends Fragment implements View.OnClickListener
-	{
-
-		private Account mAccount;
-		private EditText mPassword;
-		private Button mButton;
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeParcelable(mAccount, flags);
+    }
 
 
-		@Nullable
-		@Override
-		public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
-		{
-			View result = inflater.inflate(R.layout.smoothsetup_wizard_fragment_password, container, false);
-
-			mAccount = getArguments().getParcelable(ARG_ACCOUNT);
-
-			try
-			{
-				((TextView) result.findViewById(android.R.id.message))
-					.setText(getContext().getString(R.string.smoothsetup_prompt_enter_password, mAccount.provider().name()));
-			}
-			catch (ProtocolException e)
-			{
-				throw new RuntimeException("can't get provider name", e);
-			}
-
-			mButton = (Button) result.findViewById(R.id.button);
-			mButton.setOnClickListener(this);
-
-			mPassword = (EditText) result.findViewById(android.R.id.input);
-			mPassword.addTextChangedListener(new TextWatcher()
-			{
-				@Override
-				public void beforeTextChanged(CharSequence s, int start, int count, int after)
-				{
-					// nothing to do
-				}
+    public final static Creator<PasswordWizardStep> CREATOR = new Creator<PasswordWizardStep>()
+    {
+        @Override
+        public PasswordWizardStep createFromParcel(Parcel source)
+        {
+            return new PasswordWizardStep((Account) source.readParcelable(getClass().getClassLoader()));
+        }
 
 
-				@Override
-				public void onTextChanged(CharSequence s, int start, int before, int count)
-				{
-					// nothing to do
-				}
+        @Override
+        public PasswordWizardStep[] newArray(int size)
+        {
+            return new PasswordWizardStep[0];
+        }
+    };
 
 
-				@Override
-				public void afterTextChanged(Editable s)
-				{
-					mButton.setEnabled(!s.toString().isEmpty());
-				}
-			});
+    /**
+     * A Fragment that prompts the user for his or her password.
+     */
+    public final static class PasswordFragment extends Fragment implements View.OnClickListener
+    {
 
-			mButton.setEnabled(!mPassword.getText().toString().isEmpty());
-			return result;
-		}
+        private Account mAccount;
+        private EditText mPassword;
+        private Button mButton;
 
 
-		@Override
-		public void onClick(View v)
-		{
-			if (v.getId() == R.id.button)
-			{
-				// verify entered password
-				new ForwardWizardTransition(
-					(new ApproveAuthorizationWizardStep(mAccount, new BasicHttpAuthorizationFactory(mAccount.accountId(), mPassword.getText().toString()))))
-						.execute(getContext());
-			}
-		}
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+        {
+            View result = inflater.inflate(R.layout.smoothsetup_wizard_fragment_password, container, false);
 
-	}
+            mAccount = getArguments().getParcelable(ARG_ACCOUNT);
+
+            try
+            {
+                ((TextView) result.findViewById(android.R.id.message))
+                        .setText(getContext().getString(R.string.smoothsetup_prompt_enter_password, mAccount.provider().name()));
+            }
+            catch (ProtocolException e)
+            {
+                throw new RuntimeException("can't get provider name", e);
+            }
+
+            mButton = (Button) result.findViewById(R.id.button);
+            mButton.setOnClickListener(this);
+
+            mPassword = (EditText) result.findViewById(android.R.id.input);
+            mPassword.addTextChangedListener(new TextWatcher()
+            {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after)
+                {
+                    // nothing to do
+                }
+
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count)
+                {
+                    // nothing to do
+                }
+
+
+                @Override
+                public void afterTextChanged(Editable s)
+                {
+                    mButton.setEnabled(!s.toString().isEmpty());
+                }
+            });
+
+            mButton.setEnabled(!mPassword.getText().toString().isEmpty());
+            return result;
+        }
+
+
+        @Override
+        public void onClick(View v)
+        {
+            if (v.getId() == R.id.button)
+            {
+                // verify entered password
+                new ForwardWizardTransition(
+                        (new ApproveAuthorizationWizardStep(mAccount, new BasicHttpAuthorizationFactory(mAccount.accountId(), mPassword.getText().toString()))))
+                        .execute(getContext());
+            }
+        }
+
+    }
 
 }

@@ -30,18 +30,17 @@ import com.smoothsync.api.model.Provider;
 public interface Account extends Parcelable
 {
 
-	/**
-	 * Returns the account identifier that was entered by the user. Usually that's an email address.
-	 * 
-	 * @return The account identifier.
-	 */
-	public String accountId();
+    /**
+     * Returns the account identifier that was entered by the user. Usually that's an email address.
+     *
+     * @return The account identifier.
+     */
+    public String accountId();
 
-
-	/**
-	 * Returns the provider that hosts the user account.
-	 * 
-	 * @return A {@link Provider}.
-	 */
-	public Provider provider();
+    /**
+     * Returns the provider that hosts the user account.
+     *
+     * @return A {@link Provider}.
+     */
+    public Provider provider();
 }

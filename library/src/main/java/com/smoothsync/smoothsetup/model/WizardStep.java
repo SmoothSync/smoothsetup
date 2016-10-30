@@ -27,37 +27,36 @@ import android.support.v4.app.Fragment;
  */
 public interface WizardStep extends Parcelable
 {
-	/**
-	 * The Fragment argument that contains the WizardStep that a Fragment belongs to. This must be set on a wizard fragment.
-	 */
-	String ARG_WIZARD_STEP = "WIZARD_STEP";
+    /**
+     * The Fragment argument that contains the WizardStep that a Fragment belongs to. This must be set on a wizard fragment.
+     */
+    String ARG_WIZARD_STEP = "WIZARD_STEP";
 
+    /**
+     * Returns the title of this step.
+     *
+     * @param context
+     *         A {@link Context}.
+     *
+     * @return The localized wizard step title.
+     */
+    String title(Context context);
 
-	/**
-	 * Returns the title of this step.
-	 * 
-	 * @param context
-	 *            A {@link Context}.
-	 * @return The localized wizard step title.
-	 */
-	String title(Context context);
+    /**
+     * Returns the Fragment that represents this WizardStep.
+     *
+     * @param context
+     *         A {@link Context}.
+     *
+     * @return A {@link Fragment}.
+     */
+    Fragment fragment(Context context);
 
-
-	/**
-	 * Returns the Fragment that represents this WizardStep.
-	 *
-	 * @param context
-	 *            A {@link Context}.
-	 * @return A {@link Fragment}.
-	 */
-	Fragment fragment(Context context);
-
-
-	/**
-	 * True if this step should be skipped when going back to the previous step.
-	 * 
-	 * @return
-	 */
-	boolean skipOnBack();
+    /**
+     * True if this step should be skipped when going back to the previous step.
+     *
+     * @return
+     */
+    boolean skipOnBack();
 
 }

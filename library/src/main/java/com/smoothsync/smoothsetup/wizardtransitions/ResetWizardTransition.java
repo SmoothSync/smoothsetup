@@ -33,57 +33,58 @@ import com.smoothsync.smoothsetup.model.WizardStep;
  */
 public final class ResetWizardTransition extends AbstractWizardTransition
 {
-	private final WizardStep mNextStep;
+    private final WizardStep mNextStep;
 
 
-	public ResetWizardTransition(WizardStep nextStep)
-	{
-		this.mNextStep = nextStep;
-	}
+    public ResetWizardTransition(WizardStep nextStep)
+    {
+        this.mNextStep = nextStep;
+    }
 
 
-	@Override
-	public void apply(Context context, FragmentManager fragmentManager, WizardStep previousStep)
-	{
-		// remove everything from the backstack and set a new root fragment
-		while (fragmentManager.popBackStackImmediate())
-		{
-		}
+    @Override
+    public void apply(Context context, FragmentManager fragmentManager, WizardStep previousStep)
+    {
+        // remove everything from the backstack and set a new root fragment
+        while (fragmentManager.popBackStackImmediate())
+        {
+        }
 
-		FragmentTransaction transaction = fragmentManager.beginTransaction();
-		transaction.setCustomAnimations(R.anim.smoothsetup_enter_right, R.anim.smoothsetup_exit_left, R.anim.smoothsetup_enter_left,
-			R.anim.smoothsetup_exit_right);
-		transaction.replace(R.id.wizards, mNextStep.fragment(context));
-		transaction.commit();
-	}
-
-
-	@Override
-	public int describeContents()
-	{
-		return 0;
-	}
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(R.anim.smoothsetup_enter_right, R.anim.smoothsetup_exit_left, R.anim.smoothsetup_enter_left,
+                R.anim.smoothsetup_exit_right);
+        transaction.replace(R.id.wizards, mNextStep.fragment(context));
+        transaction.commit();
+    }
 
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags)
-	{
-		dest.writeParcelable(mNextStep, flags);
-	}
-
-	public final static Creator<ResetWizardTransition> CREATOR = new Creator<ResetWizardTransition>()
-	{
-		@Override
-		public ResetWizardTransition createFromParcel(Parcel source)
-		{
-			return new ResetWizardTransition((WizardStep) source.readParcelable(getClass().getClassLoader()));
-		}
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
 
 
-		@Override
-		public ResetWizardTransition[] newArray(int size)
-		{
-			return new ResetWizardTransition[size];
-		}
-	};
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeParcelable(mNextStep, flags);
+    }
+
+
+    public final static Creator<ResetWizardTransition> CREATOR = new Creator<ResetWizardTransition>()
+    {
+        @Override
+        public ResetWizardTransition createFromParcel(Parcel source)
+        {
+            return new ResetWizardTransition((WizardStep) source.readParcelable(getClass().getClassLoader()));
+        }
+
+
+        @Override
+        public ResetWizardTransition[] newArray(int size)
+        {
+            return new ResetWizardTransition[size];
+        }
+    };
 }

@@ -1,37 +1,45 @@
-<manifest package="com.smoothsync.smoothsetup.demo"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.smoothsync.smoothsetup.demo">
 
     <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+            android:allowBackup="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:supportsRtl="true"
+            android:theme="@style/AppTheme">
         <activity
-            android:name="com.smoothsync.smoothsetup.SmoothSetupDispatchActivity">
+                android:name="com.smoothsync.smoothsetup.SmoothSetupDispatchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
 
             <meta-data
-                android:name="com.smoothsync.PROVIDERx"
-                android:value="136f0ab6eac14fde9211ecfee33cb73e"/>
+                    android:name="com.smoothsync.PROVIDERx"
+                    android:value="136f0ab6eac14fde9211ecfee33cb73e"/>
         </activity>
 
         <service
-            android:name=".SmoothSyncApiService"
-            android:exported="false">
+                android:name=".SmoothSyncApiService"
+                android:exported="false">
             <intent-filter>
                 <action android:name="com.smoothsync.action.BIND_API"/>
             </intent-filter>
         </service>
 
         <service
-            android:name=".AccountService"
-            android:exported="false">
+                android:name=".AccountService"
+                android:exported="false">
             <intent-filter>
                 <action android:name="com.smoothsync.action.ACCOUNT_SERVICE"/>
+            </intent-filter>
+        </service>
+        <service
+                android:name=".VerificationService"
+                android:exported="false">
+            <intent-filter>
+                <action android:name="com.smoothsync.SERVICE_TEST_SERVICE"/>
+                <data android:scheme="com.smoothsync.authenticate"/>
             </intent-filter>
         </service>
     </application>

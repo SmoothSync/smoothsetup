@@ -40,93 +40,95 @@ import com.smoothsync.smoothsetup.wizardtransitions.ResetWizardTransition;
 public final class ErrorResetWizardStep implements WizardStep
 {
 
-	private final static String ARG_RESET_STEP = "reset_step";
+    private final static String ARG_RESET_STEP = "reset_step";
 
-	private final WizardStep mRetryStep;
-
-
-	public ErrorResetWizardStep(WizardStep retryStep)
-	{
-		this.mRetryStep = retryStep;
-	}
+    private final WizardStep mRetryStep;
 
 
-	@Override
-	public String title(Context context)
-	{
-		return context.getString(R.string.smoothsetup_wizard_title_error);
-	}
+    public ErrorResetWizardStep(WizardStep retryStep)
+    {
+        this.mRetryStep = retryStep;
+    }
 
 
-	@Override
-	public boolean skipOnBack()
-	{
-		return true;
-	}
+    @Override
+    public String title(Context context)
+    {
+        return context.getString(R.string.smoothsetup_wizard_title_error);
+    }
 
 
-	@Override
-	public Fragment fragment(Context context)
-	{
-		Fragment result = new ErrorFragment();
-		Bundle arguments = new Bundle();
-		arguments.putParcelable(ARG_RESET_STEP, mRetryStep);
-		arguments.putParcelable(ARG_WIZARD_STEP, this);
-		result.setArguments(arguments);
-		result.setRetainInstance(true);
-		return result;
-	}
+    @Override
+    public boolean skipOnBack()
+    {
+        return true;
+    }
 
 
-	@Override
-	public int describeContents()
-	{
-		return 0;
-	}
+    @Override
+    public Fragment fragment(Context context)
+    {
+        Fragment result = new ErrorFragment();
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(ARG_RESET_STEP, mRetryStep);
+        arguments.putParcelable(ARG_WIZARD_STEP, this);
+        result.setArguments(arguments);
+        result.setRetainInstance(true);
+        return result;
+    }
 
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags)
-	{
-		dest.writeParcelable(mRetryStep, flags);
-	}
-
-	public final static Creator<ErrorResetWizardStep> CREATOR = new Creator<ErrorResetWizardStep>()
-	{
-		@Override
-		public ErrorResetWizardStep createFromParcel(Parcel source)
-		{
-			return new ErrorResetWizardStep((WizardStep) source.readParcelable(getClass().getClassLoader()));
-		}
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
 
 
-		@Override
-		public ErrorResetWizardStep[] newArray(int size)
-		{
-			return new ErrorResetWizardStep[size];
-		}
-	};
-
-	/**
-	 * A Fragment that shows an error with an option to retry.
-	 */
-	public static class ErrorFragment extends Fragment implements View.OnClickListener
-	{
-
-		@Nullable
-		@Override
-		public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
-		{
-			View result = inflater.inflate(R.layout.smoothsetup_wizard_fragment_error, container, false);
-			((Button) result.findViewById(android.R.id.button1)).setOnClickListener(this);
-			return result;
-		}
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeParcelable(mRetryStep, flags);
+    }
 
 
-		@Override
-		public void onClick(View v)
-		{
-			new ResetWizardTransition((WizardStep) getArguments().getParcelable(ARG_RESET_STEP)).execute(getContext());
-		}
-	}
+    public final static Creator<ErrorResetWizardStep> CREATOR = new Creator<ErrorResetWizardStep>()
+    {
+        @Override
+        public ErrorResetWizardStep createFromParcel(Parcel source)
+        {
+            return new ErrorResetWizardStep((WizardStep) source.readParcelable(getClass().getClassLoader()));
+        }
+
+
+        @Override
+        public ErrorResetWizardStep[] newArray(int size)
+        {
+            return new ErrorResetWizardStep[size];
+        }
+    };
+
+
+    /**
+     * A Fragment that shows an error with an option to retry.
+     */
+    public static class ErrorFragment extends Fragment implements View.OnClickListener
+    {
+
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+        {
+            View result = inflater.inflate(R.layout.smoothsetup_wizard_fragment_error, container, false);
+            ((Button) result.findViewById(android.R.id.button1)).setOnClickListener(this);
+            return result;
+        }
+
+
+        @Override
+        public void onClick(View v)
+        {
+            new ResetWizardTransition((WizardStep) getArguments().getParcelable(ARG_RESET_STEP)).execute(getContext());
+        }
+    }
 }

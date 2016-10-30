@@ -17,11 +17,11 @@
 
 package com.smoothsync.smoothsetup.setupbuttons;
 
-import com.smoothsync.smoothsetup.R;
-
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
+
+import com.smoothsync.smoothsetup.R;
 
 
 /**
@@ -31,40 +31,40 @@ import android.widget.Button;
  */
 public final class BasicButtonViewHolder extends RecyclerView.ViewHolder implements ButtonViewHolder
 {
-	private final Button mButton;
+    private final Button mButton;
 
 
-	public BasicButtonViewHolder(View itemView)
-	{
-		super(itemView);
-		mButton = (Button) itemView.findViewById(R.id.button);
-	}
+    public BasicButtonViewHolder(View itemView)
+    {
+        super(itemView);
+        mButton = (Button) itemView.findViewById(R.id.button);
+    }
 
 
-	@Override
-	public void updateText(String text)
-	{
-		mButton.setText(text);
-	}
+    @Override
+    public void updateText(String text)
+    {
+        mButton.setText(text);
+    }
 
 
-	@Override
-	public void updateText(int stringResourceId, Object... parameters)
-	{
-		mButton.setText(mButton.getContext().getString(stringResourceId, parameters));
-	}
+    @Override
+    public void updateText(int stringResourceId, Object... parameters)
+    {
+        mButton.setText(mButton.getContext().getString(stringResourceId, parameters));
+    }
 
 
-	@Override
-	public void updateEnabled(boolean enabled)
-	{
-		mButton.setEnabled(enabled);
-	}
+    @Override
+    public void updateEnabled(boolean enabled)
+    {
+        mButton.setEnabled(enabled);
+    }
 
 
-	@Override
-	public void updateOnClickListener(View.OnClickListener listener)
-	{
-		mButton.setOnClickListener(listener);
-	}
+    @Override
+    public void updateOnClickListener(View.OnClickListener listener)
+    {
+        mButton.setOnClickListener(listener);
+    }
 }

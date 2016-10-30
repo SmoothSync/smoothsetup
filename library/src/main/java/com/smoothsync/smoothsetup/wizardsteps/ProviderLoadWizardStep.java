@@ -43,161 +43,164 @@ import com.smoothsync.smoothsetup.wizardtransitions.AutomaticWizardTransition;
 
 /**
  * A {@link WizardStep} that loads a provider by its id, before moving on to a setup step.
- * 
+ *
  * @author Marten Gajda <marten@dmfs.org>
  */
 public final class ProviderLoadWizardStep implements WizardStep
 {
-	private final static String ARG_PROVIDER_ID = "provider-id";
-	private final static String ARG_ACCOUNT = "account";
+    private final static String ARG_PROVIDER_ID = "provider-id";
+    private final static String ARG_ACCOUNT = "account";
 
-	private final String mProviderId;
-	private final String mAccount;
-
-
-	/**
-	 * Create a ProviderLoadWizardStep that loads the provider with the given id.
-	 * 
-	 * @param providerId
-	 *            The provider id.
-	 * @param account
-	 *            An optional account to set up.
-	 */
-	public ProviderLoadWizardStep(String providerId, String account)
-	{
-		mProviderId = providerId;
-		mAccount = account;
-	}
+    private final String mProviderId;
+    private final String mAccount;
 
 
-	@Override
-	public String title(Context context)
-	{
-		return context.getString(R.string.smoothsetup_wizard_title_loading);
-	}
+    /**
+     * Create a ProviderLoadWizardStep that loads the provider with the given id.
+     *
+     * @param providerId
+     *         The provider id.
+     * @param account
+     *         An optional account to set up.
+     */
+    public ProviderLoadWizardStep(String providerId, String account)
+    {
+        mProviderId = providerId;
+        mAccount = account;
+    }
 
 
-	@Override
-	public boolean skipOnBack()
-	{
-		return true;
-	}
+    @Override
+    public String title(Context context)
+    {
+        return context.getString(R.string.smoothsetup_wizard_title_loading);
+    }
 
 
-	@Override
-	public Fragment fragment(Context context)
-	{
-		Fragment result = new LoadFragment();
-		Bundle args = new Bundle();
-		args.putString(ARG_PROVIDER_ID, mProviderId);
-		args.putString(ARG_ACCOUNT, mAccount);
-		args.putParcelable(ARG_WIZARD_STEP, this);
-		result.setArguments(args);
-		result.setRetainInstance(true);
-		return result;
-	}
+    @Override
+    public boolean skipOnBack()
+    {
+        return true;
+    }
 
 
-	@Override
-	public int describeContents()
-	{
-		return 0;
-	}
+    @Override
+    public Fragment fragment(Context context)
+    {
+        Fragment result = new LoadFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PROVIDER_ID, mProviderId);
+        args.putString(ARG_ACCOUNT, mAccount);
+        args.putParcelable(ARG_WIZARD_STEP, this);
+        result.setArguments(args);
+        result.setRetainInstance(true);
+        return result;
+    }
 
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags)
-	{
-		dest.writeString(mProviderId);
-		dest.writeString(mAccount);
-	}
-
-	public final static Creator CREATOR = new Creator()
-	{
-		@Override
-		public ProviderLoadWizardStep createFromParcel(Parcel source)
-		{
-			return new ProviderLoadWizardStep(source.readString(), source.readString());
-		}
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
 
 
-		@Override
-		public ProviderLoadWizardStep[] newArray(int size)
-		{
-			return new ProviderLoadWizardStep[size];
-		}
-	};
-
-	public static class LoadFragment extends Fragment implements ThrowingAsyncTask.OnResultCallback<Provider>
-	{
-		private final static int DELAY_WAIT_MESSAGE = 2500;
-
-		private View mWaitMessage;
-		private Handler mHandler = new Handler();
-		private FutureServiceConnection<SmoothSyncApi> mApiService;
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeString(mProviderId);
+        dest.writeString(mAccount);
+    }
 
 
-		@Nullable
-		@Override
-		public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
-		{
-			View result = inflater.inflate(R.layout.smoothsetup_wizard_fragment_loading, container, false);
-			mWaitMessage = result.findViewById(android.R.id.message);
-			mHandler.postDelayed(mShowWaitMessage, DELAY_WAIT_MESSAGE);
-			return result;
-		}
+    public final static Creator CREATOR = new Creator()
+    {
+        @Override
+        public ProviderLoadWizardStep createFromParcel(Parcel source)
+        {
+            return new ProviderLoadWizardStep(source.readString(), source.readString());
+        }
 
 
-		@Override
-		public void onCreate(@Nullable Bundle savedInstanceState)
-		{
-			super.onCreate(savedInstanceState);
-			Context context = getContext();
-			mApiService = new FutureLocalServiceConnection<SmoothSyncApi>(context,
-				new Intent("com.smoothsync.action.BIND_API").setPackage(context.getPackageName()));
-			new ProviderLoadTask(new SmoothSyncApiProxy(mApiService), this).execute(getArguments().getString(ARG_PROVIDER_ID));
-		}
+        @Override
+        public ProviderLoadWizardStep[] newArray(int size)
+        {
+            return new ProviderLoadWizardStep[size];
+        }
+    };
 
 
-		@Override
-		public void onDetach()
-		{
-			mHandler.removeCallbacks(mShowWaitMessage);
-			super.onDetach();
-		}
+    public static class LoadFragment extends Fragment implements ThrowingAsyncTask.OnResultCallback<Provider>
+    {
+        private final static int DELAY_WAIT_MESSAGE = 2500;
+
+        private View mWaitMessage;
+        private Handler mHandler = new Handler();
+        private FutureServiceConnection<SmoothSyncApi> mApiService;
 
 
-		@Override
-		public void onDestroy()
-		{
-			mApiService.disconnect();
-			super.onDestroy();
-		}
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+        {
+            View result = inflater.inflate(R.layout.smoothsetup_wizard_fragment_loading, container, false);
+            mWaitMessage = result.findViewById(android.R.id.message);
+            mHandler.postDelayed(mShowWaitMessage, DELAY_WAIT_MESSAGE);
+            return result;
+        }
 
 
-		@Override
-		public void onResult(final AsyncTaskResult<Provider> result)
-		{
-			if (isAdded())
-			{
-				try
-				{
-					new AutomaticWizardTransition(new ProviderLoginWizardStep(result.value(), getArguments().getString(ARG_ACCOUNT))).execute(getContext());
-				}
-				catch (Exception e)
-				{
-					new AutomaticWizardTransition(new ErrorResetWizardStep((WizardStep) getArguments().getParcelable(ARG_WIZARD_STEP))).execute(getContext());
-				}
-			}
-		}
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState)
+        {
+            super.onCreate(savedInstanceState);
+            Context context = getContext();
+            mApiService = new FutureLocalServiceConnection<SmoothSyncApi>(context,
+                    new Intent("com.smoothsync.action.BIND_API").setPackage(context.getPackageName()));
+            new ProviderLoadTask(new SmoothSyncApiProxy(mApiService), this).execute(getArguments().getString(ARG_PROVIDER_ID));
+        }
 
-		private final Runnable mShowWaitMessage = new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				mWaitMessage.animate().alpha(1f).start();
-			}
-		};
-	}
+
+        @Override
+        public void onDetach()
+        {
+            mHandler.removeCallbacks(mShowWaitMessage);
+            super.onDetach();
+        }
+
+
+        @Override
+        public void onDestroy()
+        {
+            mApiService.disconnect();
+            super.onDestroy();
+        }
+
+
+        @Override
+        public void onResult(final AsyncTaskResult<Provider> result)
+        {
+            if (isAdded())
+            {
+                try
+                {
+                    new AutomaticWizardTransition(new ProviderLoginWizardStep(result.value(), getArguments().getString(ARG_ACCOUNT))).execute(getContext());
+                }
+                catch (Exception e)
+                {
+                    new AutomaticWizardTransition(new ErrorResetWizardStep((WizardStep) getArguments().getParcelable(ARG_WIZARD_STEP))).execute(getContext());
+                }
+            }
+        }
+
+
+        private final Runnable mShowWaitMessage = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                mWaitMessage.animate().alpha(1f).start();
+            }
+        };
+    }
 }

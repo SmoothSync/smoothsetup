@@ -17,12 +17,19 @@
 
 package com.smoothsync.smoothsetup.model;
 
-import java.net.URI;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.smoothsync.api.model.Service;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 
 /**
@@ -32,120 +39,152 @@ import android.os.Parcelable;
  */
 public final class ParcelableService implements Service, Parcelable
 {
-	private final Service mDecorated;
+    private final Service mDecorated;
 
 
-	public ParcelableService(Service decorated)
-	{
-		mDecorated = decorated;
-	}
+    public ParcelableService(Service decorated)
+    {
+        mDecorated = decorated;
+    }
 
 
-	@Override
-	public String name()
-	{
-		return mDecorated.name();
-	}
+    @Override
+    public String name()
+    {
+        return mDecorated.name();
+    }
 
 
-	@Override
-	public String serviceType()
-	{
-		return mDecorated.serviceType();
-	}
+    @Override
+    public String serviceType()
+    {
+        return mDecorated.serviceType();
+    }
 
 
-	@Override
-	public URI uri()
-	{
-		return mDecorated.uri();
-	}
+    @Override
+    public URI uri()
+    {
+        return mDecorated.uri();
+    }
 
 
-	@Override
-	public int describeContents()
-	{
-		return 0;
-	}
+    @Override
+    public KeyStore keyStore()
+    {
+        return mDecorated.keyStore();
+    }
 
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags)
-	{
-		dest.writeString(name());
-		dest.writeString(serviceType());
-		dest.writeSerializable(uri());
-	}
-
-	public final static Creator<Service> CREATOR = new Creator<Service>()
-	{
-		@Override
-		public Service createFromParcel(Parcel source)
-		{
-			return new UnparcelledService(source.readString(), source.readString(), (URI) source.readSerializable());
-		}
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
 
 
-		@Override
-		public Service[] newArray(int size)
-		{
-			return new Service[size];
-		}
-	};
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeString(name());
+        dest.writeString(serviceType());
+        dest.writeSerializable(uri());
 
-	private final static class UnparcelledService implements Service, Parcelable
-	{
-
-		private final String mName;
-		private final String mServiceType;
-		private final URI mUri;
-
-
-		public UnparcelledService(String name, String serviceType, URI uri)
-		{
-			this.mName = name;
-			this.mServiceType = serviceType;
-			this.mUri = uri;
-		}
-
-
-		@Override
-		public String name()
-		{
-			return mName;
-		}
+        KeyStore keyStore = keyStore();
+        if (keyStore == null)
+        {
+            dest.writeByteArray(new byte[0]);
+        }
+        else
+        {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            try
+            {
+                keyStore.store(outputStream, null);
+            }
+            catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException e)
+            {
+                throw new RuntimeException("Can't serialize KeyStore", e);
+            }
+            dest.writeByteArray(outputStream.toByteArray());
+        }
+    }
 
 
-		@Override
-		public String serviceType()
-		{
-			return mServiceType;
-		}
+    public final static Creator<Service> CREATOR = new Creator<Service>()
+    {
+        @Override
+        public Service createFromParcel(Parcel source)
+        {
+            return new UnparcelledService(source.readString(), source.readString(), (URI) source.readSerializable(), source.createByteArray());
+        }
 
 
-		@Override
-		public URI uri()
-		{
-			return mUri;
-		}
+        @Override
+        public Service[] newArray(int size)
+        {
+            return new Service[size];
+        }
+    };
 
 
-		@Override
-		public int describeContents()
-		{
-			return 0;
-		}
+    private final static class UnparcelledService implements Service
+    {
+
+        private final String mName;
+        private final String mServiceType;
+        private final URI mUri;
+        private final byte[] mKeyStoreBytes;
 
 
-		@Override
-		public void writeToParcel(Parcel dest, int flags)
-		{
-			dest.writeString(name());
-			dest.writeString(serviceType());
-			dest.writeSerializable(uri());
-		}
+        public UnparcelledService(String name, String serviceType, URI uri, byte[] keyStoreBytes)
+        {
+            mName = name;
+            mServiceType = serviceType;
+            mUri = uri;
+            mKeyStoreBytes = keyStoreBytes;
+        }
 
-		public final static Creator<Service> CREATOR = ParcelableService.CREATOR;
-	}
+
+        @Override
+        public String name()
+        {
+            return mName;
+        }
+
+
+        @Override
+        public String serviceType()
+        {
+            return mServiceType;
+        }
+
+
+        @Override
+        public URI uri()
+        {
+            return mUri;
+        }
+
+
+        @Override
+        public KeyStore keyStore()
+        {
+            if (mKeyStoreBytes == null || mKeyStoreBytes.length == 0)
+            {
+                return null;
+            }
+            try
+            {
+                KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+                keyStore.load(new ByteArrayInputStream(mKeyStoreBytes), null);
+                return keyStore;
+            }
+            catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e)
+            {
+                throw new RuntimeException("Can't create KeyStore", e);
+            }
+        }
+    }
 
 }

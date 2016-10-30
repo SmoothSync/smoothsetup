@@ -28,40 +28,37 @@ import android.view.View;
  */
 public interface ButtonViewHolder
 {
-	/**
-	 * Update the text of the button.
-	 * 
-	 * @param text
-	 *            The new button text.
-	 */
-	public void updateText(String text);
+    /**
+     * Update the text of the button.
+     *
+     * @param text
+     *         The new button text.
+     */
+    public void updateText(String text);
 
+    /**
+     * Update the text of the button.
+     *
+     * @param stringResourceId
+     *         A string resource id.
+     * @param parameters
+     *         Positional parameters.
+     */
+    public void updateText(int stringResourceId, Object... parameters);
 
-	/**
-	 * Update the text of the button.
-	 *
-	 * @param stringResourceId
-	 *            A string resource id.
-	 * @param parameters
-	 *            Positional parameters.
-	 */
-	public void updateText(int stringResourceId, Object... parameters);
+    /**
+     * Update the enabled status of the button.
+     *
+     * @param enabled
+     *         {@code true} to enable the button, {@code false} to disable it.
+     */
+    public void updateEnabled(boolean enabled);
 
-
-	/**
-	 * Update the enabled status of the button.
-	 * 
-	 * @param enabled
-	 *            {@code true} to enable the button, {@code false} to disable it.
-	 */
-	public void updateEnabled(boolean enabled);
-
-
-	/**
-	 * Update the {@link View.OnClickListener} of the button.
-	 * 
-	 * @param listener
-	 *            The new OnClickListener.
-	 */
-	public void updateOnClickListener(View.OnClickListener listener);
+    /**
+     * Update the {@link View.OnClickListener} of the button.
+     *
+     * @param listener
+     *         The new OnClickListener.
+     */
+    public void updateOnClickListener(View.OnClickListener listener);
 }

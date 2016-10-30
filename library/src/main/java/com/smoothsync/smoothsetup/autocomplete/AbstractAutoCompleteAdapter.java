@@ -33,23 +33,23 @@ import android.widget.TextView;
 public abstract class AbstractAutoCompleteAdapter extends BaseAdapter implements Filterable
 {
 
-	@Override
-	public final long getItemId(int position)
-	{
-		return position;
-	}
+    @Override
+    public final long getItemId(int position)
+    {
+        return position;
+    }
 
 
-	@Override
-	public final View getView(int position, View convertView, ViewGroup parent)
-	{
-		View result = convertView;
-		if (result == null)
-		{
-			result = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_dropdown_item_1line, parent, false);
-		}
-		((TextView) result.findViewById(android.R.id.text1)).setText(getItem(position).toString());
-		return result;
-	}
+    @Override
+    public final View getView(int position, View convertView, ViewGroup parent)
+    {
+        View result = convertView;
+        if (result == null)
+        {
+            result = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_dropdown_item_1line, parent, false);
+        }
+        ((TextView) result.findViewById(android.R.id.text1)).setText(getItem(position).toString());
+        return result;
+    }
 
 }

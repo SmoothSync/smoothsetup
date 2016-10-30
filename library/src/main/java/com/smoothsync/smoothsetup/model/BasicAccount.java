@@ -30,66 +30,67 @@ import com.smoothsync.api.model.Provider;
  */
 public final class BasicAccount implements Account
 {
-	private final String mAccountId;
-	private final Provider mProvider;
+    private final String mAccountId;
+    private final Provider mProvider;
 
 
-	public BasicAccount(String accountId, Provider provider)
-	{
-		mAccountId = accountId;
-		mProvider = provider;
-	}
+    public BasicAccount(String accountId, Provider provider)
+    {
+        mAccountId = accountId;
+        mProvider = provider;
+    }
 
 
-	@Override
-	public String accountId()
-	{
-		return mAccountId;
-	}
+    @Override
+    public String accountId()
+    {
+        return mAccountId;
+    }
 
 
-	@Override
-	public Provider provider()
-	{
-		return mProvider;
-	}
+    @Override
+    public Provider provider()
+    {
+        return mProvider;
+    }
 
 
-	@Override
-	public int describeContents()
-	{
-		return 0;
-	}
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
 
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags)
-	{
-		dest.writeString(mAccountId);
-		if (mProvider instanceof Parcelable)
-		{
-			dest.writeParcelable((Parcelable) mProvider, flags);
-		}
-		else
-		{
-			dest.writeParcelable(new ParcelableProvider(mProvider), flags);
-		}
-	}
-
-	public final static Creator<BasicAccount> CREATOR = new Creator<BasicAccount>()
-	{
-
-		@Override
-		public BasicAccount createFromParcel(Parcel source)
-		{
-			return new BasicAccount(source.readString(), (Provider) source.readParcelable(getClass().getClassLoader()));
-		}
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeString(mAccountId);
+        if (mProvider instanceof Parcelable)
+        {
+            dest.writeParcelable((Parcelable) mProvider, flags);
+        }
+        else
+        {
+            dest.writeParcelable(new ParcelableProvider(mProvider), flags);
+        }
+    }
 
 
-		@Override
-		public BasicAccount[] newArray(int size)
-		{
-			return new BasicAccount[0];
-		}
-	};
+    public final static Creator<BasicAccount> CREATOR = new Creator<BasicAccount>()
+    {
+
+        @Override
+        public BasicAccount createFromParcel(Parcel source)
+        {
+            return new BasicAccount(source.readString(), (Provider) source.readParcelable(getClass().getClassLoader()));
+        }
+
+
+        @Override
+        public BasicAccount[] newArray(int size)
+        {
+            return new BasicAccount[0];
+        }
+    };
 }

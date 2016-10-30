@@ -24,18 +24,18 @@ package com.smoothsync.smoothsetup.utils;
  */
 public final class ThrowingAsyncTaskResult<T> implements AsyncTaskResult<T>
 {
-	private final Exception mException;
+    private final Exception mException;
 
 
-	public ThrowingAsyncTaskResult(Exception exception)
-	{
-		mException = exception;
-	}
+    public ThrowingAsyncTaskResult(Exception exception)
+    {
+        mException = exception;
+    }
 
 
-	@Override
-	public T value() throws Exception
-	{
-		throw mException;
-	}
+    @Override
+    public T value() throws Exception
+    {
+        throw mException;
+    }
 }

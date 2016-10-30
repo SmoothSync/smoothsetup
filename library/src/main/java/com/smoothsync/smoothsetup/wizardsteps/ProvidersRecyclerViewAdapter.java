@@ -37,77 +37,78 @@ import java.util.List;
 public final class ProvidersRecyclerViewAdapter extends RecyclerView.Adapter<ProvidersRecyclerViewAdapter.ViewHolder>
 {
 
-	private final List<Provider> mProviders;
-	private final SetupButtonAdapter.OnProviderSelectListener mListener;
+    private final List<Provider> mProviders;
+    private final SetupButtonAdapter.OnProviderSelectListener mListener;
 
 
-	public ProvidersRecyclerViewAdapter(List<Provider> providers, SetupButtonAdapter.OnProviderSelectListener listener)
-	{
-		mProviders = providers;
-		mListener = listener;
-	}
+    public ProvidersRecyclerViewAdapter(List<Provider> providers, SetupButtonAdapter.OnProviderSelectListener listener)
+    {
+        mProviders = providers;
+        mListener = listener;
+    }
 
 
-	@Override
-	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-	{
-		View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.smoothsetup_provider, parent, false);
-		return new ViewHolder(view);
-	}
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.smoothsetup_provider, parent, false);
+        return new ViewHolder(view);
+    }
 
 
-	@Override
-	public void onBindViewHolder(final ViewHolder holder, final int position)
-	{
-		try
-		{
-			holder.mContentView.setText(mProviders.get(position).name());
-		}
-		catch (ProtocolException e)
-		{
-			e.printStackTrace();
-		}
+    @Override
+    public void onBindViewHolder(final ViewHolder holder, final int position)
+    {
+        try
+        {
+            holder.mContentView.setText(mProviders.get(position).name());
+        }
+        catch (ProtocolException e)
+        {
+            e.printStackTrace();
+        }
 
-		holder.mView.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				if (null != mListener)
-				{
-					mListener.onProviderSelected(mProviders.get(position));
-				}
-			}
-		});
-	}
-
-
-	@Override
-	public int getItemCount()
-	{
-		return mProviders.size();
-	}
-
-	public class ViewHolder extends RecyclerView.ViewHolder
-	{
-		public final View mView;
-		// public final TextView mIdView;
-		public final TextView mContentView;
+        holder.mView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if (null != mListener)
+                {
+                    mListener.onProviderSelected(mProviders.get(position));
+                }
+            }
+        });
+    }
 
 
-		public ViewHolder(View view)
-		{
-			super(view);
-			mView = view;
-			// mIdView = (TextView) view.findViewById(R.id.id);
-			mContentView = (TextView) view.findViewById(R.id.content);
-		}
+    @Override
+    public int getItemCount()
+    {
+        return mProviders.size();
+    }
 
 
-		@Override
-		public String toString()
-		{
-			return super.toString() + " '" + mContentView.getText() + "'";
-		}
-	}
+    public class ViewHolder extends RecyclerView.ViewHolder
+    {
+        public final View mView;
+        // public final TextView mIdView;
+        public final TextView mContentView;
+
+
+        public ViewHolder(View view)
+        {
+            super(view);
+            mView = view;
+            // mIdView = (TextView) view.findViewById(R.id.id);
+            mContentView = (TextView) view.findViewById(R.id.content);
+        }
+
+
+        @Override
+        public String toString()
+        {
+            return super.toString() + " '" + mContentView.getText() + "'";
+        }
+    }
 }

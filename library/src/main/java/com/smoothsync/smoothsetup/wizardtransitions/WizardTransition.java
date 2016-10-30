@@ -31,25 +31,24 @@ import com.smoothsync.smoothsetup.model.WizardStep;
 public interface WizardTransition
 {
 
-	/**
-	 * Executes this transition, switching to another WizardStep.
-	 * 
-	 * @param context
-	 *            A Context.
-	 */
-	public void execute(Context context);
+    /**
+     * Executes this transition, switching to another WizardStep.
+     *
+     * @param context
+     *         A Context.
+     */
+    public void execute(Context context);
 
-
-	/**
-	 * Applies this transition to the given FragmentManager.
-	 * 
-	 * @param context
-	 *            A Context.
-	 * @param fragmentManager
-	 *            The FragmentManager on which to perform the transition.
-	 * @param previousStep
-	 *            The previous WizardStep.
-	 */
-	public void apply(Context context, FragmentManager fragmentManager, WizardStep previousStep);
+    /**
+     * Applies this transition to the given FragmentManager.
+     *
+     * @param context
+     *         A Context.
+     * @param fragmentManager
+     *         The FragmentManager on which to perform the transition.
+     * @param previousStep
+     *         The previous WizardStep.
+     */
+    public void apply(Context context, FragmentManager fragmentManager, WizardStep previousStep);
 
 }

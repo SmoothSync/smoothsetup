@@ -45,142 +45,145 @@ import java.util.concurrent.TimeUnit;
 public final class WaitForReferrerWizardStep implements WizardStep
 {
 
-	@Override
-	public String title(Context context)
-	{
-		return context.getString(R.string.smoothsetup_wizard_title_loading);
-	}
+    @Override
+    public String title(Context context)
+    {
+        return context.getString(R.string.smoothsetup_wizard_title_loading);
+    }
 
 
-	@Override
-	public boolean skipOnBack()
-	{
-		return true;
-	}
+    @Override
+    public boolean skipOnBack()
+    {
+        return true;
+    }
 
 
-	@Override
-	public Fragment fragment(Context context)
-	{
-		Fragment result = new WaitForReferrerFragment();
-		Bundle arguments = new Bundle();
-		arguments.putParcelable(ARG_WIZARD_STEP, this);
-		result.setArguments(arguments);
-		result.setRetainInstance(true);
-		return result;
-	}
+    @Override
+    public Fragment fragment(Context context)
+    {
+        Fragment result = new WaitForReferrerFragment();
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(ARG_WIZARD_STEP, this);
+        result.setArguments(arguments);
+        result.setRetainInstance(true);
+        return result;
+    }
 
 
-	@Override
-	public int describeContents()
-	{
-		return 0;
-	}
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
 
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags)
-	{
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
 
-	}
-
-	public final static Creator CREATOR = new Creator()
-	{
-		@Override
-		public WaitForReferrerWizardStep createFromParcel(Parcel source)
-		{
-			return new WaitForReferrerWizardStep();
-		}
+    }
 
 
-		@Override
-		public WaitForReferrerWizardStep[] newArray(int size)
-		{
-			return new WaitForReferrerWizardStep[size];
-		}
-	};
-
-	public static class WaitForReferrerFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener
-	{
-		private final Handler mHandler = new Handler();
-		private SharedPreferences mPreferences;
+    public final static Creator CREATOR = new Creator()
+    {
+        @Override
+        public WaitForReferrerWizardStep createFromParcel(Parcel source)
+        {
+            return new WaitForReferrerWizardStep();
+        }
 
 
-		@Nullable
-		@Override
-		public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
-		{
-			return inflater.inflate(R.layout.smoothsetup_wizard_fragment_loading, container, false);
-		}
+        @Override
+        public WaitForReferrerWizardStep[] newArray(int size)
+        {
+            return new WaitForReferrerWizardStep[size];
+        }
+    };
 
 
-		@Override
-		public void onResume()
-		{
-			super.onResume();
-			mPreferences = getActivity().getSharedPreferences("com.smoothsync.smoothsetup.prefs", 0);
-			mPreferences.registerOnSharedPreferenceChangeListener(this);
-			if (mPreferences.contains(SmoothSetupDispatchActivity.PREF_REFERRER))
-			{
-				onSharedPreferenceChanged(mPreferences, SmoothSetupDispatchActivity.PREF_REFERRER);
-			}
-			mHandler.postDelayed(mMoveOn, TimeUnit.SECONDS.toMillis(1));
-		}
+    public static class WaitForReferrerFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener
+    {
+        private final Handler mHandler = new Handler();
+        private SharedPreferences mPreferences;
 
 
-		@Override
-		public void onPause()
-		{
-			mHandler.removeCallbacks(mMoveOn);
-			mPreferences.unregisterOnSharedPreferenceChangeListener(this);
-			super.onPause();
-		}
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+        {
+            return inflater.inflate(R.layout.smoothsetup_wizard_fragment_loading, container, false);
+        }
 
 
-		@Override
-		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
-		{
-			if (!SmoothSetupDispatchActivity.PREF_REFERRER.equals(key))
-			{
-				// not the right key
-				return;
-			}
+        @Override
+        public void onResume()
+        {
+            super.onResume();
+            mPreferences = getActivity().getSharedPreferences("com.smoothsync.smoothsetup.prefs", 0);
+            mPreferences.registerOnSharedPreferenceChangeListener(this);
+            if (mPreferences.contains(SmoothSetupDispatchActivity.PREF_REFERRER))
+            {
+                onSharedPreferenceChanged(mPreferences, SmoothSetupDispatchActivity.PREF_REFERRER);
+            }
+            mHandler.postDelayed(mMoveOn, TimeUnit.SECONDS.toMillis(1));
+        }
 
-			String referrer = sharedPreferences.getString(SmoothSetupDispatchActivity.PREF_REFERRER, null);
-			if (referrer == null || referrer.isEmpty())
-			{
-				// referrer is null
-				return;
-			}
 
-			Uri uri = Uri.parse(referrer);
-			if (uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_PROVIDER) == null)
-			{
-				// no provider present
-				return;
-			}
+        @Override
+        public void onPause()
+        {
+            mHandler.removeCallbacks(mMoveOn);
+            mPreferences.unregisterOnSharedPreferenceChangeListener(this);
+            super.onPause();
+        }
 
-			mHandler.removeCallbacks(mMoveOn);
-			new AutomaticWizardTransition(new ProviderLoadWizardStep(uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_PROVIDER),
-				uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_ACCOUNT))).execute(getContext());
-		}
 
-		/**
-		 * A Runnable that's executed when the waiting time is up and no broadcast was received.
-		 */
-		private final Runnable mMoveOn = new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				mPreferences.unregisterOnSharedPreferenceChangeListener(WaitForReferrerFragment.this);
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+        {
+            if (!SmoothSetupDispatchActivity.PREF_REFERRER.equals(key))
+            {
+                // not the right key
+                return;
+            }
 
-				// make sure we won't wait for the broadcast again
-				mPreferences.edit().putString("referrer", "").apply();
+            String referrer = sharedPreferences.getString(SmoothSetupDispatchActivity.PREF_REFERRER, null);
+            if (referrer == null || referrer.isEmpty())
+            {
+                // referrer is null
+                return;
+            }
 
-				// move on
-				new AutomaticWizardTransition(new GenericProviderWizardStep()).execute(getContext());
-			}
-		};
-	}
+            Uri uri = Uri.parse(referrer);
+            if (uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_PROVIDER) == null)
+            {
+                // no provider present
+                return;
+            }
+
+            mHandler.removeCallbacks(mMoveOn);
+            new AutomaticWizardTransition(new ProviderLoadWizardStep(uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_PROVIDER),
+                    uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_ACCOUNT))).execute(getContext());
+        }
+
+
+        /**
+         * A Runnable that's executed when the waiting time is up and no broadcast was received.
+         */
+        private final Runnable mMoveOn = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                mPreferences.unregisterOnSharedPreferenceChangeListener(WaitForReferrerFragment.this);
+
+                // make sure we won't wait for the broadcast again
+                mPreferences.edit().putString("referrer", "").apply();
+
+                // move on
+                new AutomaticWizardTransition(new GenericProviderWizardStep()).execute(getContext());
+            }
+        };
+    }
 }

@@ -34,30 +34,30 @@ import java.util.concurrent.TimeoutException;
  */
 public final class SmoothSyncApiProxy implements SmoothSyncApi
 {
-	private final FutureServiceConnection<SmoothSyncApi> mConnection;
+    private final FutureServiceConnection<SmoothSyncApi> mConnection;
 
 
-	public SmoothSyncApiProxy(FutureServiceConnection<SmoothSyncApi> connection)
-	{
-		this.mConnection = connection;
-	}
+    public SmoothSyncApiProxy(FutureServiceConnection<SmoothSyncApi> connection)
+    {
+        this.mConnection = connection;
+    }
 
 
-	@Override
-	public <T> T resultOf(SmoothSyncApiRequest<T> smoothSyncApiRequest) throws IOException, ProtocolError, ProtocolException
-	{
-		try
-		{
-			return mConnection.service(365L * 24L * 3600L * 1000L).resultOf(smoothSyncApiRequest);
-		}
-		catch (InterruptedException e)
-		{
-			Thread.currentThread().interrupt();
-			throw new IOException();
-		}
-		catch (TimeoutException e)
-		{
-			throw new RuntimeException("Couldn't connect to SmoothSyncApiService within a reasonable time.", e);
-		}
-	}
+    @Override
+    public <T> T resultOf(SmoothSyncApiRequest<T> smoothSyncApiRequest) throws IOException, ProtocolError, ProtocolException
+    {
+        try
+        {
+            return mConnection.service(365L * 24L * 3600L * 1000L).resultOf(smoothSyncApiRequest);
+        }
+        catch (InterruptedException e)
+        {
+            Thread.currentThread().interrupt();
+            throw new IOException();
+        }
+        catch (TimeoutException e)
+        {
+            throw new RuntimeException("Couldn't connect to SmoothSyncApiService within a reasonable time.", e);
+        }
+    }
 }

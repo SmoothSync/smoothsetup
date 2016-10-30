@@ -33,55 +33,56 @@ import com.smoothsync.smoothsetup.model.WizardStep;
  */
 public final class AutomaticWizardTransition extends AbstractWizardTransition
 {
-	private final WizardStep mNextStep;
+    private final WizardStep mNextStep;
 
 
-	public AutomaticWizardTransition(WizardStep nextStep)
-	{
-		this.mNextStep = nextStep;
-	}
+    public AutomaticWizardTransition(WizardStep nextStep)
+    {
+        this.mNextStep = nextStep;
+    }
 
 
-	@Override
-	public void apply(Context context, FragmentManager fragmentManager, WizardStep previousStep)
-	{
-		FragmentTransaction transaction = fragmentManager.beginTransaction();
-		transaction.setCustomAnimations(R.anim.smoothsetup_fade_in, R.anim.smoothsetup_fade_out, R.anim.smoothsetup_enter_left, R.anim.smoothsetup_exit_right);
-		transaction.replace(R.id.wizards, mNextStep.fragment(context));
-		if (fragmentManager.getBackStackEntryCount() > 0 || !previousStep.skipOnBack())
-		{
-			transaction.addToBackStack(mNextStep.skipOnBack() ? "skip" : null);
-		}
-		transaction.commit();
-	}
+    @Override
+    public void apply(Context context, FragmentManager fragmentManager, WizardStep previousStep)
+    {
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(R.anim.smoothsetup_fade_in, R.anim.smoothsetup_fade_out, R.anim.smoothsetup_enter_left, R.anim.smoothsetup_exit_right);
+        transaction.replace(R.id.wizards, mNextStep.fragment(context));
+        if (fragmentManager.getBackStackEntryCount() > 0 || !previousStep.skipOnBack())
+        {
+            transaction.addToBackStack(mNextStep.skipOnBack() ? "skip" : null);
+        }
+        transaction.commit();
+    }
 
 
-	@Override
-	public int describeContents()
-	{
-		return 0;
-	}
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
 
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags)
-	{
-		dest.writeParcelable(mNextStep, flags);
-	}
-
-	public final static Creator<AutomaticWizardTransition> CREATOR = new Creator<AutomaticWizardTransition>()
-	{
-		@Override
-		public AutomaticWizardTransition createFromParcel(Parcel source)
-		{
-			return new AutomaticWizardTransition((WizardStep) source.readParcelable(getClass().getClassLoader()));
-		}
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeParcelable(mNextStep, flags);
+    }
 
 
-		@Override
-		public AutomaticWizardTransition[] newArray(int size)
-		{
-			return new AutomaticWizardTransition[size];
-		}
-	};
+    public final static Creator<AutomaticWizardTransition> CREATOR = new Creator<AutomaticWizardTransition>()
+    {
+        @Override
+        public AutomaticWizardTransition createFromParcel(Parcel source)
+        {
+            return new AutomaticWizardTransition((WizardStep) source.readParcelable(getClass().getClassLoader()));
+        }
+
+
+        @Override
+        public AutomaticWizardTransition[] newArray(int size)
+        {
+            return new AutomaticWizardTransition[size];
+        }
+    };
 }

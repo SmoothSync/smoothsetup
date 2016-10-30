@@ -59,131 +59,131 @@ import org.dmfs.httpessentials.exceptions.ProtocolException;
  */
 public final class LoginFragment extends Fragment implements SetupButtonAdapter.OnProviderSelectListener
 {
-	public final static String ARG_LOGIN_FORM_ADAPTER_FACTORY = "login-form-adapter-factory";
-	public final static String ARG_ACCOUNT = "account";
-
-	public interface LoginFormAdapterFactory extends Parcelable
-	{
-		public <T extends Adapter & Filterable> T autoCompleteAdapter(Context context, SmoothSyncApi api);
+    public final static String ARG_LOGIN_FORM_ADAPTER_FACTORY = "login-form-adapter-factory";
+    public final static String ARG_ACCOUNT = "account";
 
 
-		public <T extends RecyclerView.Adapter<BasicButtonViewHolder>, SetupButtonAdapter> T setupButtonAdapter(Context context,
-			com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter.OnProviderSelectListener providerSelectListener, SmoothSyncApi api);
+    public interface LoginFormAdapterFactory extends Parcelable
+    {
+        public <T extends Adapter & Filterable> T autoCompleteAdapter(Context context, SmoothSyncApi api);
+
+        public <T extends RecyclerView.Adapter<BasicButtonViewHolder>, SetupButtonAdapter> T setupButtonAdapter(Context context,
+                                                                                                                com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter.OnProviderSelectListener providerSelectListener, SmoothSyncApi api);
+
+        public String promptText(Context context);
+    }
 
 
-		public String promptText(Context context);
-	}
-
-	private AutoCompleteTextView mLogin;
-	private FutureServiceConnection<SmoothSyncApi> mApiService;
+    private AutoCompleteTextView mLogin;
+    private FutureServiceConnection<SmoothSyncApi> mApiService;
 
 
-	public static Fragment newInstance(WizardStep wizardStep, LoginFormAdapterFactory loginFormAdapterFactory, String account)
-	{
-		Fragment result = new LoginFragment();
-		Bundle arguments = new Bundle();
-		arguments.putParcelable(WizardStep.ARG_WIZARD_STEP, wizardStep);
-		arguments.putParcelable(ARG_LOGIN_FORM_ADAPTER_FACTORY, loginFormAdapterFactory);
-		arguments.putString(ARG_ACCOUNT, account);
-		result.setArguments(arguments);
-		result.setRetainInstance(true);
-		return result;
-	}
+    public static Fragment newInstance(WizardStep wizardStep, LoginFormAdapterFactory loginFormAdapterFactory, String account)
+    {
+        Fragment result = new LoginFragment();
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(WizardStep.ARG_WIZARD_STEP, wizardStep);
+        arguments.putParcelable(ARG_LOGIN_FORM_ADAPTER_FACTORY, loginFormAdapterFactory);
+        arguments.putString(ARG_ACCOUNT, account);
+        result.setArguments(arguments);
+        result.setRetainInstance(true);
+        return result;
+    }
 
 
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		Context context = getContext();
-		mApiService = new FutureLocalServiceConnection<SmoothSyncApi>(context,
-			new Intent("com.smoothsync.action.BIND_API").setPackage(context.getPackageName()));
-	}
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        Context context = getContext();
+        mApiService = new FutureLocalServiceConnection<SmoothSyncApi>(context,
+                new Intent("com.smoothsync.action.BIND_API").setPackage(context.getPackageName()));
+    }
 
 
-	@Nullable
-	@Override
-	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
-	{
-		View result = inflater.inflate(R.layout.smoothsetup_wizard_fragment_login, container, false);
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    {
+        View result = inflater.inflate(R.layout.smoothsetup_wizard_fragment_login, container, false);
 
-		mLogin = (AutoCompleteTextView) result.findViewById(android.R.id.input);
+        mLogin = (AutoCompleteTextView) result.findViewById(android.R.id.input);
 
-		LoginFormAdapterFactory loginFormAdapterFactory = (LoginFormAdapterFactory) getArguments().getParcelable(ARG_LOGIN_FORM_ADAPTER_FACTORY);
-		AbstractAutoCompleteAdapter autoCompleteAdapter = loginFormAdapterFactory.autoCompleteAdapter(getContext(), new SmoothSyncApiProxy(mApiService));
-		mLogin.setAdapter(autoCompleteAdapter);
+        LoginFormAdapterFactory loginFormAdapterFactory = (LoginFormAdapterFactory) getArguments().getParcelable(ARG_LOGIN_FORM_ADAPTER_FACTORY);
+        AbstractAutoCompleteAdapter autoCompleteAdapter = loginFormAdapterFactory.autoCompleteAdapter(getContext(), new SmoothSyncApiProxy(mApiService));
+        mLogin.setAdapter(autoCompleteAdapter);
 
-		RecyclerView list = (RecyclerView) result.findViewById(android.R.id.list);
+        RecyclerView list = (RecyclerView) result.findViewById(android.R.id.list);
 
-		list.setHasFixedSize(true);
-		LinearLayoutManager llm = new LinearLayoutManager(getContext());
-		llm.setOrientation(LinearLayoutManager.VERTICAL);
-		list.setLayoutManager(llm);
+        list.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        list.setLayoutManager(llm);
 
-		final AbstractSmoothSetupAdapter adapter = loginFormAdapterFactory.setupButtonAdapter(getContext(), this, new SmoothSyncApiProxy(mApiService));
-		list.setAdapter(adapter);
+        final AbstractSmoothSetupAdapter adapter = loginFormAdapterFactory.setupButtonAdapter(getContext(), this, new SmoothSyncApiProxy(mApiService));
+        list.setAdapter(adapter);
 
-		mLogin.addTextChangedListener(new TextWatcher()
-		{
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after)
-			{
-				// nothing to do
-			}
-
-
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count)
-			{
-				// nothing to do
-			}
+        mLogin.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after)
+            {
+                // nothing to do
+            }
 
 
-			@Override
-			public void afterTextChanged(Editable s)
-			{
-				String login = s.toString();
-				final int atPos = login.indexOf('@');
-				if (atPos > 0 && atPos < login.length() - 1)
-				{
-					try
-					{
-						adapter.update(login.substring(atPos + 1));
-					}
-					catch (ProtocolException e)
-					{
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-
-		mLogin.setText(getArguments().getString(ARG_ACCOUNT));
-
-		((TextView) result.findViewById(android.R.id.message)).setText(loginFormAdapterFactory.promptText(getContext()));
-
-		return result;
-	}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count)
+            {
+                // nothing to do
+            }
 
 
-	@Override
-	public void onDestroy()
-	{
-		mApiService.disconnect();
-		super.onDestroy();
-	}
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+                String login = s.toString();
+                final int atPos = login.indexOf('@');
+                if (atPos > 0 && atPos < login.length() - 1)
+                {
+                    try
+                    {
+                        adapter.update(login.substring(atPos + 1));
+                    }
+                    catch (ProtocolException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        mLogin.setText(getArguments().getString(ARG_ACCOUNT));
+
+        ((TextView) result.findViewById(android.R.id.message)).setText(loginFormAdapterFactory.promptText(getContext()));
+
+        return result;
+    }
 
 
-	@Override
-	public void onProviderSelected(Provider provider)
-	{
-		new ForwardWizardTransition(new PasswordWizardStep(new BasicAccount(mLogin.getText().toString(), provider))).execute(getContext());
-	}
+    @Override
+    public void onDestroy()
+    {
+        mApiService.disconnect();
+        super.onDestroy();
+    }
 
 
-	@Override
-	public void onOtherSelected()
-	{
-		new ForwardWizardTransition(new ProvidersLoadWizardStep(mLogin.getText().toString())).execute(getContext());
-	}
+    @Override
+    public void onProviderSelected(Provider provider)
+    {
+        new ForwardWizardTransition(new PasswordWizardStep(new BasicAccount(mLogin.getText().toString(), provider))).execute(getContext());
+    }
+
+
+    @Override
+    public void onOtherSelected()
+    {
+        new ForwardWizardTransition(new ProvidersLoadWizardStep(mLogin.getText().toString())).execute(getContext());
+    }
 }

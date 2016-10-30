@@ -24,18 +24,18 @@ package com.smoothsync.smoothsetup.utils;
  */
 public final class ValueAsyncTaskResult<T> implements AsyncTaskResult<T>
 {
-	private final T mValue;
+    private final T mValue;
 
 
-	public ValueAsyncTaskResult(T value)
-	{
-		mValue = value;
-	}
+    public ValueAsyncTaskResult(T value)
+    {
+        mValue = value;
+    }
 
 
-	@Override
-	public T value() throws Exception
-	{
-		return mValue;
-	}
+    @Override
+    public T value() throws Exception
+    {
+        return mValue;
+    }
 }

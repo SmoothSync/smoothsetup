@@ -41,66 +41,69 @@ import java.io.IOException;
 public abstract class AbstractSmoothSyncApiService extends Service
 {
 
-	/**
-	 * A {@link Binder} that gives access to the SmoothSync API.
-	 */
-	private final static class SmoothSyncApiServiceBinder extends Binder implements SmoothSyncApi
-	{
+    /**
+     * A {@link Binder} that gives access to the SmoothSync API.
+     */
+    private final static class SmoothSyncApiServiceBinder extends Binder implements SmoothSyncApi
+    {
 
-		private final SmoothSyncApi mApi;
-
-
-		public SmoothSyncApiServiceBinder(SmoothSyncApi api)
-		{
-			this.mApi = api;
-		}
+        private final SmoothSyncApi mApi;
 
 
-		@Override
-		public <T> T resultOf(SmoothSyncApiRequest<T> smoothSyncApiRequest) throws IOException, ProtocolError, ProtocolException
-		{
-			// just forward the call.
-			return mApi.resultOf(smoothSyncApiRequest);
-		}
-	}
-
-	/**
-	 * A factory that creates SmoothSyncApi instances.
-	 */
-	public interface SmoothSyncApiFactory
-	{
-		/**
-		 * Create a new SmoothSyncApi.
-		 * 
-		 * @param context
-		 *            A Context.
-		 * @return
-		 */
-		public SmoothSyncApi smoothSyncApi(Context context);
-	}
-
-	private SmoothSyncApiServiceBinder mBinder;
-	private SmoothSyncApiFactory mApiFactory;
+        public SmoothSyncApiServiceBinder(SmoothSyncApi api)
+        {
+            this.mApi = api;
+        }
 
 
-	public AbstractSmoothSyncApiService(SmoothSyncApiFactory apiFactory)
-	{
-		mApiFactory = apiFactory;
-	}
+        @Override
+        public <T> T resultOf(SmoothSyncApiRequest<T> smoothSyncApiRequest) throws IOException, ProtocolError, ProtocolException
+        {
+            // just forward the call.
+            return mApi.resultOf(smoothSyncApiRequest);
+        }
+    }
 
 
-	@Override
-	public final void onCreate()
-	{
-		super.onCreate();
-		mBinder = new SmoothSyncApiServiceBinder(mApiFactory.smoothSyncApi(this.getApplicationContext()));
-	}
+    /**
+     * A factory that creates SmoothSyncApi instances.
+     */
+    public interface SmoothSyncApiFactory
+    {
+        /**
+         * Create a new SmoothSyncApi.
+         *
+         * @param context
+         *         A Context.
+         *
+         * @return
+         */
+        public SmoothSyncApi smoothSyncApi(Context context);
+    }
 
 
-	@Nullable
-	@Override
-	public final IBinder onBind(Intent intent)
-	{
-		return mBinder;
-	}
+    private SmoothSyncApiServiceBinder mBinder;
+    private SmoothSyncApiFactory mApiFactory;
+
+
+    public AbstractSmoothSyncApiService(SmoothSyncApiFactory apiFactory)
+    {
+        mApiFactory = apiFactory;
+    }
+
+
+    @Override
+    public final void onCreate()
+    {
+        super.onCreate();
+        mBinder = new SmoothSyncApiServiceBinder(mApiFactory.smoothSyncApi(this.getApplicationContext()));
+    }
+
+
+    @Nullable
+    @Override
+    public final IBinder onBind(Intent intent)
+    {
+        return mBinder;
+    }
 }

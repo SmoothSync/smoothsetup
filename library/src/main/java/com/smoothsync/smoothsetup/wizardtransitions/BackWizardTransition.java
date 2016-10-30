@@ -32,47 +32,48 @@ import com.smoothsync.smoothsetup.model.WizardStep;
 public final class BackWizardTransition extends AbstractWizardTransition
 {
 
-	/**
-	 * Creates a WizardTransition that goes back to the previous step.
-	 */
-	public BackWizardTransition()
-	{
-	}
+    /**
+     * Creates a WizardTransition that goes back to the previous step.
+     */
+    public BackWizardTransition()
+    {
+    }
 
 
-	@Override
-	public void apply(Context context, FragmentManager fragmentManager, WizardStep previousStep)
-	{
-		fragmentManager.popBackStackImmediate();
-	}
+    @Override
+    public void apply(Context context, FragmentManager fragmentManager, WizardStep previousStep)
+    {
+        fragmentManager.popBackStackImmediate();
+    }
 
 
-	@Override
-	public int describeContents()
-	{
-		return 0;
-	}
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
 
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags)
-	{
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
 
-	}
-
-	public final static Creator<BackWizardTransition> CREATOR = new Creator<BackWizardTransition>()
-	{
-		@Override
-		public BackWizardTransition createFromParcel(Parcel source)
-		{
-			return new BackWizardTransition();
-		}
+    }
 
 
-		@Override
-		public BackWizardTransition[] newArray(int size)
-		{
-			return new BackWizardTransition[size];
-		}
-	};
+    public final static Creator<BackWizardTransition> CREATOR = new Creator<BackWizardTransition>()
+    {
+        @Override
+        public BackWizardTransition createFromParcel(Parcel source)
+        {
+            return new BackWizardTransition();
+        }
+
+
+        @Override
+        public BackWizardTransition[] newArray(int size)
+        {
+            return new BackWizardTransition[size];
+        }
+    };
 }

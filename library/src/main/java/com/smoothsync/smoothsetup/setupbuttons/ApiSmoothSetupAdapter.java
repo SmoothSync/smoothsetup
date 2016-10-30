@@ -40,88 +40,88 @@ import java.util.List;
 public final class ApiSmoothSetupAdapter extends AbstractSmoothSetupAdapter
 {
 
-	private SmoothSyncApi mApi;
-	private final LruCache<String, List<Provider>> mResultCache = new LruCache<String, List<Provider>>(100);
+    private SmoothSyncApi mApi;
+    private final LruCache<String, List<Provider>> mResultCache = new LruCache<String, List<Provider>>(100);
 
-	private List<Provider> mProviders = Collections.EMPTY_LIST;
-
-
-	public ApiSmoothSetupAdapter(SmoothSyncApi api, OnProviderSelectListener listener)
-	{
-		super(listener);
-		mApi = api;
-	}
+    private List<Provider> mProviders = Collections.EMPTY_LIST;
 
 
-	@Override
-	public BasicButtonViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-	{
-		View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.smoothsetup_provider_button, parent, false);
-		return new BasicButtonViewHolder(itemView);
-	}
+    public ApiSmoothSetupAdapter(SmoothSyncApi api, OnProviderSelectListener listener)
+    {
+        super(listener);
+        mApi = api;
+    }
 
 
-	@Override
-	public long getItemId(int position)
-	{
-		try
-		{
-			return mProviders.get(position).id().hashCode();
-		}
-		catch (ProtocolException e)
-		{
-			return position;
-		}
-	}
+    @Override
+    public BasicButtonViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    {
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.smoothsetup_provider_button, parent, false);
+        return new BasicButtonViewHolder(itemView);
+    }
 
 
-	@Override
-	public void onBindViewHolder(final BasicButtonViewHolder holder, final int position)
-	{
-		final Provider provider = mProviders.get(position);
-		try
-		{
-			holder.updateText(provider.name());
-			holder.updateOnClickListener(new View.OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-					notifyProviderSeleteced(provider);
-				}
-			});
-		}
-		catch (ProtocolException e)
-		{
-			e.printStackTrace();
-		}
-	}
+    @Override
+    public long getItemId(int position)
+    {
+        try
+        {
+            return mProviders.get(position).id().hashCode();
+        }
+        catch (ProtocolException e)
+        {
+            return position;
+        }
+    }
 
 
-	@Override
-	public int getItemCount()
-	{
-		return mProviders.size();
-	}
+    @Override
+    public void onBindViewHolder(final BasicButtonViewHolder holder, final int position)
+    {
+        final Provider provider = mProviders.get(position);
+        try
+        {
+            holder.updateText(provider.name());
+            holder.updateOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    notifyProviderSeleteced(provider);
+                }
+            });
+        }
+        catch (ProtocolException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
 
-	public void update(String value)
-	{
-		new ProviderSearchTask(mApi, new ThrowingAsyncTask.OnResultCallback<List<Provider>>()
-		{
-			@Override
-			public void onResult(AsyncTaskResult<List<Provider>> result)
-			{
-				try
-				{
-					mProviders = result.value();
-					notifyDataSetChanged();
-				}
-				catch (Exception e)
-				{
-					// ignore
-				}
-			}
-		}).execute(value);
-	}
+    @Override
+    public int getItemCount()
+    {
+        return mProviders.size();
+    }
+
+
+    public void update(String value)
+    {
+        new ProviderSearchTask(mApi, new ThrowingAsyncTask.OnResultCallback<List<Provider>>()
+        {
+            @Override
+            public void onResult(AsyncTaskResult<List<Provider>> result)
+            {
+                try
+                {
+                    mProviders = result.value();
+                    notifyDataSetChanged();
+                }
+                catch (Exception e)
+                {
+                    // ignore
+                }
+            }
+        }).execute(value);
+    }
 }

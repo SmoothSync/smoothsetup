@@ -28,17 +28,17 @@ import android.content.Intent;
  */
 public final class InstallReferrerBroadcastReceiver extends BroadcastReceiver
 {
-	@Override
-	public void onReceive(Context context, Intent intent)
-	{
-		String referrer = intent.getStringExtra("referrer");
-		if (referrer == null)
-		{
-			return;
-		}
+    @Override
+    public void onReceive(Context context, Intent intent)
+    {
+        String referrer = intent.getStringExtra("referrer");
+        if (referrer == null)
+        {
+            return;
+        }
 
-		// just store the referrer as is and a timestamp
-		context.getSharedPreferences("com.smoothsync.smoothsetup.prefs", 0).edit().putString("referrer", referrer)
-			.putLong("timestamp", System.currentTimeMillis()).apply();
-	}
+        // just store the referrer as is and a timestamp
+        context.getSharedPreferences("com.smoothsync.smoothsetup.prefs", 0).edit().putString("referrer", referrer)
+                .putLong("timestamp", System.currentTimeMillis()).apply();
+    }
 }

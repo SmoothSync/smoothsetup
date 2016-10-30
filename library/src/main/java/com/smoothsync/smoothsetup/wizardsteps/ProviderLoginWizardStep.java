@@ -43,142 +43,145 @@ import org.dmfs.httpessentials.exceptions.ProtocolException;
  */
 public final class ProviderLoginWizardStep implements WizardStep
 {
-	private final Provider mProvider;
-	private final String mAccount;
+    private final Provider mProvider;
+    private final String mAccount;
 
 
-	public ProviderLoginWizardStep(Provider provider, String account)
-	{
-		mProvider = provider;
-		mAccount = account;
-	}
+    public ProviderLoginWizardStep(Provider provider, String account)
+    {
+        mProvider = provider;
+        mAccount = account;
+    }
 
 
-	@Override
-	public String title(Context context)
-	{
-		try
-		{
-			return mProvider.name();
-		}
-		catch (ProtocolException e)
-		{
-			throw new RuntimeException("Can't load provider title", e);
-		}
-	}
+    @Override
+    public String title(Context context)
+    {
+        try
+        {
+            return mProvider.name();
+        }
+        catch (ProtocolException e)
+        {
+            throw new RuntimeException("Can't load provider title", e);
+        }
+    }
 
 
-	@Override
-	public boolean skipOnBack()
-	{
-		return false;
-	}
+    @Override
+    public boolean skipOnBack()
+    {
+        return false;
+    }
 
 
-	@Override
-	public Fragment fragment(Context context)
-	{
-		return LoginFragment.newInstance(this, new ProviderLoginFormAdapterFactory(mProvider), mAccount);
-	}
+    @Override
+    public Fragment fragment(Context context)
+    {
+        return LoginFragment.newInstance(this, new ProviderLoginFormAdapterFactory(mProvider), mAccount);
+    }
 
 
-	@Override
-	public int describeContents()
-	{
-		return 0;
-	}
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
 
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags)
-	{
-		dest.writeParcelable(new ParcelableProvider(mProvider), flags);
-		dest.writeString(mAccount);
-	}
-
-	public final static Creator CREATOR = new Creator()
-	{
-		@Override
-		public Object createFromParcel(Parcel source)
-		{
-			return new ProviderLoginWizardStep((Provider) source.readParcelable(getClass().getClassLoader()), source.readString());
-		}
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeParcelable(new ParcelableProvider(mProvider), flags);
+        dest.writeString(mAccount);
+    }
 
 
-		@Override
-		public Object[] newArray(int size)
-		{
-			return new ProviderLoginWizardStep[size];
-		}
-	};
-
-	private final static class ProviderLoginFormAdapterFactory implements LoginFragment.LoginFormAdapterFactory
-	{
-		private final Provider mProvider;
+    public final static Creator CREATOR = new Creator()
+    {
+        @Override
+        public Object createFromParcel(Parcel source)
+        {
+            return new ProviderLoginWizardStep((Provider) source.readParcelable(getClass().getClassLoader()), source.readString());
+        }
 
 
-		private ProviderLoginFormAdapterFactory(Provider provider)
-		{
-			mProvider = provider;
-		}
+        @Override
+        public Object[] newArray(int size)
+        {
+            return new ProviderLoginWizardStep[size];
+        }
+    };
 
 
-		@Override
-		public <T extends RecyclerView.Adapter<BasicButtonViewHolder>, SetupButtonAdapter> T setupButtonAdapter(Context context,
-			com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter.OnProviderSelectListener providerSelectListener, SmoothSyncApi api)
-		{
-			return (T) new ProviderSmoothSetupAdapter(mProvider, providerSelectListener);
-		}
+    private final static class ProviderLoginFormAdapterFactory implements LoginFragment.LoginFormAdapterFactory
+    {
+        private final Provider mProvider;
 
 
-		@Override
-		public <T extends Adapter & Filterable> T autoCompleteAdapter(Context context, SmoothSyncApi api)
-		{
-			return (T) new ProviderAutoCompleteAdapter(mProvider);
-		}
+        private ProviderLoginFormAdapterFactory(Provider provider)
+        {
+            mProvider = provider;
+        }
 
 
-		@Override
-		public String promptText(Context context)
-		{
-			try
-			{
-				return context.getString(R.string.smoothsetup_prompt_login_at_provider, mProvider.name());
-			}
-			catch (ProtocolException e)
-			{
-				throw new RuntimeException("Can't retrieve provider name", e);
-			}
-		}
+        @Override
+        public <T extends RecyclerView.Adapter<BasicButtonViewHolder>, SetupButtonAdapter> T setupButtonAdapter(Context context,
+                                                                                                                com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter.OnProviderSelectListener providerSelectListener, SmoothSyncApi api)
+        {
+            return (T) new ProviderSmoothSetupAdapter(mProvider, providerSelectListener);
+        }
 
 
-		@Override
-		public int describeContents()
-		{
-			return 0;
-		}
+        @Override
+        public <T extends Adapter & Filterable> T autoCompleteAdapter(Context context, SmoothSyncApi api)
+        {
+            return (T) new ProviderAutoCompleteAdapter(mProvider);
+        }
 
 
-		@Override
-		public void writeToParcel(Parcel dest, int flags)
-		{
-			dest.writeParcelable(new ParcelableProvider(mProvider), flags);
-		}
+        @Override
+        public String promptText(Context context)
+        {
+            try
+            {
+                return context.getString(R.string.smoothsetup_prompt_login_at_provider, mProvider.name());
+            }
+            catch (ProtocolException e)
+            {
+                throw new RuntimeException("Can't retrieve provider name", e);
+            }
+        }
 
-		public final static Creator<LoginFragment.LoginFormAdapterFactory> CREATOR = new Creator<LoginFragment.LoginFormAdapterFactory>()
-		{
-			@Override
-			public LoginFragment.LoginFormAdapterFactory createFromParcel(Parcel source)
-			{
-				return new ProviderLoginFormAdapterFactory((Provider) source.readParcelable(getClass().getClassLoader()));
-			}
+
+        @Override
+        public int describeContents()
+        {
+            return 0;
+        }
 
 
-			@Override
-			public LoginFragment.LoginFormAdapterFactory[] newArray(int size)
-			{
-				return new ProviderLoginFormAdapterFactory[size];
-			}
-		};
-	}
+        @Override
+        public void writeToParcel(Parcel dest, int flags)
+        {
+            dest.writeParcelable(new ParcelableProvider(mProvider), flags);
+        }
+
+
+        public final static Creator<LoginFragment.LoginFormAdapterFactory> CREATOR = new Creator<LoginFragment.LoginFormAdapterFactory>()
+        {
+            @Override
+            public LoginFragment.LoginFormAdapterFactory createFromParcel(Parcel source)
+            {
+                return new ProviderLoginFormAdapterFactory((Provider) source.readParcelable(getClass().getClassLoader()));
+            }
+
+
+            @Override
+            public LoginFragment.LoginFormAdapterFactory[] newArray(int size)
+            {
+                return new ProviderLoginFormAdapterFactory[size];
+            }
+        };
+    }
 }

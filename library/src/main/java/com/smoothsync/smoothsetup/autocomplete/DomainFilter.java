@@ -17,35 +17,35 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
+import org.dmfs.iterators.FilteredIterator;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import org.dmfs.iterators.FilteredIterator;
 
 
 /**
  * An {@link FilteredIterator.IteratorFilter} that removes all {@link String}s that do not resolve to an IP address.
- * <p />
+ * <p/>
  * Note, by design this will trigger a network request, so don't use this on the UI thread.
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
 public final class DomainFilter implements FilteredIterator.IteratorFilter<String>
 {
-	public final static DomainFilter INSTANCE = new DomainFilter();
+    public final static DomainFilter INSTANCE = new DomainFilter();
 
 
-	@Override
-	public boolean iterate(String element)
-	{
-		try
-		{
-			InetAddress.getByName(element);
-			return true;
-		}
-		catch (UnknownHostException e)
-		{
-			return false;
-		}
-	}
+    @Override
+    public boolean iterate(String element)
+    {
+        try
+        {
+            InetAddress.getByName(element);
+            return true;
+        }
+        catch (UnknownHostException e)
+        {
+            return false;
+        }
+    }
 }

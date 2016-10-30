@@ -37,21 +37,21 @@ import java.util.List;
  */
 public final class ProviderSearchTask extends ThrowingAsyncTask<String, Void, List<Provider>>
 {
-	private final SmoothSyncApi mApi;
+    private final SmoothSyncApi mApi;
 
 
-	public ProviderSearchTask(SmoothSyncApi api, OnResultCallback callback)
-	{
-		super(callback);
-		mApi = api;
-	}
+    public ProviderSearchTask(SmoothSyncApi api, OnResultCallback callback)
+    {
+        super(callback);
+        mApi = api;
+    }
 
 
-	@Override
-	protected List<Provider> doInBackgroundWithException(String... params) throws IOException, ProtocolException, ProtocolError
-	{
-		// don't try to hit the API if we can't resolve the hostname
-		InetAddress address = InetAddress.getByName(params[0]);
-		return mApi.resultOf(new ProviderSearch(params[0]));
-	}
+    @Override
+    protected List<Provider> doInBackgroundWithException(String... params) throws IOException, ProtocolException, ProtocolError
+    {
+        // don't try to hit the API if we can't resolve the hostname
+        InetAddress address = InetAddress.getByName(params[0]);
+        return mApi.resultOf(new ProviderSearch(params[0]));
+    }
 }
