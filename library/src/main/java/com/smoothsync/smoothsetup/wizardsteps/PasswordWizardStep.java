@@ -18,6 +18,8 @@
 package com.smoothsync.smoothsetup.wizardsteps;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.Nullable;
@@ -35,9 +37,16 @@ import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.model.BasicHttpAuthorizationFactory;
 import com.smoothsync.smoothsetup.model.WizardStep;
+import com.smoothsync.smoothsetup.utils.Count;
+import com.smoothsync.smoothsetup.utils.Default;
+import com.smoothsync.smoothsetup.utils.Related;
+import com.smoothsync.smoothsetup.wizardtransitions.AutomaticWizardTransition;
 import com.smoothsync.smoothsetup.wizardtransitions.ForwardWizardTransition;
 
 import org.dmfs.httpessentials.exceptions.ProtocolException;
+import org.dmfs.httpessentials.types.Link;
+import org.dmfs.iterators.AbstractConvertedIterator;
+import org.dmfs.iterators.ConvertedIterator;
 
 
 /**
@@ -134,11 +143,11 @@ public final class PasswordWizardStep implements WizardStep
             View result = inflater.inflate(R.layout.smoothsetup_wizard_fragment_password, container, false);
 
             mAccount = getArguments().getParcelable(ARG_ACCOUNT);
+            TextView messageView = ((TextView) result.findViewById(android.R.id.message));
 
             try
             {
-                ((TextView) result.findViewById(android.R.id.message))
-                        .setText(getContext().getString(R.string.smoothsetup_prompt_enter_password, mAccount.provider().name()));
+                messageView.setText(getContext().getString(R.string.smoothsetup_prompt_enter_password, mAccount.provider().name()));
             }
             catch (ProtocolException e)
             {
@@ -173,6 +182,55 @@ public final class PasswordWizardStep implements WizardStep
             });
 
             mButton.setEnabled(!mPassword.getText().toString().isEmpty());
+            try
+            {
+                String appSpecificPasswordOption = new Default<>(new ConvertedIterator<>(
+                        new Related(mAccount.provider().links(), "http://smoothsync.com/rel/app-specific-password"),
+                        new AbstractConvertedIterator.Converter<String, Link>()
+                        {
+                            @Override
+                            public String convert(Link element)
+                            {
+                                return element.target().toASCIIString();
+                            }
+                        }), "no").next();
+
+                switch (appSpecificPasswordOption)
+                {
+                    case "mandatory":
+                        if (new Count(new Related(mAccount.provider().links(), "http://smoothsync.com/rel/manage-password")).intValue() > 0)
+                        {
+                            setupClickableTextView(result, R.id.smoothsetup_create_app_specific_password);
+                        }
+                        messageView.setText(getString(R.string.smoothsetup_prompt_enter_app_specific_password, mAccount.provider().name()));
+                        break;
+                    case "optional":
+                        if (new Count(new Related(mAccount.provider().links(), "http://smoothsync.com/rel/manage-password")).intValue() > 0)
+                        {
+                            setupClickableTextView(result, R.id.smoothsetup_create_app_specific_password);
+                        }
+                        messageView.setText(getString(R.string.smoothsetup_prompt_enter_password_or_app_specific_password, mAccount.provider().name()));
+                        // fall through
+                    default:
+                        if (new Count(new Related(mAccount.provider().links(), "http://smoothsync.com/rel/forgot-password")).intValue() > 0)
+                        {
+                            setupClickableTextView(result, R.id.smoothsetup_forgot_password);
+                        }
+                }
+            }
+            catch (ProtocolException e)
+            {
+                // switch to an error screen when done
+                result.post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        new AutomaticWizardTransition(new ErrorRetryWizardStep(getString(R.string.smoothsetup_error_network))).execute(getContext());
+                    }
+                });
+            }
+
             return result;
         }
 
@@ -180,15 +238,43 @@ public final class PasswordWizardStep implements WizardStep
         @Override
         public void onClick(View v)
         {
-            if (v.getId() == R.id.button)
+            int id = v.getId();
+            if (id == R.id.button)
             {
                 // verify entered password
                 new ForwardWizardTransition(
-                        (new ApproveAuthorizationWizardStep(mAccount, new BasicHttpAuthorizationFactory(mAccount.accountId(), mPassword.getText().toString()))))
+                        new ApproveAuthorizationWizardStep(mAccount, new BasicHttpAuthorizationFactory(mAccount.accountId(), mPassword.getText().toString())))
                         .execute(getContext());
+            }
+            if (id == R.id.smoothsetup_forgot_password)
+            {
+                openLink("http://smoothsync.com/rel/forgot-password");
+            }
+            if (id == R.id.smoothsetup_create_app_specific_password)
+            {
+                openLink("http://smoothsync.com/rel/manage-password");
             }
         }
 
-    }
 
+        private void setupClickableTextView(View result, int id)
+        {
+            TextView passwordView = ((TextView) result.findViewById(id));
+            passwordView.setVisibility(View.VISIBLE);
+            passwordView.setOnClickListener(this);
+        }
+
+
+        private void openLink(String name)
+        {
+            try
+            {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(new Related(mAccount.provider().links(), name).next().target().toASCIIString())));
+            }
+            catch (ProtocolException e)
+            {
+                throw new RuntimeException("Something went very wrong. We shouldn't be here because it should have crashed in onCreateView already", e);
+            }
+        }
+    }
 }
