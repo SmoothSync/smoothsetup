@@ -17,8 +17,6 @@
 
 package com.smoothsync.smoothsetup.services;
 
-import java.util.concurrent.TimeoutException;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;

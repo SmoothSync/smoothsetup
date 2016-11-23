@@ -17,8 +17,6 @@
 
 package com.smoothsync.smoothsetup.wizardtransitions;
 
-import java.util.Locale;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +25,8 @@ import android.os.Build;
 import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
+
+import java.util.Locale;
 
 
 /**

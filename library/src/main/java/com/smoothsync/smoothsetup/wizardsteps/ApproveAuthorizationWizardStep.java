@@ -17,13 +17,17 @@
 
 package com.smoothsync.smoothsetup.wizardsteps;
 
-import java.util.Iterator;
-
-import org.dmfs.iterators.AbstractConvertedIterator;
-import org.dmfs.iterators.AbstractFilteredIterator;
-import org.dmfs.iterators.ConvertedIterator;
-import org.dmfs.iterators.FilteredIterator;
-import org.dmfs.iterators.SerialIteratorIterator;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcel;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.smoothsync.api.model.Service;
 import com.smoothsync.smoothsetup.R;
@@ -38,22 +42,18 @@ import com.smoothsync.smoothsetup.utils.IndirectServiceIntentIterable;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 import com.smoothsync.smoothsetup.wizardtransitions.AutomaticWizardTransition;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Parcel;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import org.dmfs.iterators.AbstractConvertedIterator;
+import org.dmfs.iterators.AbstractFilteredIterator;
+import org.dmfs.iterators.ConvertedIterator;
+import org.dmfs.iterators.FilteredIterator;
+import org.dmfs.iterators.SerialIteratorIterator;
+
+import java.util.Iterator;
 
 
 /**
  * A {@link WizardStep} to verify a user's authorization.
- * 
+ *
  * @author Marten Gajda <marten@dmfs.org>
  */
 public final class ApproveAuthorizationWizardStep implements WizardStep
@@ -114,6 +114,7 @@ public final class ApproveAuthorizationWizardStep implements WizardStep
         dest.writeParcelable(mHttpAuthorizationFactory, 0);
     }
 
+
     public final static Creator CREATOR = new Creator()
     {
         @Override
@@ -121,7 +122,7 @@ public final class ApproveAuthorizationWizardStep implements WizardStep
         {
             ClassLoader classLoader = getClass().getClassLoader();
             return new ApproveAuthorizationWizardStep((Account) source.readParcelable(classLoader),
-                (HttpAuthorizationFactory) source.readParcelable(classLoader));
+                    (HttpAuthorizationFactory) source.readParcelable(classLoader));
         }
 
 
@@ -131,6 +132,7 @@ public final class ApproveAuthorizationWizardStep implements WizardStep
             return new ApproveAuthorizationWizardStep[size];
         }
     };
+
 
     public static class LoadFragment extends Fragment implements ThrowingAsyncTask.OnResultCallback<Boolean>
     {
@@ -162,40 +164,44 @@ public final class ApproveAuthorizationWizardStep implements WizardStep
                 @Override
                 protected Boolean doInBackgroundWithException(Void[] params) throws Exception
                 {
-                    Iterator<FutureServiceConnection<VerificationService>> serviceConnections = new ConvertedIterator<>(new SerialIteratorIterator<>(
-                        new ConvertedIterator<>(new FilteredIterator<>(((Account) getArguments().getParcelable(ARG_ACCOUNT)).provider().services(),
-                            new AbstractFilteredIterator.IteratorFilter<Service>()
-                            {
-                                @Override
-                                public boolean iterate(Service element)
-                                {
-                                    return "com.smoothsync.authenticate".equals(element.serviceType());
-                                }
-                            }), new AbstractConvertedIterator.Converter<Iterator<Intent>, Service>()
-                            {
-                                @Override
-                                public Iterator<Intent> convert(Service element)
-                                {
-                                    return new IndirectServiceIntentIterable(context,
-                                        new Intent(VerificationService.ACTION)
-                                            .setData(Uri.fromParts(element.serviceType(), element.uri().toASCIIString(), null))
-                                            .setPackage(context.getPackageName())).iterator();
-                                }
-                            })),
-                        new AbstractConvertedIterator.Converter<FutureServiceConnection<VerificationService>, Intent>()
-                        {
-                            @Override
-                            public FutureServiceConnection<VerificationService> convert(Intent element)
-                            {
-                                return new FutureLocalServiceConnection<>(context, element);
-                            }
-                        });
+                    Iterator<FutureServiceConnection<VerificationService>> serviceConnections =
+                            new ConvertedIterator<>(
+                                    new SerialIteratorIterator<>(
+                                            new ConvertedIterator<>(
+                                                    new FilteredIterator<>(((Account) getArguments().getParcelable(ARG_ACCOUNT)).provider().services(),
+                                                            new AbstractFilteredIterator.IteratorFilter<Service>()
+                                                            {
+                                                                @Override
+                                                                public boolean iterate(Service element)
+                                                                {
+                                                                    return "com.smoothsync.authenticate".equals(element.serviceType());
+                                                                }
+                                                            }),
+                                                    new AbstractConvertedIterator.Converter<Iterator<Intent>, Service>()
+                                                    {
+                                                        @Override
+                                                        public Iterator<Intent> convert(Service element)
+                                                        {
+                                                            return new IndirectServiceIntentIterable(context,
+                                                                    new Intent(VerificationService.ACTION)
+                                                                            .setData(Uri.fromParts(element.serviceType(), element.uri().toASCIIString(), null))
+                                                                            .setPackage(context.getPackageName())).iterator();
+                                                        }
+                                                    })),
+                                    new AbstractConvertedIterator.Converter<FutureServiceConnection<VerificationService>, Intent>()
+                                    {
+                                        @Override
+                                        public FutureServiceConnection<VerificationService> convert(Intent element)
+                                        {
+                                            return new FutureLocalServiceConnection<>(context, element);
+                                        }
+                                    });
                     if (!serviceConnections.hasNext())
                     {
                         throw new RuntimeException("No verification service found");
                     }
                     return serviceConnections.next().service(1000).verify(((Account) getArguments().getParcelable(ARG_ACCOUNT)).provider(),
-                        ((HttpAuthorizationFactory) getArguments().getParcelable(ARG_AUTH_FACTORY)));
+                            ((HttpAuthorizationFactory) getArguments().getParcelable(ARG_AUTH_FACTORY)));
                 }
             }.execute();
         }
@@ -219,7 +225,7 @@ public final class ApproveAuthorizationWizardStep implements WizardStep
                     if (result.value())
                     {
                         new AutomaticWizardTransition(new CreateAccountWizardStep(((Account) getArguments().getParcelable(ARG_ACCOUNT)),
-                            ((HttpAuthorizationFactory) getArguments().getParcelable(ARG_AUTH_FACTORY)))).execute(getContext());
+                                ((HttpAuthorizationFactory) getArguments().getParcelable(ARG_AUTH_FACTORY)))).execute(getContext());
                     }
                     else
                     {
@@ -232,6 +238,7 @@ public final class ApproveAuthorizationWizardStep implements WizardStep
                 }
             }
         }
+
 
         private final Runnable mShowWaitMessage = new Runnable()
         {

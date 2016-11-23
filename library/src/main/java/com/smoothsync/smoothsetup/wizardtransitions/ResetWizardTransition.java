@@ -54,12 +54,12 @@ public final class ResetWizardTransition extends AbstractWizardTransition
         if (useRtl(context))
         {
             transaction.setCustomAnimations(R.anim.smoothsetup_enter_left, R.anim.smoothsetup_exit_right, R.anim.smoothsetup_enter_right,
-                R.anim.smoothsetup_exit_left);
+                    R.anim.smoothsetup_exit_left);
         }
         else
         {
             transaction.setCustomAnimations(R.anim.smoothsetup_enter_right, R.anim.smoothsetup_exit_left, R.anim.smoothsetup_enter_left,
-                R.anim.smoothsetup_exit_right);
+                    R.anim.smoothsetup_exit_right);
         }
         transaction.replace(R.id.wizards, mNextStep.fragment(context));
         transaction.commit();
@@ -78,6 +78,7 @@ public final class ResetWizardTransition extends AbstractWizardTransition
     {
         dest.writeParcelable(mNextStep, flags);
     }
+
 
     public final static Creator<ResetWizardTransition> CREATOR = new Creator<ResetWizardTransition>()
     {
