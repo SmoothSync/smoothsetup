@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='UTF-8'?><resources>
+
+    <!-- Wizard titles - all these strings have to fit on a single title line in an large font, so they should not exceed ~16 characters --> <!--
+    Title of the wizard step that's shown while the app loads data from the SmoothSync service.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_loading">正在加载…</string>
+
+    <!--
+    Title of the wizard step that asks the user to enter his/her user name.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_login">登录</string>
+
+    <!--
+    Title of the wizard step that asks the user to select a provider.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_choose_provider">选择提供商</string>
+
+    <!--
+    Title of the wizard step that asks the user to enter his/her password.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_enter_password">输入密码</string>
+
+    <!--
+    Title of the wizard step that's shown while the credentials verification is in progress.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_authenticating">正在验证身份…</string>
+
+    <!--
+    Title of the wizard step that's shown while the app prepares the account on the device.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_completing_setup">即将完成…</string>
+
+    <!--
+    Title of the wizard step that's shown after the account setup has been completed.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_setup_completed">恭喜</string>
+
+    <!--
+    Title of a wizard step that presents an error to the user.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_error">错误</string>
+
+
+    <!-- Prompts --> <!--
+    Message that prompts the user to enter his/her username or email address for the provider to set up
+    and to select the provider afterwards.
+    -->
+    <string name="smoothsetup_prompt_login">输入电子邮件地址或登录名，然后选择提供商</string>
+
+    <!--
+    Message that prompts the user to enter his/her username or email address for a specific provider.
+    %1$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_prompt_login_at_provider">输入 %1$s 登录名</string>
+
+    <!--
+    Message that prompts the user to enter his/her password for a specific provider.
+    %1$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_prompt_enter_password">输入 %1$s 密码</string>
+
+    <!--
+    Message that prompts the user to enter his/her password or app-specific password for a specific provider.
+    %1$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_prompt_enter_password_or_app_specific_password">输入 %1$s 密码或应用专用 %1$s 密码</string>
+
+    <!--
+    Message that prompts the user to enter his/her app-specific password for a specific provider.
+    %1$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_prompt_enter_app_specific_password">输入应用专用 %1$s 密码</string>
+
+
+    <!-- Buttons --> <!--
+    Text on a button that allows the user to select a provider from a list.
+    Shown if no other provider matches the login name.
+    -->
+    <string name="smoothsetup_button_choose_provider">选择提供商</string>
+
+    <!--
+    Text on a button that allows the user to select a provider from a list.
+    Shown if the login name matches a specific provider.
+    -->
+    <string name="smoothsetup_button_other_provider">其他</string>
+
+    <!--
+    Text on a button that proceeds to the password prompt after entering the login name.
+    -->
+    <string name="smoothsetup_button_login_next">下一步</string>
+
+    <!--
+    Text on a button that starts the credentials verification after entering a password.
+    -->
+    <string name="smoothsetup_button_sign_in">登录</string>
+
+    <!--
+    Text on a button to close the activity after a successful account setup.
+    -->
+    <string name="smoothsetup_button_finish_setup">完成设置</string>
+
+    <!--
+    Text on the button under an error page that takes the user back to the previous step.
+    -->
+    <string name="smoothsetup_button_retry_now">立即重试</string>
+
+
+    <!-- Messages --> <!--
+    Message that's shown to the user when everything worked out an the setup has been completed successfully.
+    %1$s will be replaced with the app name.
+    -->
+    <string name="smoothsetup_message_setup_completed">%1$s 设置完成，即将开始同步</string>
+
+    <!--
+    Message that's faded in if a blocking operation (usually a network operation) takes longer than a few seconds.
+    -->
+    <string name="smoothsetup_message_please_wait">这可能最多需要 2 分钟。</string>
+
+
+    <!-- Error Messages --> <!--
+    Error message that's shown when no provider data (for one or multiple providers) could be loaded (due to any kind of error).
+    -->
+    <string name="smoothsetup_error_load_provider">无法加载提供商数据。\n\n请检查网络连接，或者稍后重试。</string>
+
+    <!--
+    Error message that's shown when the user's credentials were not accepted by the provider.
+    -->
+    <string name="smoothsetup_error_authentication">身份验证失败。\n\n请核实密码，然后重试。</string>
+
+    <!--
+    Generic network error message that's shown when there was any sort of connection issue.
+    -->
+    <string name="smoothsetup_error_network">连接失败。\n\n请检查网络连接，或者稍后重试。</string>
+
+
+    <!-- EditText hints --> <!--
+    Hint text in the field that takes the user's email address or login name.
+    -->
+    <string name="smoothsetup_default_login_hint">电子邮件地址或登录名</string>
+
+    <!--
+    Hint text on a password input field.
+    -->
+    <string name="smoothsetup_hint_password">密码</string>
+
+
+    <!-- Links --> <!--
+    Text of a link that will be shown on the login screen if a service provides a sign up link.
+    -->
+    <string name="smoothsetup_sign_up_now">没有帐户？ <b>立即注册。</b></string>
+
+    <!--
+    Text of a link that will be shown underneath the password dialog if a service provides a password recovery link.
+    -->
+    <string name="smoothsetup_forgot_password">忘记密码？</string>
+
+    <!--
+    Text of a link that will be shown underneath the password dialog if a service provides a link to create app specific passwords.
+    -->
+    <string name="smoothsetup_create_app_specific_password">创建应用专用密码</string>
+
+    <!--
+    Text of a link that opens a privacy policy when clicked.
+    %1$s wil be replaced either with the app name or the provider name.
+    -->
+    <string name="smoothsetup_privacy_policy">%1$s 隐私政策</string>
+
+    <!--
+    Text of a link that opens terms & conditions when clicked.
+    %1$s wil be replaced either with the app name or the provider name.
+    -->
+    <string name="smoothsetup_terms_and_conditions">%1$s 条款与条件</string>
+</resources>

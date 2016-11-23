@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='UTF-8'?><resources>
+
+    <!-- Wizard titles - all these strings have to fit on a single title line in an large font, so they should not exceed ~16 characters --> <!--
+    Title of the wizard step that's shown while the app loads data from the SmoothSync service.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_loading">טוען…</string>
+
+    <!--
+    Title of the wizard step that asks the user to enter his/her user name.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_login">כניסה</string>
+
+    <!--
+    Title of the wizard step that asks the user to select a provider.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_choose_provider">בחר ספק</string>
+
+    <!--
+    Title of the wizard step that asks the user to enter his/her password.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_enter_password">הזן סיסמה</string>
+
+    <!--
+    Title of the wizard step that's shown while the credentials verification is in progress.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_authenticating">מאמת…</string>
+
+    <!--
+    Title of the wizard step that's shown while the app prepares the account on the device.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_completing_setup">מסיים…</string>
+
+    <!--
+    Title of the wizard step that's shown after the account setup has been completed.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_setup_completed">מזל טוב</string>
+
+    <!--
+    Title of a wizard step that presents an error to the user.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_error">שגיאה</string>
+
+
+    <!-- Prompts --> <!--
+    Message that prompts the user to enter his/her username or email address for the provider to set up
+    and to select the provider afterwards.
+    -->
+    <string name="smoothsetup_prompt_login">הזן את כתובת הדוא“ל או שם המשתמש שלך ובחר את הספק</string>
+
+    <!--
+    Message that prompts the user to enter his/her username or email address for a specific provider.
+    %1$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_prompt_login_at_provider">הזן את שם המשתמש של %1$s</string>
+
+    <!--
+    Message that prompts the user to enter his/her password for a specific provider.
+    %1$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_prompt_enter_password">הזן את הסיסמה של %1$s</string>
+
+    <!--
+    Message that prompts the user to enter his/her password or app-specific password for a specific provider.
+    %1$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_prompt_enter_password_or_app_specific_password">הזן את הסיסמה של %1$s או את הסיסמה הספציפית לאפליקציית %1$s</string>
+
+    <!--
+    Message that prompts the user to enter his/her app-specific password for a specific provider.
+    %1$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_prompt_enter_app_specific_password">הזן את הסיסמה הספציפית לאפליקציית %1$s</string>
+
+
+    <!-- Buttons --> <!--
+    Text on a button that allows the user to select a provider from a list.
+    Shown if no other provider matches the login name.
+    -->
+    <string name="smoothsetup_button_choose_provider">בחר ספק</string>
+
+    <!--
+    Text on a button that allows the user to select a provider from a list.
+    Shown if the login name matches a specific provider.
+    -->
+    <string name="smoothsetup_button_other_provider">אחר</string>
+
+    <!--
+    Text on a button that proceeds to the password prompt after entering the login name.
+    -->
+    <string name="smoothsetup_button_login_next">הבא</string>
+
+    <!--
+    Text on a button that starts the credentials verification after entering a password.
+    -->
+    <string name="smoothsetup_button_sign_in">כניסה</string>
+
+    <!--
+    Text on a button to close the activity after a successful account setup.
+    -->
+    <string name="smoothsetup_button_finish_setup">סיים את ההגדרה</string>
+
+    <!--
+    Text on the button under an error page that takes the user back to the previous step.
+    -->
+    <string name="smoothsetup_button_retry_now">נסה שוב כעת</string>
+
+
+    <!-- Messages --> <!--
+    Message that's shown to the user when everything worked out an the setup has been completed successfully.
+    %1$s will be replaced with the app name.
+    -->
+    <string name="smoothsetup_message_setup_completed">%1$s מוגדר כעת והסנכרון יחל בקרוב</string>
+
+    <!--
+    Message that's faded in if a blocking operation (usually a network operation) takes longer than a few seconds.
+    -->
+    <string name="smoothsetup_message_please_wait">הפעולה עשויה להימשך עד 2 דקות.</string>
+
+
+    <!-- Error Messages --> <!--
+    Error message that's shown when no provider data (for one or multiple providers) could be loaded (due to any kind of error).
+    -->
+    <string name="smoothsetup_error_load_provider">לא הייתה אפשרות לטעון את נתוני הספק.\n\nבדוק את החיבור לאינטרנט או נסה שוב מאוחר יותר.</string>
+
+    <!--
+    Error message that's shown when the user's credentials were not accepted by the provider.
+    -->
+    <string name="smoothsetup_error_authentication">האימות נכשל.\n\nבדוק את הסיסמה שהזנת ונסה שוב.</string>
+
+    <!--
+    Generic network error message that's shown when there was any sort of connection issue.
+    -->
+    <string name="smoothsetup_error_network">החיבור נכשל.\n\nבדוק את החיבור לאינטרנט או נסה שוב מאוחר יותר.</string>
+
+
+    <!-- EditText hints --> <!--
+    Hint text in the field that takes the user's email address or login name.
+    -->
+    <string name="smoothsetup_default_login_hint">כתובת דוא“ל או שם משתמש</string>
+
+    <!--
+    Hint text on a password input field.
+    -->
+    <string name="smoothsetup_hint_password">סיסמה</string>
+
+
+    <!-- Links --> <!--
+    Text of a link that will be shown on the login screen if a service provides a sign up link.
+    -->
+    <string name="smoothsetup_sign_up_now">אין לך עדיין חשבון? <b>הירשם עכשיו.</b></string>
+
+    <!--
+    Text of a link that will be shown underneath the password dialog if a service provides a password recovery link.
+    -->
+    <string name="smoothsetup_forgot_password">שכחת את הסיסמה?</string>
+
+    <!--
+    Text of a link that will be shown underneath the password dialog if a service provides a link to create app specific passwords.
+    -->
+    <string name="smoothsetup_create_app_specific_password">צור סיסמה ספציפית לאפליקציה</string>
+
+    <!--
+    Text of a link that opens a privacy policy when clicked.
+    %1$s wil be replaced either with the app name or the provider name.
+    -->
+    <string name="smoothsetup_privacy_policy">מדיניות הפרטיות של %1$s</string>
+
+    <!--
+    Text of a link that opens terms & conditions when clicked.
+    %1$s wil be replaced either with the app name or the provider name.
+    -->
+    <string name="smoothsetup_terms_and_conditions">תנאים והגבלות של %1$s</string>
+</resources>

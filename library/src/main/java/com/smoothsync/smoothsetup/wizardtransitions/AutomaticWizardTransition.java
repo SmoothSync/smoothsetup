@@ -46,7 +46,16 @@ public final class AutomaticWizardTransition extends AbstractWizardTransition
     public void apply(Context context, FragmentManager fragmentManager, WizardStep previousStep)
     {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setCustomAnimations(R.anim.smoothsetup_fade_in, R.anim.smoothsetup_fade_out, R.anim.smoothsetup_enter_left, R.anim.smoothsetup_exit_right);
+        if (useRtl(context))
+        {
+            transaction.setCustomAnimations(R.anim.smoothsetup_fade_in, R.anim.smoothsetup_fade_out, R.anim.smoothsetup_enter_right,
+                R.anim.smoothsetup_exit_left);
+        }
+        else
+        {
+            transaction.setCustomAnimations(R.anim.smoothsetup_fade_in, R.anim.smoothsetup_fade_out, R.anim.smoothsetup_enter_left,
+                R.anim.smoothsetup_exit_right);
+        }
         transaction.replace(R.id.wizards, mNextStep.fragment(context));
         if (fragmentManager.getBackStackEntryCount() > 0 || !previousStep.skipOnBack())
         {
@@ -68,7 +77,6 @@ public final class AutomaticWizardTransition extends AbstractWizardTransition
     {
         dest.writeParcelable(mNextStep, flags);
     }
-
 
     public final static Creator<AutomaticWizardTransition> CREATOR = new Creator<AutomaticWizardTransition>()
     {

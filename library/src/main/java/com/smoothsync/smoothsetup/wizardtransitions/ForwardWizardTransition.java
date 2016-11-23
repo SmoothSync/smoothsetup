@@ -25,7 +25,6 @@ import android.support.v4.app.FragmentTransaction;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.WizardStep;
 
-
 /**
  * A WizardTransition that just moves on to the next WizardStep using a swipe animation.
  *
@@ -46,8 +45,16 @@ public final class ForwardWizardTransition extends AbstractWizardTransition
     public void apply(Context context, FragmentManager fragmentManager, WizardStep previousStep)
     {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setCustomAnimations(R.anim.smoothsetup_enter_right, R.anim.smoothsetup_exit_left, R.anim.smoothsetup_enter_left,
+        if (useRtl(context))
+        {
+            transaction.setCustomAnimations(R.anim.smoothsetup_enter_left, R.anim.smoothsetup_exit_right, R.anim.smoothsetup_enter_right,
+                R.anim.smoothsetup_exit_left);
+        }
+        else
+        {
+            transaction.setCustomAnimations(R.anim.smoothsetup_enter_right, R.anim.smoothsetup_exit_left, R.anim.smoothsetup_enter_left,
                 R.anim.smoothsetup_exit_right);
+        }
         transaction.replace(R.id.wizards, mNextStep.fragment(context));
         if (fragmentManager.getBackStackEntryCount() > 0 || !previousStep.skipOnBack())
         {
@@ -69,7 +76,6 @@ public final class ForwardWizardTransition extends AbstractWizardTransition
     {
         dest.writeParcelable(mNextStep, flags);
     }
-
 
     public final static Creator<ForwardWizardTransition> CREATOR = new Creator<ForwardWizardTransition>()
     {

@@ -17,10 +17,16 @@
 
 package com.smoothsync.smoothsetup.wizardtransitions;
 
+import java.util.Locale;
+
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.View;
 
 
 /**
@@ -47,5 +53,19 @@ public abstract class AbstractWizardTransition implements WizardTransition, Parc
         Intent intent = new Intent(ACTION_WIZARD_TRANSITION);
         intent.putExtra(EXTRA_WIZARD_TRANSITION, this);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+
+
+    @SuppressLint("InlinedApi")
+    protected final boolean useRtl(Context context)
+    {
+        if (Build.VERSION.SDK_INT < 17)
+        {
+            String lang = Locale.getDefault().getLanguage();
+            // only check for RTL languages that we actually support.
+            return lang != null && "iw".equals(lang) || "ar".equals(lang);
+        }
+        Configuration config = context.getResources().getConfiguration();
+        return config.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 }

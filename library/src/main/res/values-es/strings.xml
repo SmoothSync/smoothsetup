@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='UTF-8'?><resources>
+
+    
+    <string name="smoothsetup_wizard_title_loading">Cargando...</string>
+
+    
+    <string name="smoothsetup_wizard_title_login">Iniciar sesión</string>
+
+    
+    <string name="smoothsetup_wizard_title_choose_provider">Elegir proveedor</string>
+
+    
+    <string name="smoothsetup_wizard_title_enter_password">Poner contraseña</string>
+
+    
+    <string name="smoothsetup_wizard_title_authenticating">Autenticando...</string>
+
+    
+    <string name="smoothsetup_wizard_title_completing_setup">Finalizando...</string>
+
+    
+    <string name="smoothsetup_wizard_title_setup_completed">Felicidades</string>
+
+    
+    <string name="smoothsetup_wizard_title_error">Error</string>
+
+
+    
+    <string name="smoothsetup_prompt_login">Introduzca su correo electrónico o nombre de inicio de sesión y elija su proveedor</string>
+
+    
+    <string name="smoothsetup_prompt_login_at_provider">Introduzca su nombre de inicio de sesión de %1$s</string>
+
+    
+    <string name="smoothsetup_prompt_enter_password">Introduzca su contraseña de %1$s</string>
+
+    
+    <string name="smoothsetup_prompt_enter_password_or_app_specific_password">Introduzca su contraseña de %1$s o la contraseña de %1$s específica de la app</string>
+
+    
+    <string name="smoothsetup_prompt_enter_app_specific_password">Introduzca su contraseña de %1$s específica de la app</string>
+
+
+    
+    <string name="smoothsetup_button_choose_provider">Elegir proveedor</string>
+
+    
+    <string name="smoothsetup_button_other_provider">Otro</string>
+
+    
+    <string name="smoothsetup_button_login_next">Siguiente</string>
+
+    
+    <string name="smoothsetup_button_sign_in">Conectar</string>
+
+    
+    <string name="smoothsetup_button_finish_setup">Finalizar configuración</string>
+
+    
+    <string name="smoothsetup_button_retry_now">Volver a intentar</string>
+
+
+    
+    <string name="smoothsetup_message_setup_completed">%1$s está configurado y la sincronización empezará en breve</string>
+
+    
+    <string name="smoothsetup_message_please_wait">Puede tardar hasta 2 minutos.</string>
+
+
+    
+    <string name="smoothsetup_error_load_provider">No se han podido cargar los datos del proveedor.\n\nCompruebe su conexión a Internet o vuelva a intentarlo más tarde.</string>
+
+    
+    <string name="smoothsetup_error_authentication">Error en la autenticación.\n\nCompruebe su contraseña y vuelva a intentarlo.</string>
+
+    
+    <string name="smoothsetup_error_network">Error en la conexión.\n\nCompruebe su conexión a Internet o vuelva a intentarlo más tarde.</string>
+
+
+    
+    <string name="smoothsetup_default_login_hint">Dirección de correo o nombre de inicio de sesión</string>
+
+    
+    <string name="smoothsetup_hint_password">Contraseña</string>
+
+
+    
+    <string name="smoothsetup_sign_up_now">¿Todavía no tiene cuenta? <b>Regístrese ahora.</b></string>
+
+    
+    <string name="smoothsetup_forgot_password">¿Ha olvidado la contraseña?</string>
+
+    
+    <string name="smoothsetup_create_app_specific_password">Crear contraseña específica para la app</string>
+
+    
+    <string name="smoothsetup_privacy_policy">Política de privacidad de %1$s</string>
+
+    
+    <string name="smoothsetup_terms_and_conditions">Condiciones de %1$s</string>
+</resources>

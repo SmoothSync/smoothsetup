@@ -2,9 +2,11 @@
 <manifest package="com.smoothsync.smoothsetup"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-sdk android:minSdkVersion="14"/>
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <application>
+
+    <application android:supportsRtl="true" >
         <activity
             android:name=".WizardActivity"
             android:excludeFromRecents="false"
@@ -17,16 +19,15 @@
             android:exported="true"
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW"></action>
+                <action android:name="android.intent.action.VIEW"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"></category>
+                <category android:name="android.intent.category.BROWSABLE"/>
 
                 <data
                     android:host="api.smoothsync.com"
                     android:pathPattern="/setup/.*"
                     android:scheme="https"/>
-
             </intent-filter>
         </activity>
 
