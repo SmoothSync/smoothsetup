@@ -34,10 +34,11 @@ import java.util.List;
 
 /**
  * {@link Provider} decorator that makes a Provider Parcelable.
+ *
+ * @author Marten Gajda
  */
 public final class ParcelableProvider implements Provider, Parcelable
 {
-
     private final Provider mDecorated;
 
 
@@ -97,18 +98,19 @@ public final class ParcelableProvider implements Provider, Parcelable
             dest.writeString(mDecorated.id());
             dest.writeString(mDecorated.name());
             dest.writeStringArray(mDecorated.domains());
+            Iterator<Link> linkIterator = mDecorated.links();
+            while (linkIterator.hasNext())
+            {
+                Link next = linkIterator.next();
+                dest.writeParcelable(next instanceof Parcelable ? (Parcelable) next : new ParcelableLink(next), 0);
+            }
+            dest.writeParcelable(null, 0);
+
             Iterator<Service> iterator = mDecorated.services();
             while (iterator.hasNext())
             {
                 Service service = iterator.next();
-                if (service instanceof Parcelable)
-                {
-                    dest.writeParcelable((Parcelable) service, 0);
-                }
-                else
-                {
-                    dest.writeParcelable(new ParcelableService(service), 0);
-                }
+                dest.writeParcelable(service instanceof Parcelable ? (Parcelable) service : new ParcelableService(service), 0);
             }
             dest.writeParcelable(null, 0);
         }
@@ -124,11 +126,18 @@ public final class ParcelableProvider implements Provider, Parcelable
         @Override
         public Provider createFromParcel(Parcel source)
         {
+            ClassLoader classLoader = getClass().getClassLoader();
             String id = source.readString();
             String name = source.readString();
             String[] domains = source.createStringArray();
-            List<Service> services = new ArrayList<Service>();
-            ClassLoader classLoader = getClass().getClassLoader();
+            List<Link> links = new ArrayList<>();
+            Link link = source.readParcelable(classLoader);
+            while (link != null)
+            {
+                links.add(link);
+                link = source.readParcelable(classLoader);
+            }
+            List<Service> services = new ArrayList<>();
             Service service = source.readParcelable(classLoader);
             while (service != null)
             {
@@ -136,7 +145,7 @@ public final class ParcelableProvider implements Provider, Parcelable
                 service = source.readParcelable(classLoader);
             }
 
-            return new UnparcelledProvider(id, name, domains, services);
+            return new ParcelableProvider(new UnparcelledProvider(id, name, domains, links, services));
         }
 
 
@@ -148,20 +157,22 @@ public final class ParcelableProvider implements Provider, Parcelable
     };
 
 
-    private final static class UnparcelledProvider implements Provider, Parcelable
+    private final static class UnparcelledProvider implements Provider
     {
 
         private final String mId;
         private final String mName;
         private final String[] mDomains;
+        private final List<Link> mLinks;
         private final List<Service> mServices;
 
 
-        public UnparcelledProvider(String id, String name, String[] domains, List<Service> services)
+        public UnparcelledProvider(String id, String name, String[] domains, List<Link> links, List<Service> services)
         {
             mId = id;
             mName = name;
             mDomains = domains;
+            mLinks = links;
             mServices = services;
         }
 
@@ -190,7 +201,7 @@ public final class ParcelableProvider implements Provider, Parcelable
         @Override
         public Iterator<Link> links() throws ProtocolException
         {
-            return Collections.<Link>emptyList().iterator();
+            return Collections.unmodifiableList(mLinks).iterator();
         }
 
 
@@ -199,39 +210,6 @@ public final class ParcelableProvider implements Provider, Parcelable
         {
             return Collections.unmodifiableList(mServices).iterator();
         }
-
-
-        @Override
-        public int describeContents()
-        {
-            return 0;
-        }
-
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags)
-        {
-            dest.writeString(mId);
-            dest.writeString(mName);
-            dest.writeStringArray(mDomains);
-            Iterator<Service> iterator = mServices.iterator();
-            while (iterator.hasNext())
-            {
-                Service service = iterator.next();
-                if (service instanceof Parcelable)
-                {
-                    dest.writeParcelable((Parcelable) service, 0);
-                }
-                else
-                {
-                    dest.writeParcelable(new ParcelableService(service), 0);
-                }
-            }
-            dest.writeParcelable(null, 0);
-        }
-
-
-        public final static Creator<Provider> CREATOR = ParcelableProvider.CREATOR;
     }
 
 }

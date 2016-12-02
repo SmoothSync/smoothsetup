@@ -89,7 +89,7 @@ public final class ApiAutoCompleteAdapter extends AbstractAutoCompleteAdapter
             results.values = Collections.emptyList();
             results.count = 0;
 
-            if (prefix == null || prefix.length() == 0)
+            if (prefix == null || prefix.length() < 2)
             {
                 return results;
             }
