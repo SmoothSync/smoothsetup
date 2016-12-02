@@ -1,0 +1,39 @@
+<resources>
+    <string name="smoothsetup_wizard_title_login">Войти</string>
+    <string name="smoothsetup_wizard_title_loading">Загрузка …</string>
+    <string name="smoothsetup_wizard_title_choose_provider">Выбрать провайдер</string>
+    <string name="smoothsetup_wizard_title_enter_password">Ввести пароль</string>
+    <string name="smoothsetup_wizard_title_authenticating">Войти …</string>
+    <string name="smoothsetup_wizard_title_completing_setup">Завершить …</string>
+    <string name="smoothsetup_wizard_title_setup_completed">Получилось!</string>
+    <string name="smoothsetup_wizard_title_error">Ошибка</string>
+
+    <string name="smoothsetup_prompt_login">Введите Ваш адрес электронной почты или имя пользователя и выберите Ваш провайдер</string>
+    <string name="smoothsetup_prompt_login_at_provider">Введите Ваше %1$s имя пользователя</string>
+    <string name="smoothsetup_prompt_enter_password">Введите Ваш %1$s пароль</string>
+    <string name="smoothsetup_prompt_enter_password_or_app_specific_password">Введите Ваш %1$s пароль или Ваш специальный %1$s пароль приложения</string>
+    <string name="smoothsetup_prompt_enter_app_specific_password">Введите Ваш специальный %1$s пароль приложения</string>
+
+    <string name="smoothsetup_button_choose_provider">Выбрать провайдер</string>
+    <string name="smoothsetup_button_other_provider">Другой провайдер</string>
+    <string name="smoothsetup_button_login_next">Дальше</string>
+    <string name="smoothsetup_button_sign_in">Войти</string>
+    <string name="smoothsetup_button_finish_setup">Закончить настройки</string>
+    <string name="smoothsetup_button_retry_now">Попробовать еще раз</string>
+
+    <string name="smoothsetup_message_setup_completed">%1$s установлено и скоро будет произведена синхронизация</string>
+    <string name="smoothsetup_message_please_wait">Это может длиться до 2-х минут.</string>
+
+    <string name="smoothsetup_error_load_provider">Провайдер не найден.\n\nПожалуйста, проверьте связь с интернетом или попробуйте еще раз позже.</string>
+    <string name="smoothsetup_error_authentication">Вход не удался.\n\nПожалуйста, проверьте Ваш пароль и попробуйте еще раз.</string>
+    <string name="smoothsetup_error_network">Соединение не удалось.\n\nПожалуйста, проверьте связь с интернетом или попробуйте еще раз позже.</string>
+
+    <string name="smoothsetup_default_login_hint">Электронная почта или имя пользователя</string>
+    <string name="smoothsetup_hint_password">Пароль</string>
+
+    <string name="smoothsetup_sign_up_now">Еще нет аккаунта? <b>Зарегистрироваться сейчас</b></string>
+    <string name="smoothsetup_forgot_password">Забыли пароль?</string>
+    <string name="smoothsetup_create_app_specific_password">Создать специальный пароль приложения</string>
+    <string name="smoothsetup_privacy_policy">%1$s Политика конфиденциальности</string>
+    <string name="smoothsetup_terms_and_conditions">%1$s Пользовательское соглашение</string>
+</resources>
