@@ -198,21 +198,21 @@ public final class PasswordWizardStep implements WizardStep
                 switch (appSpecificPasswordOption)
                 {
                     case "mandatory":
-                        if (new Count(new Related(mAccount.provider().links(), "http://smoothsync.com/rel/manage-password")).intValue() > 0)
+                        if (new Related(mAccount.provider().links(), "http://smoothsync.com/rel/manage-password").hasNext())
                         {
                             setupClickableTextView(result, R.id.smoothsetup_create_app_specific_password);
                         }
                         messageView.setText(getString(R.string.smoothsetup_prompt_enter_app_specific_password, mAccount.provider().name()));
                         break;
                     case "optional":
-                        if (new Count(new Related(mAccount.provider().links(), "http://smoothsync.com/rel/manage-password")).intValue() > 0)
+                        if (new Related(mAccount.provider().links(), "http://smoothsync.com/rel/manage-password").hasNext())
                         {
                             setupClickableTextView(result, R.id.smoothsetup_create_app_specific_password);
                         }
                         messageView.setText(getString(R.string.smoothsetup_prompt_enter_password_or_app_specific_password, mAccount.provider().name()));
                         // fall through
                     default:
-                        if (new Count(new Related(mAccount.provider().links(), "http://smoothsync.com/rel/forgot-password")).intValue() > 0)
+                        if (new Related(mAccount.provider().links(), "http://smoothsync.com/rel/forgot-password").hasNext())
                         {
                             setupClickableTextView(result, R.id.smoothsetup_forgot_password);
                         }
