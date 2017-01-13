@@ -36,4 +36,8 @@
     <string name="smoothsetup_create_app_specific_password">Anwendungsspezifisches Passwort erstellen</string>
     <string name="smoothsetup_privacy_policy">%1$s Datenschutzerklärung</string>
     <string name="smoothsetup_terms_and_conditions">%1$s Geschäftsbedingungen</string>
+    <string name="smoothsetup_button_copy_app_specific_password">Kopieren</string>
+    <string name="smoothsetup_label_app_specific_password">Anwendungsspezifisches Passwort</string>
+    <string name="smoothsetup_snackbar_copied_app_specific_password">Anwendungsspezifisches Passwort in Zwischenablage kopiert</string>
+    <string name="smoothsetup_snackbar_found_app_specific_password">Anwendungsspezifisches Passwort gefunden: %1$s</string>
 </resources>

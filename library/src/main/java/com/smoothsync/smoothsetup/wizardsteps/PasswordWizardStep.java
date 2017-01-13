@@ -18,8 +18,6 @@
 package com.smoothsync.smoothsetup.wizardsteps;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.Nullable;
@@ -37,7 +35,6 @@ import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.model.BasicHttpAuthorizationFactory;
 import com.smoothsync.smoothsetup.model.WizardStep;
-import com.smoothsync.smoothsetup.utils.Count;
 import com.smoothsync.smoothsetup.utils.Default;
 import com.smoothsync.smoothsetup.utils.Related;
 import com.smoothsync.smoothsetup.wizardtransitions.AutomaticWizardTransition;
@@ -134,6 +131,7 @@ public final class PasswordWizardStep implements WizardStep
         private Account mAccount;
         private EditText mPassword;
         private Button mButton;
+        private String mPasswordOptionTitle;
 
 
         @Nullable
@@ -246,13 +244,20 @@ public final class PasswordWizardStep implements WizardStep
                         new ApproveAuthorizationWizardStep(mAccount, new BasicHttpAuthorizationFactory(mAccount.accountId(), mPassword.getText().toString())))
                         .execute(getContext());
             }
-            if (id == R.id.smoothsetup_forgot_password)
+            try
             {
-                openLink("http://smoothsync.com/rel/forgot-password");
+                if (id == R.id.smoothsetup_forgot_password)
+                {
+                    openLink(mAccount.provider().name(), "http://smoothsync.com/rel/forgot-password");
+                }
+                if (id == R.id.smoothsetup_create_app_specific_password)
+                {
+                    openLink(mAccount.provider().name(), "http://smoothsync.com/rel/manage-password");
+                }
             }
-            if (id == R.id.smoothsetup_create_app_specific_password)
+            catch (ProtocolException e)
             {
-                openLink("http://smoothsync.com/rel/manage-password");
+                new ForwardWizardTransition(new ErrorRetryWizardStep(e.getMessage()));
             }
         }
 
@@ -265,11 +270,11 @@ public final class PasswordWizardStep implements WizardStep
         }
 
 
-        private void openLink(String name)
+        private void openLink(String title, String name)
         {
             try
             {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(new Related(mAccount.provider().links(), name).next().target().toASCIIString())));
+                new ForwardWizardTransition(new CreateAppSpecificPasswordStep(title, new Related(mAccount.provider().links(), name).next().target())).execute(getContext());
             }
             catch (ProtocolException e)
             {

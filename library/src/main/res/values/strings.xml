@@ -192,4 +192,30 @@
     %1$s wil be replaced either with the app name or the provider name.
     -->
     <string name="smoothsetup_terms_and_conditions">%1$s Terms and Conditions</string>
+
+
+    <!-- App specific password helper -->
+
+    <!--
+    Title of a button on the Snackbar to copy an app specific password to the clipboard.
+    Must be a single word, as short as possible. Will be converted to all-caps by Android.
+    -->
+    <string name="smoothsetup_button_copy_app_specific_password">Copy</string>
+
+    <!--
+    Title of a Snackbar message to inform the user that an app-specific password has been found.
+    %1$s will be replaced by the password that was found.
+    -->
+    <string name="smoothsetup_snackbar_found_app_specific_password">App-specific password found: %1$s</string>
+
+    <!--
+    Title of a Snackbar message to inform the user that an app-specific password has been copied to the clipboard.
+    -->
+    <string name="smoothsetup_snackbar_copied_app_specific_password">App-specific password copied to clipboard</string>
+
+    <!--
+    Label of the app-specific password when copied to the clipboard.
+    -->
+    <string name="smoothsetup_label_app_specific_password">App-specific password</string>
+
 </resources>
