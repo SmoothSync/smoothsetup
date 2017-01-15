@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Marten Gajda <marten@dmfs.org>
+ * Copyright (c) 2017 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.smoothsync.smoothsetup.services;
@@ -28,7 +27,7 @@ import java.util.concurrent.TimeoutException;
 
 
 /**
- * A SmoothSyncApi proxy that forwards all request to a FutureServiceConnection.
+ * A {@link SmoothSyncApi} proxy that forwards all request to a {@link FutureServiceConnection}.
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
@@ -48,7 +47,7 @@ public final class SmoothSyncApiProxy implements SmoothSyncApi
     {
         try
         {
-            return mConnection.service(365L * 24L * 3600L * 1000L).resultOf(smoothSyncApiRequest);
+            return mConnection.service(60 * 1000L).resultOf(smoothSyncApiRequest);
         }
         catch (InterruptedException e)
         {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 dmfs GmbH
+ * Copyright (c) 2017 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.NestedScrollingChild;
 import android.support.v4.view.NestedScrollingChildHelper;
 import android.support.v4.view.ViewCompat;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.webkit.WebView;
 
@@ -41,6 +42,14 @@ public class CoordinatorWebView extends WebView implements NestedScrollingChild
     public CoordinatorWebView(Context context)
     {
         super(context);
+        mNestedScrollingChildHelper = new NestedScrollingChildHelper(this);
+        setNestedScrollingEnabled(true);
+    }
+
+
+    public CoordinatorWebView(Context context, AttributeSet attributeSet)
+    {
+        super(context, attributeSet);
         mNestedScrollingChildHelper = new NestedScrollingChildHelper(this);
         setNestedScrollingEnabled(true);
     }

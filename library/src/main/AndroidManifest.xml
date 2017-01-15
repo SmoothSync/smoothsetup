@@ -8,14 +8,14 @@
 
     <application android:supportsRtl="true">
         <activity
-                android:name=".WizardActivity"
+                android:name=".MicroFragmentHostActivity"
                 android:excludeFromRecents="false"
                 android:exported="false"
                 android:theme="@style/SmoothSetupTheme">
         </activity>
         <activity
                 android:name=".SmoothSetupDispatchActivity"
-                android:excludeFromRecents="true"
+                android:excludeFromRecents="false"
                 android:exported="true"
                 android:theme="@android:style/Theme.NoDisplay">
             <intent-filter android:autoVerify="true">
