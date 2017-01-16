@@ -28,12 +28,12 @@ import org.dmfs.httpessentials.exceptions.ProtocolException;
  */
 public interface SetupButtonAdapter
 {
+    void update(@NonNull String login) throws ProtocolException;
+
     interface OnProviderSelectListener
     {
         void onProviderSelected(@NonNull Provider provider);
 
         void onOtherSelected();
     }
-
-    void update(@NonNull String login) throws ProtocolException;
 }

@@ -19,6 +19,7 @@ package com.smoothsync.smoothsetup.microfragments;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
@@ -63,6 +64,23 @@ import java.util.Iterator;
  */
 public final class ApproveAuthorizationMicroFragment implements MicroFragment<ApproveAuthorizationMicroFragment.LoadFragment.Params>
 {
+    public final static Creator<ApproveAuthorizationMicroFragment> CREATOR = new Creator<ApproveAuthorizationMicroFragment>()
+    {
+        @Override
+        public ApproveAuthorizationMicroFragment createFromParcel(Parcel source)
+        {
+            ClassLoader classLoader = getClass().getClassLoader();
+            return new ApproveAuthorizationMicroFragment((Account) source.readParcelable(classLoader),
+                    (HttpAuthorizationFactory) source.readParcelable(classLoader));
+        }
+
+
+        @Override
+        public ApproveAuthorizationMicroFragment[] newArray(int size)
+        {
+            return new ApproveAuthorizationMicroFragment[size];
+        }
+    };
     private final Account mAccount;
     private final HttpAuthorizationFactory mHttpAuthorizationFactory;
 
@@ -138,37 +156,17 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
     }
 
 
-    public final static Creator<ApproveAuthorizationMicroFragment> CREATOR = new Creator<ApproveAuthorizationMicroFragment>()
-    {
-        @Override
-        public ApproveAuthorizationMicroFragment createFromParcel(Parcel source)
-        {
-            ClassLoader classLoader = getClass().getClassLoader();
-            return new ApproveAuthorizationMicroFragment((Account) source.readParcelable(classLoader),
-                    (HttpAuthorizationFactory) source.readParcelable(classLoader));
-        }
-
-
-        @Override
-        public ApproveAuthorizationMicroFragment[] newArray(int size)
-        {
-            return new ApproveAuthorizationMicroFragment[size];
-        }
-    };
-
-
     public static class LoadFragment extends Fragment implements ThrowingAsyncTask.OnResultCallback<Boolean>
     {
-        interface Params
-        {
-            Account account();
-
-            HttpAuthorizationFactory httpAuthorizationFactory();
-        }
-
-
         private final static int DELAY_WAIT_MESSAGE = 2500;
-
+        private final Runnable mShowWaitMessage = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                getView().findViewById(android.R.id.message).animate().alpha(1f).start();
+            }
+        };
         private Handler mHandler = new Handler();
         private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
         private Params mParams;
@@ -243,7 +241,7 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                     }
                     return serviceConnections.next().service(1000).verify(mParams.account().provider(), mParams.httpAuthorizationFactory());
                 }
-            }.execute();
+            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
 
@@ -291,13 +289,11 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
         }
 
 
-        private final Runnable mShowWaitMessage = new Runnable()
+        interface Params
         {
-            @Override
-            public void run()
-            {
-                getView().findViewById(android.R.id.message).animate().alpha(1f).start();
-            }
-        };
+            Account account();
+
+            HttpAuthorizationFactory httpAuthorizationFactory();
+        }
     }
 }

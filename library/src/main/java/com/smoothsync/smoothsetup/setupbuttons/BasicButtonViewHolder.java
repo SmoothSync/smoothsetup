@@ -26,7 +26,7 @@ import com.smoothsync.smoothsetup.R;
 /**
  * A concrete {@link ButtonViewHolder} implementation.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class BasicButtonViewHolder extends RecyclerView.ViewHolder implements ButtonViewHolder
 {

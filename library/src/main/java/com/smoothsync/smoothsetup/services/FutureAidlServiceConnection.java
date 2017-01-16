@@ -32,35 +32,11 @@ import java.util.concurrent.TimeoutException;
  */
 public final class FutureAidlServiceConnection<T extends android.os.IInterface> implements FutureServiceConnection<T>
 {
-    public interface StubProxy<T extends android.os.IInterface>
-    {
-        /**
-         * Returns a stub object that connects to the service.
-         * <p>
-         * This method needs to contain only one line like:
-         * <p>
-         * <pre>
-         * <code>
-         * return &lt;T>.Stub.asInterface(service);
-         * </code>
-         * </pre>
-         * <p>
-         * Where &lt;T> is the interface of the service.
-         *
-         * @param service
-         *
-         * @return
-         */
-        T asInterface(IBinder service);
-    }
-
-
     private final Context mContext;
     private final boolean mBindSucceeded;
     private final StubProxy<T> mStubProxy;
     private boolean mIsConnected;
     private T mService;
-
     private final ServiceConnection mConnection = new ServiceConnection()
     {
 
@@ -87,7 +63,6 @@ public final class FutureAidlServiceConnection<T extends android.os.IInterface> 
             }
         }
     };
-
 
     /**
      * Binds the service identified by the given Intent.
@@ -154,5 +129,28 @@ public final class FutureAidlServiceConnection<T extends android.os.IInterface> 
                 mContext.unbindService(mConnection);
             }
         }
+    }
+
+
+    public interface StubProxy<T extends android.os.IInterface>
+    {
+        /**
+         * Returns a stub object that connects to the service.
+         * <p>
+         * This method needs to contain only one line like:
+         * <p>
+         * <pre>
+         * <code>
+         * return &lt;T>.Stub.asInterface(service);
+         * </code>
+         * </pre>
+         * <p>
+         * Where &lt;T> is the interface of the service.
+         *
+         * @param service
+         *
+         * @return
+         */
+        T asInterface(IBinder service);
     }
 }

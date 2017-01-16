@@ -33,6 +33,8 @@ import java.io.IOException;
  * <p>
  * Note: The cache tries to reduce network traffic and thus may return responses that contain more results than they should. Make sure you always filter the
  * result unsing an {@link AutoCompleteArrayIterator}.
+ *
+ * @author Marten Gajda
  */
 public final class AutoCompleteLruCache extends LruCache<String, AutoCompleteResult>
 {

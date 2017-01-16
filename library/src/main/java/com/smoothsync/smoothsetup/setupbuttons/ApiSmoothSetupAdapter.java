@@ -16,7 +16,7 @@
 
 package com.smoothsync.smoothsetup.setupbuttons;
 
-import android.support.v4.util.LruCache;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,15 +34,13 @@ import java.util.List;
 
 
 /**
- * Created by marten on 12.06.16.
+ * @author Marten Gajda
  */
 public final class ApiSmoothSetupAdapter extends AbstractSmoothSetupAdapter
 {
 
     private SmoothSyncApi mApi;
-    private final LruCache<String, List<Provider>> mResultCache = new LruCache<String, List<Provider>>(100);
-
-    private List<Provider> mProviders = Collections.EMPTY_LIST;
+    private List<Provider> mProviders = Collections.emptyList();
 
 
     public ApiSmoothSetupAdapter(SmoothSyncApi api, OnProviderSelectListener listener)
@@ -104,7 +102,8 @@ public final class ApiSmoothSetupAdapter extends AbstractSmoothSetupAdapter
     }
 
 
-    public void update(String value)
+    @Override
+    public void update(@NonNull String value)
     {
         new ProviderSearchTask(mApi, new ThrowingAsyncTask.OnResultCallback<List<Provider>>()
         {

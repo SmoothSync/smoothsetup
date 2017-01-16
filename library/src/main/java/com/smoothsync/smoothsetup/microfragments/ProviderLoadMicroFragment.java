@@ -17,6 +17,7 @@
 package com.smoothsync.smoothsetup.microfragments;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
@@ -55,14 +56,21 @@ import org.dmfs.android.microfragments.transitions.XFaded;
  */
 public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLoadMicroFragment.Params>
 {
-    interface Params
+    public final static Creator<ProviderLoadMicroFragment> CREATOR = new Creator<ProviderLoadMicroFragment>()
     {
-        String providerId();
+        @Override
+        public ProviderLoadMicroFragment createFromParcel(Parcel source)
+        {
+            return new ProviderLoadMicroFragment(source.readString(), source.readString());
+        }
 
-        String account();
-    }
 
-
+        @Override
+        public ProviderLoadMicroFragment[] newArray(int size)
+        {
+            return new ProviderLoadMicroFragment[size];
+        }
+    };
     private final String mProviderId;
     private final String mAccount;
 
@@ -147,27 +155,25 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
     }
 
 
-    public final static Creator<ProviderLoadMicroFragment> CREATOR = new Creator<ProviderLoadMicroFragment>()
+    interface Params
     {
-        @Override
-        public ProviderLoadMicroFragment createFromParcel(Parcel source)
-        {
-            return new ProviderLoadMicroFragment(source.readString(), source.readString());
-        }
+        String providerId();
 
-
-        @Override
-        public ProviderLoadMicroFragment[] newArray(int size)
-        {
-            return new ProviderLoadMicroFragment[size];
-        }
-    };
+        String account();
+    }
 
 
     public final static class LoadFragment extends Fragment implements ThrowingAsyncTask.OnResultCallback<Provider>
     {
         private final static int DELAY_WAIT_MESSAGE = 2500;
-
+        private final Runnable mShowWaitMessage = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                getView().findViewById(android.R.id.message).animate().alpha(1f).start();
+            }
+        };
         private Handler mHandler = new Handler();
         private FutureServiceConnection<SmoothSyncApi> mApiService;
         private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
@@ -197,7 +203,8 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
         public void onResume()
         {
             super.onResume();
-            new ProviderLoadTask(new SmoothSyncApiProxy(mApiService), this).execute(mMicroFragmentEnvironment.microFragment().parameters().account());
+            new ProviderLoadTask(new SmoothSyncApiProxy(mApiService), this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+                    mMicroFragmentEnvironment.microFragment().parameters().account());
         }
 
 
@@ -238,15 +245,5 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
                 }
             }
         }
-
-
-        private final Runnable mShowWaitMessage = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                getView().findViewById(android.R.id.message).animate().alpha(1f).start();
-            }
-        };
     }
 }

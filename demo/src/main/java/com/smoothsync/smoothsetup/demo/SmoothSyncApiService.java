@@ -19,8 +19,6 @@ package com.smoothsync.smoothsetup.demo;
 
 import android.content.Context;
 
-import com.smoothsync.api.ProductionApi;
-import com.smoothsync.api.ProductionApiClient;
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.smoothsetup.services.AbstractSmoothSyncApiService;
 
@@ -40,28 +38,28 @@ import org.dmfs.oauth2.client.OAuth2ClientCredentials;
 /**
  * A Service that provides the SmoothSync API.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public class SmoothSyncApiService extends AbstractSmoothSyncApiService
 {
-	public SmoothSyncApiService()
-	{
-		super(new SmoothSyncApiFactory()
-		{
-			@Override
-			public SmoothSyncApi smoothSyncApi(Context context)
-			{
-				HttpRequestExecutor executor = new Following(
-					new Retrying(new HttpUrlConnectionExecutor(new Finite(new DefaultHttpUrlConnectionFactory(), 10000, 30000)), new DefaultRetryPolicy(3)),
-					new Secure(new FollowRedirectPolicy(5)));
+    public SmoothSyncApiService()
+    {
+        super(new SmoothSyncApiFactory()
+        {
+            @Override
+            public SmoothSyncApi smoothSyncApi(Context context)
+            {
+                HttpRequestExecutor executor = new Following(
+                        new Retrying(new HttpUrlConnectionExecutor(new Finite(new DefaultHttpUrlConnectionFactory(), 10000, 30000)), new DefaultRetryPolicy(3)),
+                        new Secure(new FollowRedirectPolicy(5)));
 
-				OAuth2ClientCredentials clientCreds = new BasicOAuth2ClientCredentials("c5afc71ab8d046229d05275f0f01c03a",
-					"c1b7aa8d571c4975b6a4e8099ca052c05c239015a24845f7bf7f4c8221cfafa3");
+                OAuth2ClientCredentials clientCreds = new BasicOAuth2ClientCredentials("e71c750d1e544665ad0ebfd598260b51",
+                        "f7cb392dd43945de8fd332f80a7885db96851e6e67c64d5a82f8fc646bd25e8e");
 
-				ProductionApiClient client = new ProductionApiClient(clientCreds);
+                DemoApiClient client = new DemoApiClient(clientCreds);
 
-				return new ProductionApi(executor, client);
-			}
-		});
-	}
+                return new DemoApi(executor, client);
+            }
+        });
+    }
 }

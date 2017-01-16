@@ -42,6 +42,39 @@ import java.util.Set;
  */
 public final class ParcelableLink implements Link, Parcelable
 {
+    public static final Creator<ParcelableLink> CREATOR = new Creator<ParcelableLink>()
+    {
+        @Override
+        public ParcelableLink createFromParcel(Parcel in)
+        {
+            String target = in.readString();
+            String title = in.readString();
+            List<String> relationTypes = new ArrayList<>();
+            in.readStringList(relationTypes);
+            List<String> reverseRelationTypes = new ArrayList<>();
+            in.readStringList(reverseRelationTypes);
+            return new ParcelableLink(new UnparcelledLink(target, title, relationTypes, reverseRelationTypes));
+        }
+
+
+        private void loadProperty(Parcel in, ParameterType<String> parameterType, Map<String, String> propertyMap)
+        {
+            String value = in.readString();
+            if (value == null)
+            {
+                // no value
+                return;
+            }
+            propertyMap.put(parameterType.name(), value);
+        }
+
+
+        @Override
+        public ParcelableLink[] newArray(int size)
+        {
+            return new ParcelableLink[size];
+        }
+    };
     private final Link mDelegate;
 
 
@@ -137,41 +170,6 @@ public final class ParcelableLink implements Link, Parcelable
         dest.writeStringList(new ArrayList<>(relationTypes()));
         dest.writeStringList(new ArrayList<>(reverseRelationTypes()));
     }
-
-
-    public static final Creator<ParcelableLink> CREATOR = new Creator<ParcelableLink>()
-    {
-        @Override
-        public ParcelableLink createFromParcel(Parcel in)
-        {
-            String target = in.readString();
-            String title = in.readString();
-            List<String> relationTypes = new ArrayList<>();
-            in.readStringList(relationTypes);
-            List<String> reverseRelationTypes = new ArrayList<>();
-            in.readStringList(reverseRelationTypes);
-            return new ParcelableLink(new UnparcelledLink(target, title, relationTypes, reverseRelationTypes));
-        }
-
-
-        private void loadProperty(Parcel in, ParameterType<String> parameterType, Map<String, String> propertyMap)
-        {
-            String value = in.readString();
-            if (value == null)
-            {
-                // no value
-                return;
-            }
-            propertyMap.put(parameterType.name(), value);
-        }
-
-
-        @Override
-        public ParcelableLink[] newArray(int size)
-        {
-            return new ParcelableLink[size];
-        }
-    };
 
 
     private final static class UnparcelledLink implements Link

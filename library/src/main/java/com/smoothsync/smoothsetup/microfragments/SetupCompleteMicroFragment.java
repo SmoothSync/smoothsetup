@@ -44,6 +44,23 @@ import org.dmfs.android.microfragments.MicroFragmentHost;
 public final class SetupCompleteMicroFragment implements MicroFragment<Void>
 {
 
+    public final static Creator<SetupCompleteMicroFragment> CREATOR = new Creator<SetupCompleteMicroFragment>()
+    {
+        @Override
+        public SetupCompleteMicroFragment createFromParcel(Parcel source)
+        {
+            return new SetupCompleteMicroFragment();
+        }
+
+
+        @Override
+        public SetupCompleteMicroFragment[] newArray(int size)
+        {
+            return new SetupCompleteMicroFragment[size];
+        }
+    };
+
+
     public SetupCompleteMicroFragment()
     {
         // nothing to do here
@@ -96,23 +113,6 @@ public final class SetupCompleteMicroFragment implements MicroFragment<Void>
     public void writeToParcel(Parcel dest, int flags)
     {
     }
-
-
-    public final static Creator<SetupCompleteMicroFragment> CREATOR = new Creator<SetupCompleteMicroFragment>()
-    {
-        @Override
-        public SetupCompleteMicroFragment createFromParcel(Parcel source)
-        {
-            return new SetupCompleteMicroFragment();
-        }
-
-
-        @Override
-        public SetupCompleteMicroFragment[] newArray(int size)
-        {
-            return new SetupCompleteMicroFragment[size];
-        }
-    };
 
 
     /**

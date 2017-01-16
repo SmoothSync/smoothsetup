@@ -33,7 +33,7 @@ import android.webkit.WebView;
  *
  * @author Marten Gajda
  */
-public class CoordinatorWebView extends WebView implements NestedScrollingChild
+public final class CoordinatorWebView extends WebView implements NestedScrollingChild
 {
     private int mLastY;
     private NestedScrollingChildHelper mNestedScrollingChildHelper;
@@ -94,16 +94,16 @@ public class CoordinatorWebView extends WebView implements NestedScrollingChild
 
 
     @Override
-    public void setNestedScrollingEnabled(boolean enabled)
+    public boolean isNestedScrollingEnabled()
     {
-        mNestedScrollingChildHelper.setNestedScrollingEnabled(enabled);
+        return mNestedScrollingChildHelper.isNestedScrollingEnabled();
     }
 
 
     @Override
-    public boolean isNestedScrollingEnabled()
+    public void setNestedScrollingEnabled(boolean enabled)
     {
-        return mNestedScrollingChildHelper.isNestedScrollingEnabled();
+        mNestedScrollingChildHelper.setNestedScrollingEnabled(enabled);
     }
 
 

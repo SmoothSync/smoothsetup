@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * An auto-complete adapter that supports a single provider only.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class ProviderAutoCompleteAdapter extends AbstractAutoCompleteAdapter
 {

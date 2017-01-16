@@ -38,6 +38,21 @@ import java.net.URI;
  */
 public final class CreateAppSpecificPasswordMicroFragment implements MicroFragment<URI>
 {
+    public final static Creator<CreateAppSpecificPasswordMicroFragment> CREATOR = new Creator<CreateAppSpecificPasswordMicroFragment>()
+    {
+        @Override
+        public CreateAppSpecificPasswordMicroFragment createFromParcel(Parcel source)
+        {
+            return new CreateAppSpecificPasswordMicroFragment(source.readString(), (URI) source.readSerializable());
+        }
+
+
+        @Override
+        public CreateAppSpecificPasswordMicroFragment[] newArray(int size)
+        {
+            return new CreateAppSpecificPasswordMicroFragment[size];
+        }
+    };
     @NonNull
     private final String mTitle;
     @NonNull
@@ -99,21 +114,4 @@ public final class CreateAppSpecificPasswordMicroFragment implements MicroFragme
         dest.writeString(mTitle);
         dest.writeSerializable(mUrl);
     }
-
-
-    public final static Creator<CreateAppSpecificPasswordMicroFragment> CREATOR = new Creator<CreateAppSpecificPasswordMicroFragment>()
-    {
-        @Override
-        public CreateAppSpecificPasswordMicroFragment createFromParcel(Parcel source)
-        {
-            return new CreateAppSpecificPasswordMicroFragment(source.readString(), (URI) source.readSerializable());
-        }
-
-
-        @Override
-        public CreateAppSpecificPasswordMicroFragment[] newArray(int size)
-        {
-            return new CreateAppSpecificPasswordMicroFragment[size];
-        }
-    };
 }

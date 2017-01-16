@@ -24,7 +24,7 @@ import org.dmfs.iterators.ConvertedIterator;
  * <p/>
  * Instances of this class are not thread-safe.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class LocalPartConverter implements ConvertedIterator.Converter<String, String>
 {

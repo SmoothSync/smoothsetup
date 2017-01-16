@@ -30,50 +30,10 @@ import com.smoothsync.smoothsetup.model.HttpAuthorizationFactory;
 /**
  * An abstract service that provides an {@link VerificationService} interface.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public abstract class AbstractVerificationService extends Service
 {
-
-    /**
-     * A {@link Binder} that gives access to the {@link VerificationService}
-     */
-    private final static class AccountServiceBinder extends Binder implements VerificationService
-    {
-
-        private final VerificationService mVerificationService;
-
-
-        public AccountServiceBinder(VerificationService verificationService)
-        {
-            mVerificationService = verificationService;
-        }
-
-
-        @Override
-        public boolean verify(Provider provider, HttpAuthorizationFactory authorizationFactory) throws Exception
-        {
-            return mVerificationService.verify(provider, authorizationFactory);
-        }
-    }
-
-
-    /**
-     * A factory that creates AccountService instances.
-     */
-    public interface VerificationServiceFactory
-    {
-        /**
-         * Create a new {@link VerificationService}.
-         *
-         * @param context
-         *         A Context.
-         *
-         * @return
-         */
-        VerificationService accountService(Context context);
-    }
-
 
     private AccountServiceBinder mBinder;
     private VerificationServiceFactory mVerificationServiceFactory;
@@ -98,5 +58,45 @@ public abstract class AbstractVerificationService extends Service
     public final IBinder onBind(Intent intent)
     {
         return mBinder;
+    }
+
+
+    /**
+     * A factory that creates AccountService instances.
+     */
+    public interface VerificationServiceFactory
+    {
+        /**
+         * Create a new {@link VerificationService}.
+         *
+         * @param context
+         *         A Context.
+         *
+         * @return
+         */
+        VerificationService accountService(Context context);
+    }
+
+
+    /**
+     * A {@link Binder} that gives access to the {@link VerificationService}
+     */
+    private final static class AccountServiceBinder extends Binder implements VerificationService
+    {
+
+        private final VerificationService mVerificationService;
+
+
+        public AccountServiceBinder(VerificationService verificationService)
+        {
+            mVerificationService = verificationService;
+        }
+
+
+        @Override
+        public boolean verify(Provider provider, HttpAuthorizationFactory authorizationFactory) throws Exception
+        {
+            return mVerificationService.verify(provider, authorizationFactory);
+        }
     }
 }

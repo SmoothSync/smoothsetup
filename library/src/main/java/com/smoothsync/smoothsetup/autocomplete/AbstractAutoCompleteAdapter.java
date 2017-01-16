@@ -27,7 +27,7 @@ import android.widget.TextView;
 /**
  * Base class of all auto-complete adapters. It takes care of populating the auto-complete view, which should be done the same way for all subclasses.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public abstract class AbstractAutoCompleteAdapter extends BaseAdapter implements Filterable
 {

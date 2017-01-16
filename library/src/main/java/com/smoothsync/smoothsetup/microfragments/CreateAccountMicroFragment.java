@@ -18,6 +18,7 @@ package com.smoothsync.smoothsetup.microfragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -58,6 +59,22 @@ import org.dmfs.android.microfragments.transitions.XFaded;
  */
 public final class CreateAccountMicroFragment implements MicroFragment<ApproveAuthorizationMicroFragment.LoadFragment.Params>
 {
+    public final static Creator<CreateAccountMicroFragment> CREATOR = new Creator<CreateAccountMicroFragment>()
+    {
+        @Override
+        public CreateAccountMicroFragment createFromParcel(Parcel source)
+        {
+            ClassLoader classLoader = getClass().getClassLoader();
+            return new CreateAccountMicroFragment((Account) source.readParcelable(classLoader), (HttpAuthorizationFactory) source.readParcelable(classLoader));
+        }
+
+
+        @Override
+        public CreateAccountMicroFragment[] newArray(int size)
+        {
+            return new CreateAccountMicroFragment[size];
+        }
+    };
     private final Account mAccount;
     private final HttpAuthorizationFactory mHttpAuthorizationFactory;
 
@@ -135,44 +152,23 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
     }
 
 
-    public final static Creator<CreateAccountMicroFragment> CREATOR = new Creator<CreateAccountMicroFragment>()
-    {
-        @Override
-        public CreateAccountMicroFragment createFromParcel(Parcel source)
-        {
-            ClassLoader classLoader = getClass().getClassLoader();
-            return new CreateAccountMicroFragment((Account) source.readParcelable(classLoader), (HttpAuthorizationFactory) source.readParcelable(classLoader));
-        }
-
-
-        @Override
-        public CreateAccountMicroFragment[] newArray(int size)
-        {
-            return new CreateAccountMicroFragment[size];
-        }
-    };
-
-
     public final static class LoadFragment extends Fragment implements ThrowingAsyncTask.OnResultCallback<Boolean>
     {
-        interface Params
-        {
-            @NonNull
-            Account account();
-
-            @NonNull
-            HttpAuthorizationFactory httpAuthorizationFactory();
-        }
-
-
         private final static int DELAY_WAIT_MESSAGE = 2500;
-
+        private final Timestamp mTimestamp = new UiTimestamp();
+        private final Runnable mShowWaitMessage = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                getView().findViewById(android.R.id.message).animate().alpha(1f).start();
+            }
+        };
         private Handler mHandler = new Handler();
         private FutureServiceConnection<AccountService> mAccountService;
         private MicroFragmentEnvironment<ApproveAuthorizationMicroFragment.LoadFragment.Params> mMicroFragmentEnvironment;
         private ApproveAuthorizationMicroFragment.LoadFragment.Params mParams;
         private FragmentTransition mFragmentTransition;
-        private final Timestamp mTimestamp = new UiTimestamp();
 
 
         @Override
@@ -230,7 +226,7 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
                         service.createAccount(bundle);
                         return true;
                     }
-                }.execute();
+                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }
 
@@ -249,16 +245,6 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
             mAccountService.disconnect();
             super.onDestroy();
         }
-
-
-        private final Runnable mShowWaitMessage = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                getView().findViewById(android.R.id.message).animate().alpha(1f).start();
-            }
-        };
 
 
         @Override
@@ -286,6 +272,16 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
             {
                 mFragmentTransition = transition;
             }
+        }
+
+
+        interface Params
+        {
+            @NonNull
+            Account account();
+
+            @NonNull
+            HttpAuthorizationFactory httpAuthorizationFactory();
         }
     }
 }

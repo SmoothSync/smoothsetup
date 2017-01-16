@@ -24,7 +24,7 @@ import com.smoothsync.smoothsetup.model.HttpAuthorizationFactory;
 /**
  * An Android service that verifies access to a specific {@link Service}.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public interface VerificationService
 {

@@ -24,7 +24,7 @@ import com.smoothsync.api.model.Provider;
 /**
  * Holds information about the account to set up, including the login (account-id) and the provider.
  *
- * @author Marten Gajda <mrten@dmfs.org>
+ * @author Marten Gajda
  */
 public interface Account extends Parcelable
 {
@@ -34,12 +34,12 @@ public interface Account extends Parcelable
      *
      * @return The account identifier.
      */
-    public String accountId();
+    String accountId();
 
     /**
      * Returns the provider that hosts the user account.
      *
      * @return A {@link Provider}.
      */
-    public Provider provider();
+    Provider provider();
 }

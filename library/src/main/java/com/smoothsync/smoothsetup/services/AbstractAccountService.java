@@ -31,10 +31,53 @@ import com.smoothsync.smoothsetup.model.BasicAccount;
 /**
  * An abstract service that provides an AccountService interface.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public abstract class AbstractAccountService extends Service
 {
+
+    private AccountServiceBinder mBinder;
+    private AccountServiceFactory mAccountServiceFactory;
+
+
+    public AbstractAccountService(AccountServiceFactory accountServiceFactory)
+    {
+        mAccountServiceFactory = accountServiceFactory;
+    }
+
+
+    @Override
+    public final void onCreate()
+    {
+        super.onCreate();
+        mBinder = new AccountServiceBinder(mAccountServiceFactory.accountService(this));
+    }
+
+
+    @Nullable
+    @Override
+    public final IBinder onBind(Intent intent)
+    {
+        return mBinder;
+    }
+
+
+    /**
+     * A factory that creates AccountService instances.
+     */
+    public interface AccountServiceFactory
+    {
+        /**
+         * Create a new SmoothSyncApi.
+         *
+         * @param context
+         *         A Context.
+         *
+         * @return
+         */
+        public AccountService accountService(Context context);
+    }
+
 
     /**
      * A {@link Binder} that gives access to the AccountService
@@ -63,48 +106,5 @@ public abstract class AbstractAccountService extends Service
         {
             mAccountService.createAccount(bundle);
         }
-    }
-
-
-    /**
-     * A factory that creates AccountService instances.
-     */
-    public interface AccountServiceFactory
-    {
-        /**
-         * Create a new SmoothSyncApi.
-         *
-         * @param context
-         *         A Context.
-         *
-         * @return
-         */
-        public AccountService accountService(Context context);
-    }
-
-
-    private AccountServiceBinder mBinder;
-    private AccountServiceFactory mAccountServiceFactory;
-
-
-    public AbstractAccountService(AccountServiceFactory accountServiceFactory)
-    {
-        mAccountServiceFactory = accountServiceFactory;
-    }
-
-
-    @Override
-    public final void onCreate()
-    {
-        super.onCreate();
-        mBinder = new AccountServiceBinder(mAccountServiceFactory.accountService(this));
-    }
-
-
-    @Nullable
-    @Override
-    public final IBinder onBind(Intent intent)
-    {
-        return mBinder;
     }
 }

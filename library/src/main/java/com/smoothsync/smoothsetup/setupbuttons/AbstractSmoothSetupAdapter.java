@@ -22,7 +22,7 @@ import com.smoothsync.api.model.Provider;
 
 
 /**
- * Created by marten on 12.06.16.
+ * @author Marten Gajda
  */
 public abstract class AbstractSmoothSetupAdapter extends RecyclerView.Adapter<BasicButtonViewHolder> implements SetupButtonAdapter
 {

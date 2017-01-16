@@ -34,10 +34,25 @@ import java.security.cert.CertificateException;
 /**
  * Decorator for {@link Service}s that can be parcelled.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class ParcelableService implements Service, Parcelable
 {
+    public final static Creator<Service> CREATOR = new Creator<Service>()
+    {
+        @Override
+        public Service createFromParcel(Parcel source)
+        {
+            return new UnparcelledService(source.readString(), source.readString(), (URI) source.readSerializable(), source.createByteArray());
+        }
+
+
+        @Override
+        public Service[] newArray(int size)
+        {
+            return new Service[size];
+        }
+    };
     private final Service mDecorated;
 
 
@@ -108,23 +123,6 @@ public final class ParcelableService implements Service, Parcelable
             dest.writeByteArray(outputStream.toByteArray());
         }
     }
-
-
-    public final static Creator<Service> CREATOR = new Creator<Service>()
-    {
-        @Override
-        public Service createFromParcel(Parcel source)
-        {
-            return new UnparcelledService(source.readString(), source.readString(), (URI) source.readSerializable(), source.createByteArray());
-        }
-
-
-        @Override
-        public Service[] newArray(int size)
-        {
-            return new Service[size];
-        }
-    };
 
 
     private final static class UnparcelledService implements Service

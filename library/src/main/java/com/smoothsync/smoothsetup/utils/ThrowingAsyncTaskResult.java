@@ -17,7 +17,7 @@
 package com.smoothsync.smoothsetup.utils;
 
 /**
- * An AsyncTaskResult that carries an Exception.
+ * An {@link AsyncTaskResult} that carries an {@link Exception}.
  *
  * @author Marten Gajda
  */

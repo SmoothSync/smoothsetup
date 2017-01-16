@@ -35,12 +35,27 @@ import java.io.IOException;
 
 
 /**
- * A basic implementation of HttpAuthorizationFactory.
+ * A basic implementation of {@link HttpAuthorizationFactory}.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
-public class BasicHttpAuthorizationFactory implements HttpAuthorizationFactory
+public final class BasicHttpAuthorizationFactory implements HttpAuthorizationFactory
 {
+    public final static Creator<BasicHttpAuthorizationFactory> CREATOR = new Creator<BasicHttpAuthorizationFactory>()
+    {
+        @Override
+        public BasicHttpAuthorizationFactory createFromParcel(Parcel source)
+        {
+            return new BasicHttpAuthorizationFactory(source.readString(), source.readString());
+        }
+
+
+        @Override
+        public BasicHttpAuthorizationFactory[] newArray(int size)
+        {
+            return new BasicHttpAuthorizationFactory[size];
+        }
+    };
     private final String mAccountId;
     private final String mPassword;
 
@@ -108,21 +123,4 @@ public class BasicHttpAuthorizationFactory implements HttpAuthorizationFactory
         dest.writeString(mAccountId);
         dest.writeString(mPassword);
     }
-
-
-    public final static Creator<BasicHttpAuthorizationFactory> CREATOR = new Creator<BasicHttpAuthorizationFactory>()
-    {
-        @Override
-        public BasicHttpAuthorizationFactory createFromParcel(Parcel source)
-        {
-            return new BasicHttpAuthorizationFactory(source.readString(), source.readString());
-        }
-
-
-        @Override
-        public BasicHttpAuthorizationFactory[] newArray(int size)
-        {
-            return new BasicHttpAuthorizationFactory[size];
-        }
-    };
 }

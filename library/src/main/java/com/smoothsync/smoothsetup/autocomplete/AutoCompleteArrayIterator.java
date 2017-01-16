@@ -27,7 +27,7 @@ import java.util.Iterator;
 /**
  * An {@link Iterator} that iterates the expanded and filtered domains for auto-completion.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class AutoCompleteArrayIterator implements Iterator<String>
 {
@@ -37,8 +37,8 @@ public final class AutoCompleteArrayIterator implements Iterator<String>
 
     public AutoCompleteArrayIterator(String[] autoCompleteDomains, String localPart, String domainPart)
     {
-        mIterator = new ConvertedIterator<String, String>(new FilteredIterator<String>(new FilteredIterator<String>(
-                new ConvertedIterator<String, String>(new ArrayIterator<String>(autoCompleteDomains), new DomainExpansionConverter(domainPart)),
+        mIterator = new ConvertedIterator<>(new FilteredIterator<>(new FilteredIterator<>(
+                new ConvertedIterator<>(new ArrayIterator<>(autoCompleteDomains), new DomainExpansionConverter(domainPart)),
                 NonNull.<String>instance()), DomainFilter.INSTANCE), new LocalPartConverter(localPart));
     }
 

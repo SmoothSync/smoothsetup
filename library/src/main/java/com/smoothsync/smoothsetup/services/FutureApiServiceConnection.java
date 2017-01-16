@@ -26,6 +26,8 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * A {@link FutureServiceConnection} to the {@link SmoothSyncApi}.
+ *
+ * @author Marten Gajda
  */
 public final class FutureApiServiceConnection implements FutureServiceConnection<SmoothSyncApi>
 {

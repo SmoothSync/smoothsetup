@@ -23,7 +23,7 @@ import android.view.View;
 /**
  * The interface of a {@link RecyclerView.ViewHolder} that contains a button.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public interface ButtonViewHolder
 {
@@ -33,7 +33,7 @@ public interface ButtonViewHolder
      * @param text
      *         The new button text.
      */
-    public void updateText(String text);
+    void updateText(String text);
 
     /**
      * Update the text of the button.
@@ -43,7 +43,7 @@ public interface ButtonViewHolder
      * @param parameters
      *         Positional parameters.
      */
-    public void updateText(int stringResourceId, Object... parameters);
+    void updateText(int stringResourceId, Object... parameters);
 
     /**
      * Update the enabled status of the button.
@@ -51,7 +51,7 @@ public interface ButtonViewHolder
      * @param enabled
      *         {@code true} to enable the button, {@code false} to disable it.
      */
-    public void updateEnabled(boolean enabled);
+    void updateEnabled(boolean enabled);
 
     /**
      * Update the {@link View.OnClickListener} of the button.
@@ -59,5 +59,5 @@ public interface ButtonViewHolder
      * @param listener
      *         The new OnClickListener.
      */
-    public void updateOnClickListener(View.OnClickListener listener);
+    void updateOnClickListener(View.OnClickListener listener);
 }

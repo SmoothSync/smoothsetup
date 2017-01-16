@@ -21,7 +21,7 @@ import android.content.Intent;
 
 
 /**
- * Receives the INSTALL_REFERRER broadcast and stores the referrer in the shared preferences.
+ * Receives the {@code INSTALL_REFERRER} broadcast and stores the referrer in the shared preferences.
  *
  * @author Marten Gajda <marten@dmfs.org>
  */

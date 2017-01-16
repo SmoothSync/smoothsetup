@@ -36,8 +36,20 @@ import org.dmfs.pigeonpost.Dovecote;
 import org.dmfs.pigeonpost.localbroadcast.ParcelableDovecote;
 
 
+/**
+ * An activity that hosts a {@link MicroFragment}.
+ *
+ * @author Marten Gajda
+ */
 public final class MicroFragmentHostActivity extends AppCompatActivity implements Dovecote.OnPigeonReturnCallback<MicroFragmentState>
 {
+    private CollapsingToolbarLayout mCollapsingToolbar;
+    private ActionBar mActionBar;
+    private Dovecote<MicroFragmentState> mMicroFragmentStateDovecote;
+    private Dovecote<Boolean> mBackDovecote;
+    private MicroFragmentHost mMicroFragmentHost;
+
+
     public static void launch(@NonNull Context context, @NonNull MicroFragment<?> microFragment)
     {
         Intent intent = new Intent(context, MicroFragmentHostActivity.class);
@@ -47,13 +59,6 @@ public final class MicroFragmentHostActivity extends AppCompatActivity implement
         intent.setFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         context.startActivity(intent);
     }
-
-
-    private CollapsingToolbarLayout mCollapsingToolbar;
-    private ActionBar mActionBar;
-    private Dovecote<MicroFragmentState> mMicroFragmentStateDovecote;
-    private Dovecote<Boolean> mBackDovecote;
-    private MicroFragmentHost mMicroFragmentHost;
 
 
     @Override
@@ -83,7 +88,8 @@ public final class MicroFragmentHostActivity extends AppCompatActivity implement
             // load the initial MicroFragment
             Bundle nestedExtras = getIntent().getBundleExtra("org.dmfs.nestedExtras");
             MicroFragment<?> initialMicroFragment = nestedExtras.getParcelable("MicroFragment");
-            mMicroFragmentHost = new SimpleMicroFragmentFlow(initialMicroFragment, R.id.microfragment_host).withPigeonCage(mMicroFragmentStateDovecote.cage()).start(this);
+            mMicroFragmentHost = new SimpleMicroFragmentFlow(initialMicroFragment, R.id.microfragment_host).withPigeonCage(mMicroFragmentStateDovecote.cage())
+                    .start(this);
         }
         else
         {

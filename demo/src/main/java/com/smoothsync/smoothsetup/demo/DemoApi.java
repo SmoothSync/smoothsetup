@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package com.smoothsync.smoothsetup.model;
+package com.smoothsync.smoothsetup.demo;
 
-import android.os.Parcelable;
+import com.smoothsync.api.AbstractSmoothSyncApi;
 
-import org.dmfs.httpessentials.client.HttpRequest;
+import org.dmfs.httpessentials.client.HttpRequestExecutor;
+
+import java.net.URI;
 
 
 /**
- * An interface of a class that knows how to authenticate an HttpRequest.
+ * A demo API that might support upcoming features in an early version.
  *
  * @author Marten Gajda
  */
-public interface HttpAuthorizationFactory extends Parcelable
+public final class DemoApi extends AbstractSmoothSyncApi
 {
-    /**
-     * Authenticate the given HttpRequest.
-     *
-     * @param request
-     *         The HttpRequest to authenticate.
-     * @param <T>
-     *
-     * @return An authentcated HttpRequest.
-     */
-    <T> HttpRequest<T> authenticate(HttpRequest<T> request);
+    private final static URI API_URI = URI.create("https://smoothsync-services-test.appspot.com/api/v1/");
+
+
+    public DemoApi(HttpRequestExecutor executor, DemoApiClient apiClient)
+    {
+        super(executor, apiClient, API_URI);
+    }
+
 }

@@ -17,9 +17,9 @@
 package com.smoothsync.smoothsetup.utils;
 
 /**
- * An AsyncTaskResult that actually carries a value.
+ * An {@link AsyncTaskResult} that actually carries a value.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class ValueAsyncTaskResult<T> implements AsyncTaskResult<T>
 {

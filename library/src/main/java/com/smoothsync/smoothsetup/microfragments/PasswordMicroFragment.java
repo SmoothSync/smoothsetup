@@ -57,6 +57,21 @@ import org.dmfs.iterators.ConvertedIterator;
  */
 public final class PasswordMicroFragment implements MicroFragment<Account>
 {
+    public final static Creator<PasswordMicroFragment> CREATOR = new Creator<PasswordMicroFragment>()
+    {
+        @Override
+        public PasswordMicroFragment createFromParcel(Parcel source)
+        {
+            return new PasswordMicroFragment((Account) source.readParcelable(getClass().getClassLoader()));
+        }
+
+
+        @Override
+        public PasswordMicroFragment[] newArray(int size)
+        {
+            return new PasswordMicroFragment[0];
+        }
+    };
     @NonNull
     private final Account mAccount;
 
@@ -114,23 +129,6 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
     {
         dest.writeParcelable(mAccount, flags);
     }
-
-
-    public final static Creator<PasswordMicroFragment> CREATOR = new Creator<PasswordMicroFragment>()
-    {
-        @Override
-        public PasswordMicroFragment createFromParcel(Parcel source)
-        {
-            return new PasswordMicroFragment((Account) source.readParcelable(getClass().getClassLoader()));
-        }
-
-
-        @Override
-        public PasswordMicroFragment[] newArray(int size)
-        {
-            return new PasswordMicroFragment[0];
-        }
-    };
 
 
     /**

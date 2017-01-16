@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * An auto-complete adapter that's backed by the SmoothSync API.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class ApiAutoCompleteAdapter extends AbstractAutoCompleteAdapter
 {

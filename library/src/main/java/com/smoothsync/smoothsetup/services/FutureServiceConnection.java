@@ -24,7 +24,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Interface of an object that holds a {@link android.content.ServiceConnection}.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public interface FutureServiceConnection<T>
 {

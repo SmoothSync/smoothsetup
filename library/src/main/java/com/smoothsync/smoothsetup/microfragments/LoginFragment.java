@@ -60,28 +60,6 @@ import org.dmfs.httpessentials.exceptions.ProtocolException;
  */
 public final class LoginFragment extends Fragment implements SetupButtonAdapter.OnProviderSelectListener
 {
-    public interface Params
-    {
-        LoginFormAdapterFactory loginFormAdapterFactory();
-
-        String accountName();
-    }
-
-
-    public interface LoginFormAdapterFactory extends Parcelable
-    {
-        @NonNull
-        <T extends Adapter & Filterable> T autoCompleteAdapter(@NonNull Context context, @NonNull SmoothSyncApi api);
-
-        @NonNull
-        <T extends RecyclerView.Adapter<BasicButtonViewHolder>, SetupButtonAdapter> T setupButtonAdapter(@NonNull Context context,
-                                                                                                         @NonNull com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter.OnProviderSelectListener providerSelectListener, SmoothSyncApi api);
-
-        @NonNull
-        String promptText(@NonNull Context context);
-    }
-
-
     private AutoCompleteTextView mLogin;
     private FutureServiceConnection<SmoothSyncApi> mApiService;
     private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
@@ -188,5 +166,27 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
                 new Swiped(
                         new ForwardTransition(
                                 new ProvidersLoadMicroFragment(mLogin.getText().toString()))));
+    }
+
+
+    public interface Params
+    {
+        LoginFormAdapterFactory loginFormAdapterFactory();
+
+        String accountName();
+    }
+
+
+    public interface LoginFormAdapterFactory extends Parcelable
+    {
+        @NonNull
+        <T extends Adapter & Filterable> T autoCompleteAdapter(@NonNull Context context, @NonNull SmoothSyncApi api);
+
+        @NonNull
+        <T extends RecyclerView.Adapter<BasicButtonViewHolder>, SetupButtonAdapter> T setupButtonAdapter(@NonNull Context context,
+                                                                                                         @NonNull com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter.OnProviderSelectListener providerSelectListener, SmoothSyncApi api);
+
+        @NonNull
+        String promptText(@NonNull Context context);
     }
 }

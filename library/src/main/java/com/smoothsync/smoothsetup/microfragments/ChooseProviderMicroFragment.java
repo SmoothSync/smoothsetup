@@ -45,8 +45,6 @@ import org.dmfs.httpessentials.exceptions.ProtocolException;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import static java.security.AccessController.getContext;
-
 
 /**
  * A {@link MicroFragment} that presents the user with a list of providers to choose from.
@@ -55,6 +53,21 @@ import static java.security.AccessController.getContext;
  */
 public final class ChooseProviderMicroFragment implements MicroFragment<ChooseProviderMicroFragment.ProviderListFragment.Params>
 {
+    public final static Creator<ChooseProviderMicroFragment> CREATOR = new Creator<ChooseProviderMicroFragment>()
+    {
+        @Override
+        public ChooseProviderMicroFragment createFromParcel(Parcel source)
+        {
+            return new ChooseProviderMicroFragment((Provider[]) source.readParcelableArray(getClass().getClassLoader()), source.readString());
+        }
+
+
+        @Override
+        public ChooseProviderMicroFragment[] newArray(int size)
+        {
+            return new ChooseProviderMicroFragment[size];
+        }
+    };
     private final ParcelableProvider[] mProviders;
     private final String mAccount;
 
@@ -160,23 +173,6 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
     }
 
 
-    public final static Creator<ChooseProviderMicroFragment> CREATOR = new Creator<ChooseProviderMicroFragment>()
-    {
-        @Override
-        public ChooseProviderMicroFragment createFromParcel(Parcel source)
-        {
-            return new ChooseProviderMicroFragment((Provider[]) source.readParcelableArray(getClass().getClassLoader()), source.readString());
-        }
-
-
-        @Override
-        public ChooseProviderMicroFragment[] newArray(int size)
-        {
-            return new ChooseProviderMicroFragment[size];
-        }
-    };
-
-
     /**
      * A Fragment that shows a list of providers.
      *
@@ -184,16 +180,6 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
      */
     public static final class ProviderListFragment extends Fragment implements SetupButtonAdapter.OnProviderSelectListener
     {
-        interface Params
-        {
-            @NonNull
-            Provider[] provider();
-
-            @NonNull
-            String account();
-        }
-
-
         private RecyclerView mView;
         private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
 
@@ -224,6 +210,16 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
         public void onOtherSelected()
         {
             // should not be called
+        }
+
+
+        interface Params
+        {
+            @NonNull
+            Provider[] provider();
+
+            @NonNull
+            String account();
         }
     }
 }

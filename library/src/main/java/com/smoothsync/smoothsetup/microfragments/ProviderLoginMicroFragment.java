@@ -48,6 +48,21 @@ import org.dmfs.httpessentials.exceptions.ProtocolException;
  */
 public final class ProviderLoginMicroFragment implements MicroFragment<LoginFragment.Params>
 {
+    public final static Creator<ProviderLoginMicroFragment> CREATOR = new Creator<ProviderLoginMicroFragment>()
+    {
+        @Override
+        public ProviderLoginMicroFragment createFromParcel(Parcel source)
+        {
+            return new ProviderLoginMicroFragment((Provider) source.readParcelable(getClass().getClassLoader()), source.readString());
+        }
+
+
+        @Override
+        public ProviderLoginMicroFragment[] newArray(int size)
+        {
+            return new ProviderLoginMicroFragment[size];
+        }
+    };
     @Nullable
     private final Provider mProvider;
     @Nullable
@@ -135,25 +150,23 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
     }
 
 
-    public final static Creator<ProviderLoginMicroFragment> CREATOR = new Creator<ProviderLoginMicroFragment>()
-    {
-        @Override
-        public ProviderLoginMicroFragment createFromParcel(Parcel source)
-        {
-            return new ProviderLoginMicroFragment((Provider) source.readParcelable(getClass().getClassLoader()), source.readString());
-        }
-
-
-        @Override
-        public ProviderLoginMicroFragment[] newArray(int size)
-        {
-            return new ProviderLoginMicroFragment[size];
-        }
-    };
-
-
     private final static class ProviderLoginFormAdapterFactory implements LoginFragment.LoginFormAdapterFactory
     {
+        public final static Creator<LoginFragment.LoginFormAdapterFactory> CREATOR = new Creator<LoginFragment.LoginFormAdapterFactory>()
+        {
+            @Override
+            public LoginFragment.LoginFormAdapterFactory createFromParcel(Parcel source)
+            {
+                return new ProviderLoginFormAdapterFactory((Provider) source.readParcelable(getClass().getClassLoader()));
+            }
+
+
+            @Override
+            public LoginFragment.LoginFormAdapterFactory[] newArray(int size)
+            {
+                return new ProviderLoginFormAdapterFactory[size];
+            }
+        };
         private final Provider mProvider;
         private MicroFragmentEnvironment<ChooseProviderMicroFragment.ProviderListFragment.Params> mMicroFragmentEnvironment;
 
@@ -208,22 +221,5 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
         {
             dest.writeParcelable(new ParcelableProvider(mProvider), flags);
         }
-
-
-        public final static Creator<LoginFragment.LoginFormAdapterFactory> CREATOR = new Creator<LoginFragment.LoginFormAdapterFactory>()
-        {
-            @Override
-            public LoginFragment.LoginFormAdapterFactory createFromParcel(Parcel source)
-            {
-                return new ProviderLoginFormAdapterFactory((Provider) source.readParcelable(getClass().getClassLoader()));
-            }
-
-
-            @Override
-            public LoginFragment.LoginFormAdapterFactory[] newArray(int size)
-            {
-                return new ProviderLoginFormAdapterFactory[size];
-            }
-        };
     }
 }

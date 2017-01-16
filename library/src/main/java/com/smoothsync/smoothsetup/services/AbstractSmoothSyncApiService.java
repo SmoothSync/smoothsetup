@@ -35,51 +35,10 @@ import java.io.IOException;
 /**
  * An abstract service that provides the SmoothSync API.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public abstract class AbstractSmoothSyncApiService extends Service
 {
-
-    /**
-     * A {@link Binder} that gives access to the SmoothSync API.
-     */
-    private final static class SmoothSyncApiServiceBinder extends Binder implements SmoothSyncApi
-    {
-
-        private final SmoothSyncApi mApi;
-
-
-        public SmoothSyncApiServiceBinder(SmoothSyncApi api)
-        {
-            this.mApi = api;
-        }
-
-
-        @Override
-        public <T> T resultOf(SmoothSyncApiRequest<T> smoothSyncApiRequest) throws IOException, ProtocolError, ProtocolException
-        {
-            // just forward the call.
-            return mApi.resultOf(smoothSyncApiRequest);
-        }
-    }
-
-
-    /**
-     * A factory that creates SmoothSyncApi instances.
-     */
-    public interface SmoothSyncApiFactory
-    {
-        /**
-         * Create a new SmoothSyncApi.
-         *
-         * @param context
-         *         A Context.
-         *
-         * @return
-         */
-        public SmoothSyncApi smoothSyncApi(Context context);
-    }
-
 
     private SmoothSyncApiServiceBinder mBinder;
     private SmoothSyncApiFactory mApiFactory;
@@ -104,5 +63,46 @@ public abstract class AbstractSmoothSyncApiService extends Service
     public final IBinder onBind(Intent intent)
     {
         return mBinder;
+    }
+
+
+    /**
+     * A factory that creates SmoothSyncApi instances.
+     */
+    public interface SmoothSyncApiFactory
+    {
+        /**
+         * Create a new SmoothSyncApi.
+         *
+         * @param context
+         *         A Context.
+         *
+         * @return
+         */
+        public SmoothSyncApi smoothSyncApi(Context context);
+    }
+
+
+    /**
+     * A {@link Binder} that gives access to the SmoothSync API.
+     */
+    private final static class SmoothSyncApiServiceBinder extends Binder implements SmoothSyncApi
+    {
+
+        private final SmoothSyncApi mApi;
+
+
+        public SmoothSyncApiServiceBinder(SmoothSyncApi api)
+        {
+            this.mApi = api;
+        }
+
+
+        @Override
+        public <T> T resultOf(SmoothSyncApiRequest<T> smoothSyncApiRequest) throws IOException, ProtocolError, ProtocolException
+        {
+            // just forward the call.
+            return mApi.resultOf(smoothSyncApiRequest);
+        }
     }
 }

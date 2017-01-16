@@ -27,7 +27,7 @@ import java.net.URI;
  *
  * @author Marten Gajda
  */
-public class DefaultPasswordProbeFactory implements PasswordProbeFactory
+public final class DefaultPasswordProbeFactory implements PasswordProbeFactory
 {
     @Override
     public AppSpecificPasswordProbe forUrl(URI url)

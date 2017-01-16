@@ -51,6 +51,23 @@ import org.dmfs.android.microfragments.transitions.XFaded;
 public final class WaitForReferrerMicroFragment implements MicroFragment<Void>
 {
 
+    public final static Creator<WaitForReferrerMicroFragment> CREATOR = new Creator<WaitForReferrerMicroFragment>()
+    {
+        @Override
+        public WaitForReferrerMicroFragment createFromParcel(Parcel source)
+        {
+            return new WaitForReferrerMicroFragment();
+        }
+
+
+        @Override
+        public WaitForReferrerMicroFragment[] newArray(int size)
+        {
+            return new WaitForReferrerMicroFragment[size];
+        }
+    };
+
+
     public WaitForReferrerMicroFragment()
     {
         // nothing to do here
@@ -105,23 +122,6 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<Void>
     }
 
 
-    public final static Creator<WaitForReferrerMicroFragment> CREATOR = new Creator<WaitForReferrerMicroFragment>()
-    {
-        @Override
-        public WaitForReferrerMicroFragment createFromParcel(Parcel source)
-        {
-            return new WaitForReferrerMicroFragment();
-        }
-
-
-        @Override
-        public WaitForReferrerMicroFragment[] newArray(int size)
-        {
-            return new WaitForReferrerMicroFragment[size];
-        }
-    };
-
-
     public final static class WaitForReferrerFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener
     {
         private final static int WAIT_TIME = 1000; // milliseconds
@@ -130,6 +130,23 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<Void>
         private SharedPreferences mPreferences;
         private MicroFragmentEnvironment<Void> mMicroFragmentEnvironment;
         private Timestamp mTimeStamp = new UiTimestamp();
+        /**
+         * A Runnable that's executed when the waiting time is up and no broadcast was received.
+         */
+        private final Runnable mMoveOn = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                mPreferences.unregisterOnSharedPreferenceChangeListener(WaitForReferrerFragment.this);
+
+                // make sure we won't wait for the broadcast again
+                mPreferences.edit().putString("referrer", "").apply();
+
+                // move on without provider
+                mMicroFragmentEnvironment.host().execute(getActivity(), new XFaded(new ForwardTransition(new GenericProviderMicroFragment(), mTimeStamp)));
+            }
+        };
 
 
         @Nullable
@@ -203,24 +220,5 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<Void>
                                                     uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_PROVIDER),
                                                     uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_ACCOUNT)), mTimeStamp)));
         }
-
-
-        /**
-         * A Runnable that's executed when the waiting time is up and no broadcast was received.
-         */
-        private final Runnable mMoveOn = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                mPreferences.unregisterOnSharedPreferenceChangeListener(WaitForReferrerFragment.this);
-
-                // make sure we won't wait for the broadcast again
-                mPreferences.edit().putString("referrer", "").apply();
-
-                // move on without provider
-                mMicroFragmentEnvironment.host().execute(getActivity(), new XFaded(new ForwardTransition(new GenericProviderMicroFragment(), mTimeStamp)));
-            }
-        };
     }
 }

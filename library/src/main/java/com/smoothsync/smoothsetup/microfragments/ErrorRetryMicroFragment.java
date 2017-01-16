@@ -45,6 +45,21 @@ import org.dmfs.android.microfragments.transitions.BackTransition;
  */
 public final class ErrorRetryMicroFragment implements MicroFragment<ErrorRetryMicroFragment.ErrorFragment.Params>
 {
+    public final static Creator<ErrorRetryMicroFragment> CREATOR = new Creator<ErrorRetryMicroFragment>()
+    {
+        @Override
+        public ErrorRetryMicroFragment createFromParcel(Parcel source)
+        {
+            return new ErrorRetryMicroFragment(source.readString(), source.readString(), source.readString());
+        }
+
+
+        @Override
+        public ErrorRetryMicroFragment[] newArray(int size)
+        {
+            return new ErrorRetryMicroFragment[size];
+        }
+    };
     @Nullable
     private final String mTitle;
     @NonNull
@@ -141,38 +156,11 @@ public final class ErrorRetryMicroFragment implements MicroFragment<ErrorRetryMi
     }
 
 
-    public final static Creator<ErrorRetryMicroFragment> CREATOR = new Creator<ErrorRetryMicroFragment>()
-    {
-        @Override
-        public ErrorRetryMicroFragment createFromParcel(Parcel source)
-        {
-            return new ErrorRetryMicroFragment(source.readString(), source.readString(), source.readString());
-        }
-
-
-        @Override
-        public ErrorRetryMicroFragment[] newArray(int size)
-        {
-            return new ErrorRetryMicroFragment[size];
-        }
-    };
-
-
     /**
      * A Fragment that shows an error and a button to return to the previous step.
      */
     public final static class ErrorFragment extends Fragment implements View.OnClickListener
     {
-        interface Params
-        {
-            @NonNull
-            String error();
-
-            @Nullable
-            String buttonText();
-        }
-
-
         private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
 
 
@@ -203,6 +191,16 @@ public final class ErrorRetryMicroFragment implements MicroFragment<ErrorRetryMi
         public void onClick(View v)
         {
             mMicroFragmentEnvironment.host().execute(getActivity(), new BackTransition());
+        }
+
+
+        interface Params
+        {
+            @NonNull
+            String error();
+
+            @Nullable
+            String buttonText();
         }
     }
 }

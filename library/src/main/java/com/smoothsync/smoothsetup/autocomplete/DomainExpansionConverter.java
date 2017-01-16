@@ -52,7 +52,7 @@ import org.dmfs.iterators.AbstractConvertedIterator;
  * **.example.com                  myserver.ex.example.com
  * </pre>
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class DomainExpansionConverter implements AbstractConvertedIterator.Converter<String, String>
 {

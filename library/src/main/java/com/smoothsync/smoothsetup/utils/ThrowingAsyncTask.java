@@ -22,24 +22,18 @@ import java.lang.ref.WeakReference;
 
 
 /**
- * An AsyncTask that returns results and Exceptions of a background operation to a callback.
+ * An {@link AsyncTask} that returns results and Exceptions of a background operation to a callback.
  *
  * @author Marten Gajda
  */
 public abstract class ThrowingAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, AsyncTaskResult<Result>>
 {
-    public interface OnResultCallback<Result>
-    {
-        public void onResult(AsyncTaskResult<Result> result);
-    }
-
-
     private final WeakReference<OnResultCallback<Result>> mCallbackReference;
 
 
     public ThrowingAsyncTask(OnResultCallback<Result> callback)
     {
-        mCallbackReference = new WeakReference<OnResultCallback<Result>>(callback);
+        mCallbackReference = new WeakReference<>(callback);
     }
 
 
@@ -48,11 +42,11 @@ public abstract class ThrowingAsyncTask<Params, Progress, Result> extends AsyncT
     {
         try
         {
-            return new ValueAsyncTaskResult<Result>(doInBackgroundWithException(params));
+            return new ValueAsyncTaskResult<>(doInBackgroundWithException(params));
         }
         catch (Exception e)
         {
-            return new ThrowingAsyncTaskResult<Result>(e);
+            return new ThrowingAsyncTaskResult<>(e);
         }
     }
 
@@ -68,5 +62,11 @@ public abstract class ThrowingAsyncTask<Params, Progress, Result> extends AsyncT
         {
             callback.onResult(asyncTaskResult);
         }
+    }
+
+
+    public interface OnResultCallback<Result>
+    {
+        void onResult(AsyncTaskResult<Result> result);
     }
 }

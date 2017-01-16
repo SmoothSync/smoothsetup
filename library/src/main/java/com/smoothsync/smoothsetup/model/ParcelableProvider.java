@@ -38,6 +38,40 @@ import java.util.List;
  */
 public final class ParcelableProvider implements Provider, Parcelable
 {
+    public final static Creator<Provider> CREATOR = new Creator<Provider>()
+    {
+        @Override
+        public Provider createFromParcel(Parcel source)
+        {
+            ClassLoader classLoader = getClass().getClassLoader();
+            String id = source.readString();
+            String name = source.readString();
+            String[] domains = source.createStringArray();
+            List<Link> links = new ArrayList<>();
+            Link link = source.readParcelable(classLoader);
+            while (link != null)
+            {
+                links.add(link);
+                link = source.readParcelable(classLoader);
+            }
+            List<Service> services = new ArrayList<>();
+            Service service = source.readParcelable(classLoader);
+            while (service != null)
+            {
+                services.add(service);
+                service = source.readParcelable(classLoader);
+            }
+
+            return new ParcelableProvider(new UnparcelledProvider(id, name, domains, links, services));
+        }
+
+
+        @Override
+        public Provider[] newArray(int size)
+        {
+            return new Provider[size];
+        }
+    };
     private final Provider mDecorated;
 
 
@@ -118,42 +152,6 @@ public final class ParcelableProvider implements Provider, Parcelable
 
         }
     }
-
-
-    public final static Creator<Provider> CREATOR = new Creator<Provider>()
-    {
-        @Override
-        public Provider createFromParcel(Parcel source)
-        {
-            ClassLoader classLoader = getClass().getClassLoader();
-            String id = source.readString();
-            String name = source.readString();
-            String[] domains = source.createStringArray();
-            List<Link> links = new ArrayList<>();
-            Link link = source.readParcelable(classLoader);
-            while (link != null)
-            {
-                links.add(link);
-                link = source.readParcelable(classLoader);
-            }
-            List<Service> services = new ArrayList<>();
-            Service service = source.readParcelable(classLoader);
-            while (service != null)
-            {
-                services.add(service);
-                service = source.readParcelable(classLoader);
-            }
-
-            return new ParcelableProvider(new UnparcelledProvider(id, name, domains, links, services));
-        }
-
-
-        @Override
-        public Provider[] newArray(int size)
-        {
-            return new Provider[size];
-        }
-    };
 
 
     private final static class UnparcelledProvider implements Provider

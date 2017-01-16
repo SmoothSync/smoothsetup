@@ -43,6 +43,21 @@ import org.dmfs.android.microfragments.transitions.ResetTransition;
  */
 public final class ErrorResetMicroFragment implements MicroFragment<MicroFragment<?>>
 {
+    public final static Creator<ErrorResetMicroFragment> CREATOR = new Creator<ErrorResetMicroFragment>()
+    {
+        @Override
+        public ErrorResetMicroFragment createFromParcel(Parcel source)
+        {
+            return new ErrorResetMicroFragment((MicroFragment<?>) source.readParcelable(getClass().getClassLoader()));
+        }
+
+
+        @Override
+        public ErrorResetMicroFragment[] newArray(int size)
+        {
+            return new ErrorResetMicroFragment[size];
+        }
+    };
     @NonNull
     private final MicroFragment<?> mRetryFragment;
 
@@ -100,23 +115,6 @@ public final class ErrorResetMicroFragment implements MicroFragment<MicroFragmen
     {
         dest.writeParcelable(mRetryFragment, flags);
     }
-
-
-    public final static Creator<ErrorResetMicroFragment> CREATOR = new Creator<ErrorResetMicroFragment>()
-    {
-        @Override
-        public ErrorResetMicroFragment createFromParcel(Parcel source)
-        {
-            return new ErrorResetMicroFragment((MicroFragment<?>) source.readParcelable(getClass().getClassLoader()));
-        }
-
-
-        @Override
-        public ErrorResetMicroFragment[] newArray(int size)
-        {
-            return new ErrorResetMicroFragment[size];
-        }
-    };
 
 
     /**

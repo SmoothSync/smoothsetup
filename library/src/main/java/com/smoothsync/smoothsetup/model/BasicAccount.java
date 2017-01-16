@@ -25,10 +25,26 @@ import com.smoothsync.api.model.Provider;
 /**
  * A basic implementation of an {@link Account}.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class BasicAccount implements Account
 {
+    public final static Creator<BasicAccount> CREATOR = new Creator<BasicAccount>()
+    {
+
+        @Override
+        public BasicAccount createFromParcel(Parcel source)
+        {
+            return new BasicAccount(source.readString(), (Provider) source.readParcelable(getClass().getClassLoader()));
+        }
+
+
+        @Override
+        public BasicAccount[] newArray(int size)
+        {
+            return new BasicAccount[0];
+        }
+    };
     private final String mAccountId;
     private final Provider mProvider;
 
@@ -74,22 +90,4 @@ public final class BasicAccount implements Account
             dest.writeParcelable(new ParcelableProvider(mProvider), flags);
         }
     }
-
-
-    public final static Creator<BasicAccount> CREATOR = new Creator<BasicAccount>()
-    {
-
-        @Override
-        public BasicAccount createFromParcel(Parcel source)
-        {
-            return new BasicAccount(source.readString(), (Provider) source.readParcelable(getClass().getClassLoader()));
-        }
-
-
-        @Override
-        public BasicAccount[] newArray(int size)
-        {
-            return new BasicAccount[0];
-        }
-    };
 }

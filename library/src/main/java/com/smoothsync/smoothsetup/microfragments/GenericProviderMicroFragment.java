@@ -44,6 +44,23 @@ import org.dmfs.android.microfragments.MicroFragmentHost;
  */
 public final class GenericProviderMicroFragment implements MicroFragment<LoginFragment.Params>
 {
+    public final static Creator<GenericProviderMicroFragment> CREATOR = new Creator<GenericProviderMicroFragment>()
+    {
+        @Override
+        public GenericProviderMicroFragment createFromParcel(Parcel source)
+        {
+            return new GenericProviderMicroFragment();
+        }
+
+
+        @Override
+        public GenericProviderMicroFragment[] newArray(int size)
+        {
+            return new GenericProviderMicroFragment[size];
+        }
+    };
+
+
     public GenericProviderMicroFragment()
     {
         // nothing to do
@@ -112,25 +129,25 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
     }
 
 
-    public final static Creator<GenericProviderMicroFragment> CREATOR = new Creator<GenericProviderMicroFragment>()
-    {
-        @Override
-        public GenericProviderMicroFragment createFromParcel(Parcel source)
-        {
-            return new GenericProviderMicroFragment();
-        }
-
-
-        @Override
-        public GenericProviderMicroFragment[] newArray(int size)
-        {
-            return new GenericProviderMicroFragment[size];
-        }
-    };
-
-
     private final static class ApiLoginFormAdapterFactory implements LoginFragment.LoginFormAdapterFactory
     {
+        public final static Creator<LoginFragment.LoginFormAdapterFactory> CREATOR = new Creator<LoginFragment.LoginFormAdapterFactory>()
+        {
+            @Override
+            public LoginFragment.LoginFormAdapterFactory createFromParcel(Parcel source)
+            {
+                return new ApiLoginFormAdapterFactory();
+            }
+
+
+            @Override
+            public LoginFragment.LoginFormAdapterFactory[] newArray(int size)
+            {
+                return new ApiLoginFormAdapterFactory[size];
+            }
+        };
+
+
         @NonNull
         @Override
         public <T extends RecyclerView.Adapter<BasicButtonViewHolder>, SetupButtonAdapter> T setupButtonAdapter(@NonNull Context context,
@@ -167,22 +184,5 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
         public void writeToParcel(Parcel dest, int flags)
         {
         }
-
-
-        public final static Creator<LoginFragment.LoginFormAdapterFactory> CREATOR = new Creator<LoginFragment.LoginFormAdapterFactory>()
-        {
-            @Override
-            public LoginFragment.LoginFormAdapterFactory createFromParcel(Parcel source)
-            {
-                return new ApiLoginFormAdapterFactory();
-            }
-
-
-            @Override
-            public LoginFragment.LoginFormAdapterFactory[] newArray(int size)
-            {
-                return new ApiLoginFormAdapterFactory[size];
-            }
-        };
     }
 }

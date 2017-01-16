@@ -27,7 +27,7 @@ import java.net.UnknownHostException;
  * <p/>
  * Note, by design this will trigger a network request, so don't use this on the UI thread.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class DomainFilter implements FilteredIterator.IteratorFilter<String>
 {

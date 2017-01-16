@@ -58,6 +58,18 @@ public final class AppSpecificWebviewFragment extends Fragment implements View.O
     private String mAppSpecificPassword;
     private AppSpecificPasswordProbe mPasswordProbe;
     private Handler mHandler = new Handler();
+    private final Runnable mPasswordProbeRunnable = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            if (mWebView != null && mPasswordProbe != null)
+            {
+                mPasswordProbe.executeOn(mWebView);
+            }
+            mHandler.postDelayed(mPasswordProbeRunnable, PASSWORD_PROBE_PERIOD);
+        }
+    };
     private Snackbar mSnackbar;
     private ProgressBar mProgress;
 
@@ -203,18 +215,4 @@ public final class AppSpecificWebviewFragment extends Fragment implements View.O
         }
         return false;
     }
-
-
-    private final Runnable mPasswordProbeRunnable = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            if (mWebView != null && mPasswordProbe != null)
-            {
-                mPasswordProbe.executeOn(mWebView);
-            }
-            mHandler.postDelayed(mPasswordProbeRunnable, PASSWORD_PROBE_PERIOD);
-        }
-    };
 }
