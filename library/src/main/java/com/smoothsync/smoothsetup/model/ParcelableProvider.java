@@ -16,19 +16,20 @@
 
 package com.smoothsync.smoothsetup.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import com.smoothsync.api.model.Provider;
-import com.smoothsync.api.model.Service;
-
-import org.dmfs.httpessentials.exceptions.ProtocolException;
-import org.dmfs.httpessentials.types.Link;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import org.dmfs.httpessentials.exceptions.ProtocolException;
+import org.dmfs.httpessentials.types.Link;
+import org.dmfs.rfc5545.DateTime;
+
+import com.smoothsync.api.model.Provider;
+import com.smoothsync.api.model.Service;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 
 /**
@@ -61,8 +62,9 @@ public final class ParcelableProvider implements Provider, Parcelable
                 services.add(service);
                 service = source.readParcelable(classLoader);
             }
+            DateTime lastModified = new DateTime(source.readLong());
 
-            return new ParcelableProvider(new UnparcelledProvider(id, name, domains, links, services));
+            return new ParcelableProvider(new UnparcelledProvider(id, name, domains, links, services, lastModified));
         }
 
 
@@ -116,6 +118,12 @@ public final class ParcelableProvider implements Provider, Parcelable
     }
 
 
+    public DateTime lastModified() throws ProtocolException
+    {
+        return mDecorated.lastModified();
+    };
+
+
     @Override
     public int describeContents()
     {
@@ -146,6 +154,7 @@ public final class ParcelableProvider implements Provider, Parcelable
                 dest.writeParcelable(service instanceof Parcelable ? (Parcelable) service : new ParcelableService(service), 0);
             }
             dest.writeParcelable(null, 0);
+            dest.writeLong(mDecorated.lastModified().getTimestamp());
         }
         catch (ProtocolException e)
         {
@@ -162,15 +171,17 @@ public final class ParcelableProvider implements Provider, Parcelable
         private final String[] mDomains;
         private final List<Link> mLinks;
         private final List<Service> mServices;
+        private final DateTime mLastModified;
 
 
-        public UnparcelledProvider(String id, String name, String[] domains, List<Link> links, List<Service> services)
+        public UnparcelledProvider(String id, String name, String[] domains, List<Link> links, List<Service> services, DateTime lastModified)
         {
             mId = id;
             mName = name;
             mDomains = domains;
             mLinks = links;
             mServices = services;
+            mLastModified = lastModified;
         }
 
 
@@ -206,6 +217,13 @@ public final class ParcelableProvider implements Provider, Parcelable
         public Iterator<Service> services() throws ProtocolException
         {
             return Collections.unmodifiableList(mServices).iterator();
+        }
+
+
+        @Override
+        public DateTime lastModified() throws ProtocolException
+        {
+            return mLastModified;
         }
     }
 
