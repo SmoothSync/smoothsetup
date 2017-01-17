@@ -204,7 +204,7 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
         {
             super.onResume();
             new ProviderLoadTask(new SmoothSyncApiProxy(mApiService), this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
-                    mMicroFragmentEnvironment.microFragment().parameters().account());
+                    mMicroFragmentEnvironment.microFragment().parameters().providerId());
         }
 
 
