@@ -38,19 +38,20 @@ import java.security.cert.CertificateException;
  */
 public final class ParcelableService implements Service, Parcelable
 {
-    public final static Creator<Service> CREATOR = new Creator<Service>()
+    public final static Creator<ParcelableService> CREATOR = new Creator<ParcelableService>()
     {
         @Override
-        public Service createFromParcel(Parcel source)
+        public ParcelableService createFromParcel(Parcel source)
         {
-            return new UnparcelledService(source.readString(), source.readString(), (URI) source.readSerializable(), source.createByteArray());
+            return new ParcelableService(
+                    new UnparcelledService(source.readString(), source.readString(), (URI) source.readSerializable(), source.createByteArray()));
         }
 
 
         @Override
-        public Service[] newArray(int size)
+        public ParcelableService[] newArray(int size)
         {
-            return new Service[size];
+            return new ParcelableService[size];
         }
     };
     private final Service mDecorated;

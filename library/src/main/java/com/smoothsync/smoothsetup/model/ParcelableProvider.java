@@ -16,20 +16,20 @@
 
 package com.smoothsync.smoothsetup.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.smoothsync.api.model.Provider;
+import com.smoothsync.api.model.Service;
 
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.httpessentials.types.Link;
 import org.dmfs.rfc5545.DateTime;
 
-import com.smoothsync.api.model.Provider;
-import com.smoothsync.api.model.Service;
-
-import android.os.Parcel;
-import android.os.Parcelable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -39,10 +39,10 @@ import android.os.Parcelable;
  */
 public final class ParcelableProvider implements Provider, Parcelable
 {
-    public final static Creator<Provider> CREATOR = new Creator<Provider>()
+    public final static Creator<ParcelableProvider> CREATOR = new Creator<ParcelableProvider>()
     {
         @Override
-        public Provider createFromParcel(Parcel source)
+        public ParcelableProvider createFromParcel(Parcel source)
         {
             ClassLoader classLoader = getClass().getClassLoader();
             String id = source.readString();
@@ -69,9 +69,9 @@ public final class ParcelableProvider implements Provider, Parcelable
 
 
         @Override
-        public Provider[] newArray(int size)
+        public ParcelableProvider[] newArray(int size)
         {
-            return new Provider[size];
+            return new ParcelableProvider[size];
         }
     };
     private final Provider mDecorated;
@@ -121,7 +121,10 @@ public final class ParcelableProvider implements Provider, Parcelable
     public DateTime lastModified() throws ProtocolException
     {
         return mDecorated.lastModified();
-    };
+    }
+
+
+    ;
 
 
     @Override

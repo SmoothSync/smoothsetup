@@ -15,3 +15,7 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+
+# Make sure the callback method is not renamed by ProGuard because its name is referred to in a Javascript snipped.
+-keep class com.smoothsync.smoothsetup.microfragments.appspecificpassword.AppSpecificPasswordCallback { *; }
