@@ -17,11 +17,10 @@
 package com.smoothsync.smoothsetup.microfragments.appspecificpassword;
 
 import android.annotation.SuppressLint;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -40,6 +39,8 @@ import com.smoothsync.smoothsetup.R;
 
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.transitions.BackTransition;
+import org.dmfs.android.microfragments.transitions.BackWithResultTransition;
+import org.dmfs.pigeonpost.Cage;
 
 import java.net.URI;
 
@@ -51,13 +52,24 @@ import java.net.URI;
  */
 public final class AppSpecificWebviewFragment extends Fragment implements View.OnKeyListener
 {
-    public final static String ARG_URL = "url";
-    public static final int PASSWORD_PROBE_PERIOD = 500;
 
+    public static final int PASSWORD_PROBE_PERIOD = 500;
+    ;
+    private final Handler mHandler = new Handler();
     private WebView mWebView;
     private String mAppSpecificPassword;
+    private final View.OnClickListener mOnCopyPasswordListener = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            FragmentEnvironment<Params> env = new FragmentEnvironment<>(AppSpecificWebviewFragment.this);
+            env.host().execute(
+                    getActivity(),
+                    new BackWithResultTransition<>(env.microFragment().parameter().cage(), new SimplePasswordResult(mAppSpecificPassword)));
+        }
+    };
     private AppSpecificPasswordProbe mPasswordProbe;
-    private Handler mHandler = new Handler();
     private final Runnable mPasswordProbeRunnable = new Runnable()
     {
         @Override
@@ -79,11 +91,8 @@ public final class AppSpecificWebviewFragment extends Fragment implements View.O
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        // create and configure the WebView
-//        mWebView = new CoordinatorWebView(getActivity());
         View root = inflater.inflate(R.layout.smoothsetup_microfragment_webview, container, false);
         mWebView = (WebView) root.findViewById(R.id.smoothsetup_webview);
-        //       mWebView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setDomStorageEnabled(true);
         mWebView.setOnKeyListener(this);
@@ -109,26 +118,12 @@ public final class AppSpecificWebviewFragment extends Fragment implements View.O
                     mSnackbar = Snackbar.make(mWebView, getString(R.string.smoothsetup_snackbar_found_app_specific_password, appSpecificPassword),
                             Snackbar.LENGTH_INDEFINITE)
                             .setAction(R.string.smoothsetup_button_copy_app_specific_password,
-                                    new View.OnClickListener()
-                                    {
-                                        @Override
-                                        public void onClick(View v)
-                                        {
-                                            ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                                            ClipData clip = ClipData.newPlainText(getString(R.string.smoothsetup_label_app_specific_password),
-                                                    appSpecificPassword);
-                                            clipboard.setPrimaryClip(clip);
-
-                                            mSnackbar = Snackbar.make(mWebView, R.string.smoothsetup_snackbar_copied_app_specific_password,
-                                                    Snackbar.LENGTH_INDEFINITE);
-                                            mSnackbar.show();
-                                        }
-                                    });
+                                    mOnCopyPasswordListener);
                     mSnackbar.show();
                 }
             }
         }, "SmoothSetup");
-        String url = new FragmentEnvironment<URI>(this).microFragment().parameter().toASCIIString();
+        String url = new FragmentEnvironment<Params>(this).microFragment().parameter().uri().toASCIIString();
         if (savedInstanceState == null)
         {
             mWebView.loadUrl(url);
@@ -180,7 +175,6 @@ public final class AppSpecificWebviewFragment extends Fragment implements View.O
     @Override
     public void onDestroyView()
     {
-        super.onDestroyView();
         mHandler.removeCallbacks(mPasswordProbeRunnable);
         if (mWebView != null)
         {
@@ -190,6 +184,7 @@ public final class AppSpecificWebviewFragment extends Fragment implements View.O
         {
             mSnackbar.dismiss();
         }
+        super.onDestroyView();
     }
 
 
@@ -214,5 +209,22 @@ public final class AppSpecificWebviewFragment extends Fragment implements View.O
             return true;
         }
         return false;
+    }
+
+
+    public interface PasswordResult extends Parcelable
+    {
+        @NonNull
+        String password();
+    }
+
+
+    public interface Params
+    {
+        @NonNull
+        URI uri();
+
+        @NonNull
+        Cage<PasswordResult> cage();
     }
 }

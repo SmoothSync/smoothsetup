@@ -119,7 +119,7 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<Void>
 
     public final static class WaitForReferrerFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener
     {
-        private final static int WAIT_TIME = 1000; // milliseconds
+        private final static int WAIT_TIME = 1500; // milliseconds
 
         private final Handler mHandler = new Handler();
         private SharedPreferences mPreferences;

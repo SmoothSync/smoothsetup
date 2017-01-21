@@ -25,6 +25,7 @@ import com.smoothsync.smoothsetup.microfragments.appspecificpassword.AppSpecific
 
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
+import org.dmfs.pigeonpost.Cage;
 
 import java.net.URI;
 
@@ -34,14 +35,15 @@ import java.net.URI;
  *
  * @author Marten Gajda
  */
-public final class CreateAppSpecificPasswordMicroFragment implements MicroFragment<URI>
+public final class CreateAppSpecificPasswordMicroFragment implements MicroFragment<AppSpecificWebviewFragment.Params>
 {
     public final static Creator<CreateAppSpecificPasswordMicroFragment> CREATOR = new Creator<CreateAppSpecificPasswordMicroFragment>()
     {
         @Override
         public CreateAppSpecificPasswordMicroFragment createFromParcel(Parcel source)
         {
-            return new CreateAppSpecificPasswordMicroFragment(source.readString(), (URI) source.readSerializable());
+            return new CreateAppSpecificPasswordMicroFragment(source.readString(),
+                    (Cage<AppSpecificWebviewFragment.PasswordResult>) source.readParcelable(getClass().getClassLoader()), (URI) source.readSerializable());
         }
 
 
@@ -54,12 +56,15 @@ public final class CreateAppSpecificPasswordMicroFragment implements MicroFragme
     @NonNull
     private final String mTitle;
     @NonNull
+    private final Cage<AppSpecificWebviewFragment.PasswordResult> mCage;
+    @NonNull
     private final URI mUrl;
 
 
-    public CreateAppSpecificPasswordMicroFragment(@NonNull String title, @NonNull URI url)
+    public CreateAppSpecificPasswordMicroFragment(@NonNull String title, @NonNull Cage<AppSpecificWebviewFragment.PasswordResult> cage, @NonNull URI url)
     {
         mTitle = title;
+        mCage = cage;
         mUrl = url;
     }
 
@@ -82,9 +87,25 @@ public final class CreateAppSpecificPasswordMicroFragment implements MicroFragme
 
     @NonNull
     @Override
-    public URI parameter()
+    public AppSpecificWebviewFragment.Params parameter()
     {
-        return mUrl;
+        return new AppSpecificWebviewFragment.Params()
+        {
+            @NonNull
+            @Override
+            public URI uri()
+            {
+                return mUrl;
+            }
+
+
+            @NonNull
+            @Override
+            public Cage<AppSpecificWebviewFragment.PasswordResult> cage()
+            {
+                return mCage;
+            }
+        };
     }
 
 
@@ -106,6 +127,7 @@ public final class CreateAppSpecificPasswordMicroFragment implements MicroFragme
     public void writeToParcel(Parcel dest, int flags)
     {
         dest.writeString(mTitle);
+        dest.writeParcelable(mCage, flags);
         dest.writeSerializable(mUrl);
     }
 }

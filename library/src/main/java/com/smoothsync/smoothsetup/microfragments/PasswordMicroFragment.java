@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -32,6 +33,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.smoothsync.smoothsetup.R;
+import com.smoothsync.smoothsetup.microfragments.appspecificpassword.AppSpecificWebviewFragment;
 import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.model.BasicHttpAuthorizationFactory;
 import com.smoothsync.smoothsetup.utils.Default;
@@ -47,6 +49,8 @@ import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.httpessentials.types.Link;
 import org.dmfs.iterators.AbstractConvertedIterator;
 import org.dmfs.iterators.ConvertedIterator;
+import org.dmfs.pigeonpost.Dovecote;
+import org.dmfs.pigeonpost.localbroadcast.ParcelableDovecote;
 
 
 /**
@@ -129,13 +133,14 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
     /**
      * A Fragment that prompts the user for his or her password.
      */
-    public final static class PasswordFragment extends Fragment implements View.OnClickListener
+    public final static class PasswordFragment extends Fragment implements View.OnClickListener, Dovecote.OnPigeonReturnCallback<AppSpecificWebviewFragment.PasswordResult>
     {
 
         private Account mAccount;
         private EditText mPassword;
         private Button mButton;
         private MicroFragmentEnvironment<Account> mMicroFragmentEnvironment;
+        private Dovecote<AppSpecificWebviewFragment.PasswordResult> mDovecote;
 
 
         @Override
@@ -151,6 +156,7 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
         {
+            mDovecote = new ParcelableDovecote<>(getActivity(), "passwordDoveCote", this);
             View result = inflater.inflate(R.layout.smoothsetup_microfragment_password, container, false);
             TextView messageView = ((TextView) result.findViewById(android.R.id.message));
 
@@ -237,8 +243,15 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
                     }
                 });
             }
-
             return result;
+        }
+
+
+        @Override
+        public void onDestroyView()
+        {
+            mDovecote.dispose();
+            super.onDestroyView();
         }
 
 
@@ -294,12 +307,22 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
                                 new Swiped(
                                         new ForwardTransition<>(
                                                 new CreateAppSpecificPasswordMicroFragment(title,
-                                                        new Related(mAccount.provider().links(), name).next().target()))));
+                                                        mDovecote.cage(), new Related(mAccount.provider().links(), name).next().target()))));
             }
             catch (ProtocolException e)
             {
                 throw new RuntimeException("Something went very wrong. We shouldn't be here because it should have crashed in onCreateView already", e);
             }
+        }
+
+
+        @Override
+        public void onPigeonReturn(@NonNull AppSpecificWebviewFragment.PasswordResult passwordResult)
+        {
+            String password = passwordResult.password();
+            mPassword.setText(password);
+            mPassword.setSelection(password.length());
+            Snackbar.make(getView(), R.string.smoothsetup_app_specific_password_inserted, Snackbar.LENGTH_LONG).show();
         }
     }
 }

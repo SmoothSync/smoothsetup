@@ -209,13 +209,8 @@
     <string name="smoothsetup_snackbar_found_app_specific_password">App-specific password found: %1$s</string>
 
     <!--
-    Title of a Snackbar message to inform the user that an app-specific password has been copied to the clipboard.
+    Title of a Snackbar message to inform the user that the previously found app-specific password has been inserted into the password field.
     -->
-    <string name="smoothsetup_snackbar_copied_app_specific_password">App-specific password copied to clipboard</string>
-
-    <!--
-    Label of the app-specific password when copied to the clipboard.
-    -->
-    <string name="smoothsetup_label_app_specific_password">App-specific password</string>
+    <string name="smoothsetup_app_specific_password_inserted">App-specific password inserted</string>
 
 </resources>
