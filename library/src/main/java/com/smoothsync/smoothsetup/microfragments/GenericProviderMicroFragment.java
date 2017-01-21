@@ -17,7 +17,6 @@
 package com.smoothsync.smoothsetup.microfragments;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -32,7 +31,6 @@ import com.smoothsync.smoothsetup.setupbuttons.ApiSmoothSetupAdapter;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.FixedButtonSetupAdapter;
 
-import org.dmfs.android.microfragments.BasicMicroFragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
 
@@ -86,17 +84,13 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
     @Override
     public Fragment fragment(@NonNull Context context, @NonNull MicroFragmentHost host)
     {
-        Fragment result = new LoginFragment();
-        Bundle arguments = new Bundle();
-        arguments.putParcelable(MicroFragment.ARG_ENVIRONMENT, new BasicMicroFragmentEnvironment<>(this, host));
-        result.setArguments(arguments);
-        return result;
+        return new LoginFragment();
     }
 
 
     @NonNull
     @Override
-    public LoginFragment.Params parameters()
+    public LoginFragment.Params parameter()
     {
         return new LoginFragment.Params()
         {

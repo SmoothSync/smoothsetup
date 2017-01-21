@@ -41,7 +41,6 @@ import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
 import com.smoothsync.smoothsetup.utils.IndirectServiceIntentIterable;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
-import org.dmfs.android.microfragments.BasicMicroFragmentEnvironment;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
@@ -111,17 +110,13 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
     @Override
     public Fragment fragment(@NonNull Context context, @NonNull MicroFragmentHost host)
     {
-        Fragment result = new LoadFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(MicroFragment.ARG_ENVIRONMENT, new BasicMicroFragmentEnvironment<>(this, host));
-        result.setArguments(args);
-        return result;
+        return new LoadFragment();
     }
 
 
     @NonNull
     @Override
-    public LoadFragment.Params parameters()
+    public LoadFragment.Params parameter()
     {
         return new LoadFragment.Params()
         {
@@ -177,7 +172,7 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
         {
             super.onCreate(savedInstanceState);
             mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
-            mParams = mMicroFragmentEnvironment.microFragment().parameters();
+            mParams = mMicroFragmentEnvironment.microFragment().parameter();
 
         }
 
@@ -265,7 +260,7 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                         mMicroFragmentEnvironment.host()
                                 .execute(getActivity(),
                                         new XFaded(
-                                                new ForwardTransition(
+                                                new ForwardTransition<>(
                                                         new CreateAccountMicroFragment(mParams.account(), mParams.httpAuthorizationFactory()))));
                     }
                     else
@@ -273,7 +268,7 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                         mMicroFragmentEnvironment.host()
                                 .execute(getActivity(),
                                         new XFaded(
-                                                new ForwardTransition(
+                                                new ForwardTransition<>(
                                                         new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_authentication)))));
                     }
                 }
@@ -282,7 +277,7 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                     mMicroFragmentEnvironment.host()
                             .execute(getActivity(),
                                     new XFaded(
-                                            new ForwardTransition(
+                                            new ForwardTransition<>(
                                                     new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_network)))));
                 }
             }

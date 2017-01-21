@@ -30,7 +30,6 @@ import android.widget.TextView;
 
 import com.smoothsync.smoothsetup.R;
 
-import org.dmfs.android.microfragments.BasicMicroFragmentEnvironment;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
@@ -107,18 +106,13 @@ public final class ErrorRetryMicroFragment implements MicroFragment<ErrorRetryMi
     @Override
     public Fragment fragment(@NonNull Context context, @NonNull MicroFragmentHost host)
     {
-        Fragment result = new ErrorFragment();
-        Bundle arguments = new Bundle();
-        arguments.putParcelable(MicroFragment.ARG_ENVIRONMENT, new BasicMicroFragmentEnvironment<>(this, host));
-        result.setArguments(arguments);
-        result.setRetainInstance(true);
-        return result;
+        return new ErrorFragment();
     }
 
 
     @NonNull
     @Override
-    public ErrorFragment.Params parameters()
+    public ErrorFragment.Params parameter()
     {
         return new ErrorFragment.Params()
         {
@@ -169,7 +163,7 @@ public final class ErrorRetryMicroFragment implements MicroFragment<ErrorRetryMi
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
         {
             mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
-            Params params = mMicroFragmentEnvironment.microFragment().parameters();
+            Params params = mMicroFragmentEnvironment.microFragment().parameter();
             View result = inflater.inflate(R.layout.smoothsetup_microfragment_error, container, false);
 
             ((TextView) result.findViewById(android.R.id.message)).setText(params.error());

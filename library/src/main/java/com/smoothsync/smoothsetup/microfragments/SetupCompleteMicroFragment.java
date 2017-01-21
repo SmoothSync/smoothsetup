@@ -31,7 +31,6 @@ import android.widget.TextView;
 
 import com.smoothsync.smoothsetup.R;
 
-import org.dmfs.android.microfragments.BasicMicroFragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
 
@@ -86,17 +85,13 @@ public final class SetupCompleteMicroFragment implements MicroFragment<Void>
     @Override
     public Fragment fragment(@NonNull Context context, @NonNull MicroFragmentHost host)
     {
-        Fragment result = new MessageFragment();
-        Bundle arguments = new Bundle();
-        arguments.putParcelable(MicroFragment.ARG_ENVIRONMENT, new BasicMicroFragmentEnvironment<>(this, host));
-        result.setArguments(arguments);
-        return result;
+        return new MessageFragment();
     }
 
 
     @NonNull
     @Override
-    public Void parameters()
+    public Void parameter()
     {
         return null;
     }

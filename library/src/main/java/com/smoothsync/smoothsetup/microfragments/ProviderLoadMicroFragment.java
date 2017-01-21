@@ -38,7 +38,6 @@ import com.smoothsync.smoothsetup.services.SmoothSyncApiProxy;
 import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
-import org.dmfs.android.microfragments.BasicMicroFragmentEnvironment;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
@@ -50,7 +49,7 @@ import org.dmfs.android.microfragments.transitions.XFaded;
 
 
 /**
- * A {@link MicroFragment} that loads a provider by its id, before moving on to a setup step.
+ * A {@link MicroFragment} that loads a provider by its id before moving on to a setup step.
  *
  * @author Marten Gajda
  */
@@ -109,18 +108,13 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
     @Override
     public Fragment fragment(@NonNull Context context, @NonNull MicroFragmentHost host)
     {
-        Fragment result = new LoadFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(MicroFragment.ARG_ENVIRONMENT, new BasicMicroFragmentEnvironment<>(this, host));
-        result.setArguments(args);
-        result.setRetainInstance(true);
-        return result;
+        return new LoadFragment();
     }
 
 
     @NonNull
     @Override
-    public Params parameters()
+    public Params parameter()
     {
         return new Params()
         {
@@ -204,7 +198,7 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
         {
             super.onResume();
             new ProviderLoadTask(new SmoothSyncApiProxy(mApiService), this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
-                    mMicroFragmentEnvironment.microFragment().parameters().providerId());
+                    mMicroFragmentEnvironment.microFragment().parameter().providerId());
         }
 
 
@@ -233,15 +227,15 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
                 {
                     mMicroFragmentEnvironment.host()
                             .execute(getActivity(),
-                                    new XFaded(new ForwardTransition(
-                                            new ProviderLoginMicroFragment(result.value(), mMicroFragmentEnvironment.microFragment().parameters().account()),
+                                    new XFaded(new ForwardTransition<>(
+                                            new ProviderLoginMicroFragment(result.value(), mMicroFragmentEnvironment.microFragment().parameter().account()),
                                             mTimestamp)));
                 }
                 catch (Exception e)
                 {
                     mMicroFragmentEnvironment.host()
                             .execute(getActivity(),
-                                    new XFaded(new ForwardTransition(new ErrorResetMicroFragment(mMicroFragmentEnvironment.microFragment()), mTimestamp)));
+                                    new XFaded(new ForwardTransition<>(new ErrorResetMicroFragment(mMicroFragmentEnvironment.microFragment()), mTimestamp)));
                 }
             }
         }

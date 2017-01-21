@@ -56,7 +56,7 @@ public final class ProvidersRecyclerViewAdapter extends RecyclerView.Adapter<Pro
 
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position)
+    public void onBindViewHolder(final ViewHolder holder, int position)
     {
         try
         {
@@ -74,7 +74,7 @@ public final class ProvidersRecyclerViewAdapter extends RecyclerView.Adapter<Pro
             {
                 if (null != mListener)
                 {
-                    mListener.onProviderSelected(mProviders.get(position));
+                    mListener.onProviderSelected(mProviders.get(holder.getAdapterPosition()));
                 }
             }
         });

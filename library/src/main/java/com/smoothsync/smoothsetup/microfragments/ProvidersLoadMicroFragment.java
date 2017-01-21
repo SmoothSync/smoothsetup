@@ -38,7 +38,6 @@ import com.smoothsync.smoothsetup.services.SmoothSyncApiProxy;
 import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
-import org.dmfs.android.microfragments.BasicMicroFragmentEnvironment;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
@@ -108,18 +107,13 @@ public final class ProvidersLoadMicroFragment implements MicroFragment<String>
     @Override
     public Fragment fragment(@NonNull Context context, @NonNull MicroFragmentHost host)
     {
-        Fragment result = new LoadFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(MicroFragment.ARG_ENVIRONMENT, new BasicMicroFragmentEnvironment<>(this, host));
-        result.setArguments(args);
-        result.setRetainInstance(true);
-        return result;
+        return new LoadFragment();
     }
 
 
     @NonNull
     @Override
-    public String parameters()
+    public String parameter()
     {
         return mAccount == null ? "" : mAccount;
     }
@@ -211,16 +205,16 @@ public final class ProvidersLoadMicroFragment implements MicroFragment<String>
                 List<Provider> providers = result.value();
                 mMicroFragmentEnvironment.host().execute(getActivity(),
                         new XFaded(
-                                new ForwardTransition(
+                                new ForwardTransition<>(
                                         new ChooseProviderMicroFragment(providers.toArray(new Provider[providers.size()]),
-                                                mMicroFragmentEnvironment.microFragment().parameters()), mTimestamp)));
+                                                mMicroFragmentEnvironment.microFragment().parameter()), mTimestamp)));
             }
             catch (Exception e)
             {
                 mMicroFragmentEnvironment.host()
                         .execute(getActivity(),
                                 new XFaded(
-                                        new ForwardTransition(
+                                        new ForwardTransition<>(
                                                 new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_load_provider)), mTimestamp)));
             }
         }

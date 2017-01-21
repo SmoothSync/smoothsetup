@@ -128,7 +128,7 @@ public final class AppSpecificWebviewFragment extends Fragment implements View.O
                 }
             }
         }, "SmoothSetup");
-        String url = new FragmentEnvironment<URI>(this).microFragment().parameters().toASCIIString();
+        String url = new FragmentEnvironment<URI>(this).microFragment().parameter().toASCIIString();
         if (savedInstanceState == null)
         {
             mWebView.loadUrl(url);

@@ -17,7 +17,6 @@
 package com.smoothsync.smoothsetup.microfragments;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -34,7 +33,6 @@ import com.smoothsync.smoothsetup.model.ParcelableProvider;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.ProviderSmoothSetupAdapter;
 
-import org.dmfs.android.microfragments.BasicMicroFragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
@@ -63,7 +61,7 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
             return new ProviderLoginMicroFragment[size];
         }
     };
-    @Nullable
+    @NonNull
     private final Provider mProvider;
     @Nullable
     private final String mAccount;
@@ -102,18 +100,13 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
     @Override
     public Fragment fragment(@NonNull Context context, @NonNull MicroFragmentHost host)
     {
-        Fragment result = new LoginFragment();
-        Bundle arguments = new Bundle();
-        arguments.putParcelable(MicroFragment.ARG_ENVIRONMENT, new BasicMicroFragmentEnvironment<>(this, host));
-        result.setArguments(arguments);
-        result.setRetainInstance(true);
-        return result;
+        return new LoginFragment();
     }
 
 
     @NonNull
     @Override
-    public LoginFragment.Params parameters()
+    public LoginFragment.Params parameter()
     {
         return new LoginFragment.Params()
         {

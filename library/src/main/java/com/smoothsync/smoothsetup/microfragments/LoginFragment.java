@@ -82,7 +82,7 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
 
         mLogin = (AutoCompleteTextView) result.findViewById(android.R.id.input);
 
-        LoginFormAdapterFactory loginFormAdapterFactory = mMicroFragmentEnvironment.microFragment().parameters().loginFormAdapterFactory();
+        LoginFormAdapterFactory loginFormAdapterFactory = mMicroFragmentEnvironment.microFragment().parameter().loginFormAdapterFactory();
         AbstractAutoCompleteAdapter autoCompleteAdapter = loginFormAdapterFactory.autoCompleteAdapter(getContext(), new SmoothSyncApiProxy(mApiService));
         mLogin.setAdapter(autoCompleteAdapter);
 
@@ -131,7 +131,7 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
             }
         });
 
-        mLogin.setText(mMicroFragmentEnvironment.microFragment().parameters().accountName());
+        mLogin.setText(mMicroFragmentEnvironment.microFragment().parameter().accountName());
 
         ((TextView) result.findViewById(android.R.id.message)).setText(loginFormAdapterFactory.promptText(getContext()));
 
@@ -153,7 +153,7 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
         mMicroFragmentEnvironment.host().execute(
                 getActivity(),
                 new Swiped(
-                        new ForwardTransition(
+                        new ForwardTransition<>(
                                 new PasswordMicroFragment(new BasicAccount(mLogin.getText().toString(), provider)))));
     }
 
@@ -164,7 +164,7 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
         mMicroFragmentEnvironment.host().execute(
                 getActivity(),
                 new Swiped(
-                        new ForwardTransition(
+                        new ForwardTransition<>(
                                 new ProvidersLoadMicroFragment(mLogin.getText().toString()))));
     }
 

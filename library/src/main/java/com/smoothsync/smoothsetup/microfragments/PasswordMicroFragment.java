@@ -37,7 +37,6 @@ import com.smoothsync.smoothsetup.model.BasicHttpAuthorizationFactory;
 import com.smoothsync.smoothsetup.utils.Default;
 import com.smoothsync.smoothsetup.utils.Related;
 
-import org.dmfs.android.microfragments.BasicMicroFragmentEnvironment;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
@@ -101,17 +100,13 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
     @Override
     public Fragment fragment(@NonNull Context context, @NonNull MicroFragmentHost host)
     {
-        Fragment result = new PasswordFragment();
-        Bundle arguments = new Bundle();
-        arguments.putParcelable(MicroFragment.ARG_ENVIRONMENT, new BasicMicroFragmentEnvironment<>(this, host));
-        result.setArguments(arguments);
-        return result;
+        return new PasswordFragment();
     }
 
 
     @NonNull
     @Override
-    public Account parameters()
+    public Account parameter()
     {
         return mAccount;
     }
@@ -148,7 +143,7 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
         {
             super.onCreate(savedInstanceState);
             mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
-            mAccount = mMicroFragmentEnvironment.microFragment().parameters();
+            mAccount = mMicroFragmentEnvironment.microFragment().parameter();
         }
 
 
@@ -258,7 +253,7 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
                     // verify entered password
                     mMicroFragmentEnvironment.host()
                             .execute(getActivity(),
-                                    new Swiped(new ForwardTransition(
+                                    new Swiped(new ForwardTransition<>(
                                             new ApproveAuthorizationMicroFragment(mAccount,
                                                     new BasicHttpAuthorizationFactory(mAccount.accountId(), mPassword.getText().toString())))));
                 }
@@ -276,7 +271,7 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
                 mMicroFragmentEnvironment.host()
                         .execute(getActivity(),
                                 new Swiped(
-                                        new ForwardTransition(
+                                        new ForwardTransition<>(
                                                 new ErrorRetryMicroFragment(e.getMessage()))));
             }
         }
@@ -297,7 +292,7 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
                 mMicroFragmentEnvironment.host()
                         .execute(getActivity(),
                                 new Swiped(
-                                        new ForwardTransition(
+                                        new ForwardTransition<>(
                                                 new CreateAppSpecificPasswordMicroFragment(title,
                                                         new Related(mAccount.provider().links(), name).next().target()))));
             }

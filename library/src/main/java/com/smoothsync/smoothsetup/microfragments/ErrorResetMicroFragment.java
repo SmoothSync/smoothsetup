@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 
 import com.smoothsync.smoothsetup.R;
 
-import org.dmfs.android.microfragments.BasicMicroFragmentEnvironment;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
@@ -86,18 +85,13 @@ public final class ErrorResetMicroFragment implements MicroFragment<MicroFragmen
     @Override
     public Fragment fragment(@NonNull Context context, @NonNull MicroFragmentHost host)
     {
-        Fragment result = new ErrorFragment();
-        Bundle arguments = new Bundle();
-        arguments.putParcelable(MicroFragment.ARG_ENVIRONMENT, new BasicMicroFragmentEnvironment<>(this, host));
-        result.setArguments(arguments);
-        result.setRetainInstance(true);
-        return result;
+        return new ErrorFragment();
     }
 
 
     @NonNull
     @Override
-    public MicroFragment<?> parameters()
+    public MicroFragment<?> parameter()
     {
         return mRetryFragment;
     }
@@ -137,7 +131,7 @@ public final class ErrorResetMicroFragment implements MicroFragment<MicroFragmen
         public void onClick(View v)
         {
             MicroFragmentEnvironment<MicroFragment<?>> fragmentEnvironment = new FragmentEnvironment<>(this);
-            fragmentEnvironment.host().execute(getActivity(), new ResetTransition(fragmentEnvironment.microFragment().parameters()));
+            fragmentEnvironment.host().execute(getActivity(), new ResetTransition<>(fragmentEnvironment.microFragment().parameter()));
         }
     }
 }

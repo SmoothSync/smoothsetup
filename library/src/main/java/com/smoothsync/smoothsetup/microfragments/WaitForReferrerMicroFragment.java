@@ -32,7 +32,6 @@ import android.view.ViewGroup;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.SmoothSetupDispatchActivity;
 
-import org.dmfs.android.microfragments.BasicMicroFragmentEnvironment;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
@@ -92,17 +91,13 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<Void>
     @Override
     public Fragment fragment(@NonNull Context context, @NonNull MicroFragmentHost host)
     {
-        Fragment result = new WaitForReferrerFragment();
-        Bundle arguments = new Bundle();
-        arguments.putParcelable(MicroFragment.ARG_ENVIRONMENT, new BasicMicroFragmentEnvironment<>(this, host));
-        result.setArguments(arguments);
-        return result;
+        return new WaitForReferrerFragment();
     }
 
 
     @NonNull
     @Override
-    public Void parameters()
+    public Void parameter()
     {
         return null;
     }
@@ -144,7 +139,7 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<Void>
                 mPreferences.edit().putString("referrer", "").apply();
 
                 // move on without provider
-                mMicroFragmentEnvironment.host().execute(getActivity(), new XFaded(new ForwardTransition(new GenericProviderMicroFragment(), mTimeStamp)));
+                mMicroFragmentEnvironment.host().execute(getActivity(), new XFaded(new ForwardTransition<>(new GenericProviderMicroFragment(), mTimeStamp)));
             }
         };
 
@@ -215,7 +210,7 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<Void>
             mMicroFragmentEnvironment.host()
                     .execute(getActivity(),
                             new XFaded(
-                                    new ForwardTransition(
+                                    new ForwardTransition<>(
                                             new ProviderLoadMicroFragment(
                                                     uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_PROVIDER),
                                                     uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_ACCOUNT)), mTimeStamp)));

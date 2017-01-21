@@ -33,7 +33,6 @@ import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.ParcelableProvider;
 import com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter;
 
-import org.dmfs.android.microfragments.BasicMicroFragmentEnvironment;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
@@ -125,18 +124,13 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
     @Override
     public Fragment fragment(@NonNull Context context, @NonNull MicroFragmentHost host)
     {
-        Fragment result = new ProviderListFragment();
-        Bundle arguments = new Bundle();
-        arguments.putParcelable(MicroFragment.ARG_ENVIRONMENT, new BasicMicroFragmentEnvironment<>(this, host));
-        result.setArguments(arguments);
-        result.setRetainInstance(true);
-        return result;
+        return new ProviderListFragment();
     }
 
 
     @NonNull
     @Override
-    public ProviderListFragment.Params parameters()
+    public ProviderListFragment.Params parameter()
     {
         return new ProviderListFragment.Params()
         {
@@ -190,7 +184,7 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
             mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
             mView = (RecyclerView) inflater.inflate(R.layout.smoothsetup_microfragment_provider_list, container, false);
             mView.setLayoutManager(new LinearLayoutManager(getContext()));
-            mView.setAdapter(new ProvidersRecyclerViewAdapter(Arrays.asList(mMicroFragmentEnvironment.microFragment().parameters().provider()), this));
+            mView.setAdapter(new ProvidersRecyclerViewAdapter(Arrays.asList(mMicroFragmentEnvironment.microFragment().parameter().provider()), this));
             return mView;
         }
 
@@ -201,8 +195,8 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
             mMicroFragmentEnvironment.host()
                     .execute(getActivity(),
                             new Swiped(
-                                    new ForwardTransition(
-                                            new ProviderLoginMicroFragment(provider, mMicroFragmentEnvironment.microFragment().parameters().account()))));
+                                    new ForwardTransition<>(
+                                            new ProviderLoginMicroFragment(provider, mMicroFragmentEnvironment.microFragment().parameter().account()))));
         }
 
 

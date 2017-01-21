@@ -17,14 +17,12 @@
 package com.smoothsync.smoothsetup.microfragments;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
 import com.smoothsync.smoothsetup.microfragments.appspecificpassword.AppSpecificWebviewFragment;
 
-import org.dmfs.android.microfragments.BasicMicroFragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
 
@@ -78,17 +76,13 @@ public final class CreateAppSpecificPasswordMicroFragment implements MicroFragme
     @Override
     public Fragment fragment(@NonNull Context context, @NonNull MicroFragmentHost host)
     {
-        Fragment result = new AppSpecificWebviewFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(MicroFragment.ARG_ENVIRONMENT, new BasicMicroFragmentEnvironment<>(this, host));
-        result.setArguments(args);
-        return result;
+        return new AppSpecificWebviewFragment();
     }
 
 
     @NonNull
     @Override
-    public URI parameters()
+    public URI parameter()
     {
         return mUrl;
     }
