@@ -53,14 +53,15 @@ public final class SmoothSetupDispatchActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
-        // check if meta data contains a specific provider id, if the provider-id is hard coded, we don't allow to override it
+        // check if meta data contains a specific provider url, if the url is hard coded, we don't allow to override it
         PackageManager pm = getPackageManager();
         try
         {
             ActivityInfo ai = pm.getActivityInfo(new ComponentName(this, this.getClass()), PackageManager.GET_META_DATA);
             if (ai.metaData != null && ai.metaData.containsKey(META_PROVIDER))
             {
-                launchStep(new ProviderLoadMicroFragment(ai.metaData.getString(META_PROVIDER), ""));
+                Uri uri = Uri.parse(ai.metaData.getString(META_PROVIDER));
+                launchStep(new ProviderLoadMicroFragment(uri.getQueryParameter(PARAM_PROVIDER), uri.getQueryParameter(PARAM_ACCOUNT)));
                 return;
             }
         }

@@ -16,7 +16,7 @@
 
             <meta-data
                     android:name="com.smoothsync.PROVIDERx"
-                    android:value="136f0ab6eac14fde9211ecfee33cb73e"/>
+                    android:value="https://smoothsync-services-test.appspot.com/setup/e71c750d1e544665ad0ebfd598260b51?provider=2276a344b3324d558581e61b076fcdaa&amp;account=test"/>
         </activity>
 
         <service
