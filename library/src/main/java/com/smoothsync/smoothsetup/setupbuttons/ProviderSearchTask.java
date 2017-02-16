@@ -25,7 +25,7 @@ import org.dmfs.httpessentials.exceptions.ProtocolError;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 
 import java.io.IOException;
-import java.net.InetAddress;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -49,8 +49,13 @@ public final class ProviderSearchTask extends ThrowingAsyncTask<String, Void, Li
     @Override
     protected List<Provider> doInBackgroundWithException(String... params) throws IOException, ProtocolException, ProtocolError
     {
-        // don't try to hit the API if we can't resolve the hostname
-        InetAddress address = InetAddress.getByName(params[0]);
+        // there must be at least one dot in the domain, followed by at least two characters
+        // Note, we could do a DNS lookup, but not all email domains have an A or AAAA record and doing MX lookups is difficult on Android
+        if (!params[0].matches("^.*\\.[\\w\\d_-]{2,}$"))
+        {
+            // TODO: maybe do a more sophisticated check against https://publicsuffix.org/list/
+            return Collections.emptyList();
+        }
         return mApi.resultOf(new ProviderSearch(params[0]));
     }
 }
