@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Marten Gajda <marten@dmfs.org>
+ * Copyright (c) 2017 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.smoothsync.smoothsetup.model;
@@ -36,12 +35,27 @@ import java.io.IOException;
 
 
 /**
- * A basic implementation of HttpAuthorizationFactory.
+ * A basic implementation of {@link HttpAuthorizationFactory}.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
-public class BasicHttpAuthorizationFactory implements HttpAuthorizationFactory
+public final class BasicHttpAuthorizationFactory implements HttpAuthorizationFactory
 {
+    public final static Creator<BasicHttpAuthorizationFactory> CREATOR = new Creator<BasicHttpAuthorizationFactory>()
+    {
+        @Override
+        public BasicHttpAuthorizationFactory createFromParcel(Parcel source)
+        {
+            return new BasicHttpAuthorizationFactory(source.readString(), source.readString());
+        }
+
+
+        @Override
+        public BasicHttpAuthorizationFactory[] newArray(int size)
+        {
+            return new BasicHttpAuthorizationFactory[size];
+        }
+    };
     private final String mAccountId;
     private final String mPassword;
 
@@ -109,21 +123,4 @@ public class BasicHttpAuthorizationFactory implements HttpAuthorizationFactory
         dest.writeString(mAccountId);
         dest.writeString(mPassword);
     }
-
-
-    public final static Creator<BasicHttpAuthorizationFactory> CREATOR = new Creator<BasicHttpAuthorizationFactory>()
-    {
-        @Override
-        public BasicHttpAuthorizationFactory createFromParcel(Parcel source)
-        {
-            return new BasicHttpAuthorizationFactory(source.readString(), source.readString());
-        }
-
-
-        @Override
-        public BasicHttpAuthorizationFactory[] newArray(int size)
-        {
-            return new BasicHttpAuthorizationFactory[size];
-        }
-    };
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Marten Gajda <marten@dmfs.org>
+ * Copyright (c) 2017 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.smoothsync.smoothsetup.services;
@@ -29,38 +28,15 @@ import java.util.concurrent.TimeoutException;
 /**
  * An implementation of {@link FutureServiceConnection} to connect aidl based services.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class FutureAidlServiceConnection<T extends android.os.IInterface> implements FutureServiceConnection<T>
 {
-    public interface StubProxy<T extends android.os.IInterface>
-    {
-        /**
-         * Returns a stub object that connects to the service.
-         * <p>
-         * This method needs to contain only one line like:
-         * <p>
-         * <pre>
-         * <code>
-         * return &lt;T>.Stub.asInterface(service);
-         * </code>
-         * </pre>
-         * <p>
-         * Where &lt;T> is the interface of the service.
-         *
-         * @param service
-         *
-         * @return
-         */
-        T asInterface(IBinder service);
-    }
-
-
     private final Context mContext;
+    private final boolean mBindSucceeded;
     private final StubProxy<T> mStubProxy;
     private boolean mIsConnected;
     private T mService;
-
     private final ServiceConnection mConnection = new ServiceConnection()
     {
 
@@ -88,7 +64,6 @@ public final class FutureAidlServiceConnection<T extends android.os.IInterface> 
         }
     };
 
-
     /**
      * Binds the service identified by the given Intent.
      *
@@ -103,14 +78,17 @@ public final class FutureAidlServiceConnection<T extends android.os.IInterface> 
     {
         mContext = context.getApplicationContext();
         mStubProxy = stubProxy;
-        mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        mBindSucceeded = mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
 
     @Override
     public boolean isConnected()
     {
-        return mIsConnected;
+        synchronized (mConnection)
+        {
+            return mIsConnected;
+        }
     }
 
 
@@ -143,7 +121,36 @@ public final class FutureAidlServiceConnection<T extends android.os.IInterface> 
     @Override
     public void disconnect()
     {
-        mContext.unbindService(mConnection);
+        synchronized (mConnection)
+        {
+            if (mBindSucceeded)
+            {
+                mIsConnected = false;
+                mContext.unbindService(mConnection);
+            }
+        }
     }
 
+
+    public interface StubProxy<T extends android.os.IInterface>
+    {
+        /**
+         * Returns a stub object that connects to the service.
+         * <p>
+         * This method needs to contain only one line like:
+         * <p>
+         * <pre>
+         * <code>
+         * return &lt;T>.Stub.asInterface(service);
+         * </code>
+         * </pre>
+         * <p>
+         * Where &lt;T> is the interface of the service.
+         *
+         * @param service
+         *
+         * @return
+         */
+        T asInterface(IBinder service);
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Marten Gajda <marten@dmfs.org>
+ * Copyright (c) 2017 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,12 +12,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.smoothsync.smoothsetup.setupbuttons;
 
-import android.support.v4.util.LruCache;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,15 +34,13 @@ import java.util.List;
 
 
 /**
- * Created by marten on 12.06.16.
+ * @author Marten Gajda
  */
 public final class ApiSmoothSetupAdapter extends AbstractSmoothSetupAdapter
 {
 
     private SmoothSyncApi mApi;
-    private final LruCache<String, List<Provider>> mResultCache = new LruCache<String, List<Provider>>(100);
-
-    private List<Provider> mProviders = Collections.EMPTY_LIST;
+    private List<Provider> mProviders = Collections.emptyList();
 
 
     public ApiSmoothSetupAdapter(SmoothSyncApi api, OnProviderSelectListener listener)
@@ -56,7 +53,7 @@ public final class ApiSmoothSetupAdapter extends AbstractSmoothSetupAdapter
     @Override
     public BasicButtonViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.smoothsetup_provider_button, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.smoothsetup_button_provider, parent, false);
         return new BasicButtonViewHolder(itemView);
     }
 
@@ -105,7 +102,8 @@ public final class ApiSmoothSetupAdapter extends AbstractSmoothSetupAdapter
     }
 
 
-    public void update(String value)
+    @Override
+    public void update(@NonNull String value)
     {
         new ProviderSearchTask(mApi, new ThrowingAsyncTask.OnResultCallback<List<Provider>>()
         {

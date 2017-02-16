@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Marten Gajda <marten@dmfs.org>
+ * Copyright (c) 2017 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package com.smoothsync.smoothsetup;
 
@@ -22,7 +21,7 @@ import android.content.Intent;
 
 
 /**
- * Receives the INSTALL_REFERRER broadcast and stores the referrer in the shared preferences.
+ * Receives the {@code INSTALL_REFERRER} broadcast and stores the referrer in the shared preferences.
  *
  * @author Marten Gajda <marten@dmfs.org>
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Marten Gajda <marten@dmfs.org>
+ * Copyright (c) 2017 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.smoothsync.smoothsetup.services;
@@ -32,10 +31,53 @@ import com.smoothsync.smoothsetup.model.BasicAccount;
 /**
  * An abstract service that provides an AccountService interface.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public abstract class AbstractAccountService extends Service
 {
+
+    private AccountServiceBinder mBinder;
+    private AccountServiceFactory mAccountServiceFactory;
+
+
+    public AbstractAccountService(AccountServiceFactory accountServiceFactory)
+    {
+        mAccountServiceFactory = accountServiceFactory;
+    }
+
+
+    @Override
+    public final void onCreate()
+    {
+        super.onCreate();
+        mBinder = new AccountServiceBinder(mAccountServiceFactory.accountService(this));
+    }
+
+
+    @Nullable
+    @Override
+    public final IBinder onBind(Intent intent)
+    {
+        return mBinder;
+    }
+
+
+    /**
+     * A factory that creates AccountService instances.
+     */
+    public interface AccountServiceFactory
+    {
+        /**
+         * Create a new SmoothSyncApi.
+         *
+         * @param context
+         *         A Context.
+         *
+         * @return
+         */
+        public AccountService accountService(Context context);
+    }
+
 
     /**
      * A {@link Binder} that gives access to the AccountService
@@ -64,48 +106,5 @@ public abstract class AbstractAccountService extends Service
         {
             mAccountService.createAccount(bundle);
         }
-    }
-
-
-    /**
-     * A factory that creates AccountService instances.
-     */
-    public interface AccountServiceFactory
-    {
-        /**
-         * Create a new SmoothSyncApi.
-         *
-         * @param context
-         *         A Context.
-         *
-         * @return
-         */
-        public AccountService accountService(Context context);
-    }
-
-
-    private AccountServiceBinder mBinder;
-    private AccountServiceFactory mAccountServiceFactory;
-
-
-    public AbstractAccountService(AccountServiceFactory accountServiceFactory)
-    {
-        mAccountServiceFactory = accountServiceFactory;
-    }
-
-
-    @Override
-    public final void onCreate()
-    {
-        super.onCreate();
-        mBinder = new AccountServiceBinder(mAccountServiceFactory.accountService(this));
-    }
-
-
-    @Nullable
-    @Override
-    public final IBinder onBind(Intent intent)
-    {
-        return mBinder;
     }
 }

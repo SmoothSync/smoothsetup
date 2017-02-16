@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Marten Gajda <marten@dmfs.org>
+ * Copyright (c) 2017 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.smoothsync.smoothsetup.utils;
@@ -23,24 +22,18 @@ import java.lang.ref.WeakReference;
 
 
 /**
- * An AsyncTask that returns results and Exceptions of a background operation to a callback.
+ * An {@link AsyncTask} that returns results and Exceptions of a background operation to a callback.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public abstract class ThrowingAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, AsyncTaskResult<Result>>
 {
-    public interface OnResultCallback<Result>
-    {
-        public void onResult(AsyncTaskResult<Result> result);
-    }
-
-
     private final WeakReference<OnResultCallback<Result>> mCallbackReference;
 
 
     public ThrowingAsyncTask(OnResultCallback<Result> callback)
     {
-        mCallbackReference = new WeakReference<OnResultCallback<Result>>(callback);
+        mCallbackReference = new WeakReference<>(callback);
     }
 
 
@@ -49,11 +42,11 @@ public abstract class ThrowingAsyncTask<Params, Progress, Result> extends AsyncT
     {
         try
         {
-            return new ValueAsyncTaskResult<Result>(doInBackgroundWithException(params));
+            return new ValueAsyncTaskResult<>(doInBackgroundWithException(params));
         }
         catch (Exception e)
         {
-            return new ThrowingAsyncTaskResult<Result>(e);
+            return new ThrowingAsyncTaskResult<>(e);
         }
     }
 
@@ -69,5 +62,11 @@ public abstract class ThrowingAsyncTask<Params, Progress, Result> extends AsyncT
         {
             callback.onResult(asyncTaskResult);
         }
+    }
+
+
+    public interface OnResultCallback<Result>
+    {
+        void onResult(AsyncTaskResult<Result> result);
     }
 }

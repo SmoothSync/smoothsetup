@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Marten Gajda <marten@dmfs.org>
+ * Copyright (c) 2017 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.smoothsync.smoothsetup.model;
@@ -35,10 +34,26 @@ import java.security.cert.CertificateException;
 /**
  * Decorator for {@link Service}s that can be parcelled.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class ParcelableService implements Service, Parcelable
 {
+    public final static Creator<ParcelableService> CREATOR = new Creator<ParcelableService>()
+    {
+        @Override
+        public ParcelableService createFromParcel(Parcel source)
+        {
+            return new ParcelableService(
+                    new UnparcelledService(source.readString(), source.readString(), (URI) source.readSerializable(), source.createByteArray()));
+        }
+
+
+        @Override
+        public ParcelableService[] newArray(int size)
+        {
+            return new ParcelableService[size];
+        }
+    };
     private final Service mDecorated;
 
 
@@ -109,23 +124,6 @@ public final class ParcelableService implements Service, Parcelable
             dest.writeByteArray(outputStream.toByteArray());
         }
     }
-
-
-    public final static Creator<Service> CREATOR = new Creator<Service>()
-    {
-        @Override
-        public Service createFromParcel(Parcel source)
-        {
-            return new UnparcelledService(source.readString(), source.readString(), (URI) source.readSerializable(), source.createByteArray());
-        }
-
-
-        @Override
-        public Service[] newArray(int size)
-        {
-            return new Service[size];
-        }
-    };
 
 
     private final static class UnparcelledService implements Service

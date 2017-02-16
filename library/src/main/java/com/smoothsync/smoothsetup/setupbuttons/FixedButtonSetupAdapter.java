@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Marten Gajda <marten@dmfs.org>
+ * Copyright (c) 2017 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.smoothsync.smoothsetup.setupbuttons;
@@ -110,7 +109,7 @@ public final class FixedButtonSetupAdapter extends AbstractSmoothSetupAdapter
     {
         if (viewType == -1)
         {
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.smoothsetup_fixed_button, parent, false);
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.smoothsetup_button_other, parent, false);
             return new BasicButtonViewHolder(itemView);
         }
         return mDecorated.onCreateViewHolder(parent, viewType);

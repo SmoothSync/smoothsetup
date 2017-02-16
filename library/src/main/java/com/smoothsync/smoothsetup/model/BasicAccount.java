@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Marten Gajda <marten@dmfs.org>
+ * Copyright (c) 2017 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.smoothsync.smoothsetup.model;
@@ -26,10 +25,26 @@ import com.smoothsync.api.model.Provider;
 /**
  * A basic implementation of an {@link Account}.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class BasicAccount implements Account
 {
+    public final static Creator<BasicAccount> CREATOR = new Creator<BasicAccount>()
+    {
+
+        @Override
+        public BasicAccount createFromParcel(Parcel source)
+        {
+            return new BasicAccount(source.readString(), (Provider) source.readParcelable(getClass().getClassLoader()));
+        }
+
+
+        @Override
+        public BasicAccount[] newArray(int size)
+        {
+            return new BasicAccount[0];
+        }
+    };
     private final String mAccountId;
     private final Provider mProvider;
 
@@ -75,22 +90,4 @@ public final class BasicAccount implements Account
             dest.writeParcelable(new ParcelableProvider(mProvider), flags);
         }
     }
-
-
-    public final static Creator<BasicAccount> CREATOR = new Creator<BasicAccount>()
-    {
-
-        @Override
-        public BasicAccount createFromParcel(Parcel source)
-        {
-            return new BasicAccount(source.readString(), (Provider) source.readParcelable(getClass().getClassLoader()));
-        }
-
-
-        @Override
-        public BasicAccount[] newArray(int size)
-        {
-            return new BasicAccount[0];
-        }
-    };
 }

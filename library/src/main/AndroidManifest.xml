@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.smoothsync.smoothsetup"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.smoothsync.smoothsetup">
 
     <uses-sdk android:minSdkVersion="14"/>
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
-    <application android:supportsRtl="true" >
+    <application android:supportsRtl="true">
         <activity
-            android:name=".WizardActivity"
-            android:excludeFromRecents="false"
-            android:exported="false"
-            android:theme="@style/SmoothSetupTheme">
+                android:name=".MicroFragmentHostActivity"
+                android:excludeFromRecents="false"
+                android:exported="false"
+                android:theme="@style/SmoothSetupTheme">
         </activity>
         <activity
-            android:name=".SmoothSetupDispatchActivity"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:theme="@android:style/Theme.NoDisplay">
+                android:name=".SmoothSetupDispatchActivity"
+                android:excludeFromRecents="false"
+                android:exported="true"
+                android:theme="@android:style/Theme.NoDisplay">
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW"/>
 
@@ -25,15 +25,15 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
 
                 <data
-                    android:host="api.smoothsync.com"
-                    android:pathPattern="/setup/.*"
-                    android:scheme="https"/>
+                        android:host="api.smoothsync.com"
+                        android:pathPattern="/setup/.*"
+                        android:scheme="https"/>
             </intent-filter>
         </activity>
 
         <receiver
-            android:name=".InstallReferrerBroadcastReceiver"
-            android:exported="true">
+                android:name=".InstallReferrerBroadcastReceiver"
+                android:exported="true">
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER"/>
             </intent-filter>

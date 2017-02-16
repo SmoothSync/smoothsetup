@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Marten Gajda <marten@dmfs.org>
+ * Copyright (c) 2017 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.smoothsync.smoothsetup.model;
@@ -43,6 +42,39 @@ import java.util.Set;
  */
 public final class ParcelableLink implements Link, Parcelable
 {
+    public static final Creator<ParcelableLink> CREATOR = new Creator<ParcelableLink>()
+    {
+        @Override
+        public ParcelableLink createFromParcel(Parcel in)
+        {
+            String target = in.readString();
+            String title = in.readString();
+            List<String> relationTypes = new ArrayList<>();
+            in.readStringList(relationTypes);
+            List<String> reverseRelationTypes = new ArrayList<>();
+            in.readStringList(reverseRelationTypes);
+            return new ParcelableLink(new UnparcelledLink(target, title, relationTypes, reverseRelationTypes));
+        }
+
+
+        private void loadProperty(Parcel in, ParameterType<String> parameterType, Map<String, String> propertyMap)
+        {
+            String value = in.readString();
+            if (value == null)
+            {
+                // no value
+                return;
+            }
+            propertyMap.put(parameterType.name(), value);
+        }
+
+
+        @Override
+        public ParcelableLink[] newArray(int size)
+        {
+            return new ParcelableLink[size];
+        }
+    };
     private final Link mDelegate;
 
 
@@ -138,41 +170,6 @@ public final class ParcelableLink implements Link, Parcelable
         dest.writeStringList(new ArrayList<>(relationTypes()));
         dest.writeStringList(new ArrayList<>(reverseRelationTypes()));
     }
-
-
-    public static final Creator<ParcelableLink> CREATOR = new Creator<ParcelableLink>()
-    {
-        @Override
-        public ParcelableLink createFromParcel(Parcel in)
-        {
-            String target = in.readString();
-            String title = in.readString();
-            List<String> relationTypes = new ArrayList<>();
-            in.readStringList(relationTypes);
-            List<String> reverseRelationTypes = new ArrayList<>();
-            in.readStringList(reverseRelationTypes);
-            return new ParcelableLink(new UnparcelledLink(target, title, relationTypes, reverseRelationTypes));
-        }
-
-
-        private void loadProperty(Parcel in, ParameterType<String> parameterType, Map<String, String> propertyMap)
-        {
-            String value = in.readString();
-            if (value == null)
-            {
-                // no value
-                return;
-            }
-            propertyMap.put(parameterType.name(), value);
-        }
-
-
-        @Override
-        public ParcelableLink[] newArray(int size)
-        {
-            return new ParcelableLink[size];
-        }
-    };
 
 
     private final static class UnparcelledLink implements Link

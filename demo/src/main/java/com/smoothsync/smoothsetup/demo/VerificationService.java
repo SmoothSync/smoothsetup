@@ -55,7 +55,7 @@ import java.io.IOException;
 /**
  * Simple verification service that tries to send a GET request and returns true if no authentication error has been returned.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class VerificationService extends AbstractVerificationService
 {

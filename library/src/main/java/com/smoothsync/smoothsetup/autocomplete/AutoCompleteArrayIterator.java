@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Marten Gajda <marten@dmfs.org>
+ * Copyright (c) 2017 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.smoothsync.smoothsetup.autocomplete;
@@ -28,7 +27,7 @@ import java.util.Iterator;
 /**
  * An {@link Iterator} that iterates the expanded and filtered domains for auto-completion.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class AutoCompleteArrayIterator implements Iterator<String>
 {
@@ -38,8 +37,8 @@ public final class AutoCompleteArrayIterator implements Iterator<String>
 
     public AutoCompleteArrayIterator(String[] autoCompleteDomains, String localPart, String domainPart)
     {
-        mIterator = new ConvertedIterator<String, String>(new FilteredIterator<String>(new FilteredIterator<String>(
-                new ConvertedIterator<String, String>(new ArrayIterator<String>(autoCompleteDomains), new DomainExpansionConverter(domainPart)),
+        mIterator = new ConvertedIterator<>(new FilteredIterator<>(new FilteredIterator<>(
+                new ConvertedIterator<>(new ArrayIterator<>(autoCompleteDomains), new DomainExpansionConverter(domainPart)),
                 NonNull.<String>instance()), DomainFilter.INSTANCE), new LocalPartConverter(localPart));
     }
 

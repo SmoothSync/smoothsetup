@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Marten Gajda <marten@dmfs.org>
+ * Copyright (c) 2017 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.smoothsync.smoothsetup.model;
@@ -25,7 +24,7 @@ import com.smoothsync.api.model.Provider;
 /**
  * Holds information about the account to set up, including the login (account-id) and the provider.
  *
- * @author Marten Gajda <mrten@dmfs.org>
+ * @author Marten Gajda
  */
 public interface Account extends Parcelable
 {
@@ -35,12 +34,12 @@ public interface Account extends Parcelable
      *
      * @return The account identifier.
      */
-    public String accountId();
+    String accountId();
 
     /**
      * Returns the provider that hosts the user account.
      *
      * @return A {@link Provider}.
      */
-    public Provider provider();
+    Provider provider();
 }
