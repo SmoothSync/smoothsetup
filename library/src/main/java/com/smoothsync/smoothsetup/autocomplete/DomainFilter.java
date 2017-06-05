@@ -16,20 +16,20 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
-import org.dmfs.iterators.FilteredIterator;
+import org.dmfs.iterators.Filter;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 
 /**
- * An {@link FilteredIterator.IteratorFilter} that removes all {@link String}s that do not resolve to an IP address.
+ * A {@link Filter} which removes all {@link String}s that do not resolve to an IP address.
  * <p/>
  * Note, by design this will trigger a network request, so don't use this on the UI thread.
  *
  * @author Marten Gajda
  */
-public final class DomainFilter implements FilteredIterator.IteratorFilter<String>
+public final class DomainFilter implements Filter<String>
 {
     public final static DomainFilter INSTANCE = new DomainFilter();
 

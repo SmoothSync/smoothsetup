@@ -47,11 +47,11 @@ import org.dmfs.android.microfragments.MicroFragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.XFaded;
-import org.dmfs.iterators.AbstractConvertedIterator;
-import org.dmfs.iterators.AbstractFilteredIterator;
-import org.dmfs.iterators.ConvertedIterator;
-import org.dmfs.iterators.FilteredIterator;
-import org.dmfs.iterators.SerialIteratorIterator;
+import org.dmfs.iterators.Filter;
+import org.dmfs.iterators.Function;
+import org.dmfs.iterators.decorators.Filtered;
+import org.dmfs.iterators.decorators.Mapped;
+import org.dmfs.iterators.decorators.Serialized;
 
 import java.util.Iterator;
 
@@ -198,12 +198,12 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                 protected Boolean doInBackgroundWithException(Void[] params) throws Exception
                 {
                     Iterator<FutureServiceConnection<VerificationService>> serviceConnections =
-                            new ConvertedIterator<>(
-                                    new SerialIteratorIterator<>(
-                                            new ConvertedIterator<>(
-                                                    new FilteredIterator<>(
+                            new Mapped<>(
+                                    new Serialized<>(
+                                            new Mapped<>(
+                                                    new Filtered<>(
                                                             mParams.account().provider().services(),
-                                                            new AbstractFilteredIterator.IteratorFilter<Service>()
+                                                            new Filter<Service>()
                                                             {
                                                                 @Override
                                                                 public boolean iterate(Service element)
@@ -211,10 +211,10 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                                                                     return "com.smoothsync.authenticate".equals(element.serviceType());
                                                                 }
                                                             }),
-                                                    new AbstractConvertedIterator.Converter<Iterator<Intent>, Service>()
+                                                    new Function<Service, Iterator<Intent>>()
                                                     {
                                                         @Override
-                                                        public Iterator<Intent> convert(Service element)
+                                                        public Iterator<Intent> apply(Service element)
                                                         {
                                                             return new IndirectServiceIntentIterable(context,
                                                                     new Intent(VerificationService.ACTION)
@@ -222,10 +222,10 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                                                                             .setPackage(context.getPackageName())).iterator();
                                                         }
                                                     })),
-                                    new AbstractConvertedIterator.Converter<FutureServiceConnection<VerificationService>, Intent>()
+                                    new Function<Intent, FutureServiceConnection<VerificationService>>()
                                     {
                                         @Override
-                                        public FutureServiceConnection<VerificationService> convert(Intent element)
+                                        public FutureServiceConnection<VerificationService> apply(Intent element)
                                         {
                                             return new FutureLocalServiceConnection<>(context, element);
                                         }

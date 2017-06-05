@@ -16,7 +16,7 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
-import org.dmfs.iterators.AbstractConvertedIterator;
+import org.dmfs.iterators.Function;
 
 
 /**
@@ -54,7 +54,7 @@ import org.dmfs.iterators.AbstractConvertedIterator;
  *
  * @author Marten Gajda
  */
-public final class DomainExpansionConverter implements AbstractConvertedIterator.Converter<String, String>
+public final class DomainExpansionConverter implements Function<String, String>
 {
     private final String mDomain;
     private final String mDomainHead;
@@ -72,7 +72,7 @@ public final class DomainExpansionConverter implements AbstractConvertedIterator
 
 
     @Override
-    public String convert(String pattern)
+    public String apply(String pattern)
     {
         if (pattern.charAt(0) != '*' && pattern.startsWith(mDomain))
         {

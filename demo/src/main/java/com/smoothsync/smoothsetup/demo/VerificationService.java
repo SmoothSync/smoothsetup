@@ -46,8 +46,8 @@ import org.dmfs.httpessentials.httpurlconnection.HttpUrlConnectionExecutor;
 import org.dmfs.httpessentials.httpurlconnection.factories.DefaultHttpUrlConnectionFactory;
 import org.dmfs.httpessentials.httpurlconnection.factories.decorators.Finite;
 import org.dmfs.httpessentials.responsehandlers.TrivialResponseHandler;
-import org.dmfs.iterators.AbstractFilteredIterator;
-import org.dmfs.iterators.FilteredIterator;
+import org.dmfs.iterators.Filter;
+import org.dmfs.iterators.decorators.Filtered;
 
 import java.io.IOException;
 
@@ -72,7 +72,7 @@ public final class VerificationService extends AbstractVerificationService
                     public boolean verify(Provider provider, HttpAuthorizationFactory authorizationFactory) throws Exception
                     {
 
-                        Service service = new FilteredIterator<>(provider.services(), new AbstractFilteredIterator.IteratorFilter<Service>()
+                        Service service = new Filtered<>(provider.services(), new Filter<Service>()
                         {
                             @Override
                             public boolean iterate(Service element)

@@ -20,8 +20,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 
-import org.dmfs.iterators.AbstractConvertedIterator;
-import org.dmfs.iterators.ConvertedIterator;
+import org.dmfs.iterators.Function;
+import org.dmfs.iterators.decorators.Mapped;
 
 import java.util.Iterator;
 
@@ -47,10 +47,10 @@ public final class IndirectServiceIntentIterable implements Iterable<Intent>
     @Override
     public Iterator<Intent> iterator()
     {
-        return new ConvertedIterator<>(mResolveInfo.iterator(), new AbstractConvertedIterator.Converter<Intent, ResolveInfo>()
+        return new Mapped<>(mResolveInfo.iterator(), new Function<ResolveInfo, Intent>()
         {
             @Override
-            public Intent convert(ResolveInfo element)
+            public Intent apply(ResolveInfo element)
             {
                 if (element.serviceInfo == null)
                 {

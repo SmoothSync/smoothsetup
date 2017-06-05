@@ -16,17 +16,17 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
-import org.dmfs.iterators.ConvertedIterator;
+import org.dmfs.iterators.Function;
 
 
 /**
- * A {@link ConvertedIterator.Converter} that prepends domains with a specific local part.
+ * A {@link Function} that prepends domains with a specific local part.
  * <p/>
  * Instances of this class are not thread-safe.
  *
  * @author Marten Gajda
  */
-public final class LocalPartConverter implements ConvertedIterator.Converter<String, String>
+public final class LocalPartConverter implements Function<String, String>
 {
 
     private final StringBuilder mBuilder;
@@ -49,7 +49,7 @@ public final class LocalPartConverter implements ConvertedIterator.Converter<Str
 
 
     @Override
-    public String convert(String element)
+    public String apply(String element)
     {
         mBuilder.append(element);
         String result = mBuilder.toString();

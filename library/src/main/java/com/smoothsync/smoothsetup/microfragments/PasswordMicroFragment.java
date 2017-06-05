@@ -47,8 +47,8 @@ import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.httpessentials.types.Link;
-import org.dmfs.iterators.AbstractConvertedIterator;
-import org.dmfs.iterators.ConvertedIterator;
+import org.dmfs.iterators.Function;
+import org.dmfs.iterators.decorators.Mapped;
 import org.dmfs.pigeonpost.Dovecote;
 import org.dmfs.pigeonpost.localbroadcast.ParcelableDovecote;
 
@@ -190,12 +190,12 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
             mButton.setEnabled(!mPassword.getText().toString().isEmpty());
             try
             {
-                String appSpecificPasswordOption = new Default<>(new ConvertedIterator<>(
+                String appSpecificPasswordOption = new Default<>(new Mapped<>(
                         new Related(mAccount.provider().links(), "http://smoothsync.com/rel/app-specific-password"),
-                        new AbstractConvertedIterator.Converter<String, Link>()
+                        new Function<Link, String>()
                         {
                             @Override
-                            public String convert(Link element)
+                            public String apply(Link element)
                             {
                                 return element.target().toASCIIString();
                             }

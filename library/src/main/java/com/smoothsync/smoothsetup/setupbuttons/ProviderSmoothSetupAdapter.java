@@ -26,8 +26,8 @@ import com.smoothsync.smoothsetup.autocomplete.DomainExpansionConverter;
 
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.iterators.ArrayIterator;
-import org.dmfs.iterators.ConvertedIterator;
-import org.dmfs.iterators.FilteredIterator;
+import org.dmfs.iterators.decorators.Filtered;
+import org.dmfs.iterators.decorators.Mapped;
 import org.dmfs.iterators.filters.NonNull;
 
 import java.util.Iterator;
@@ -99,8 +99,8 @@ public final class ProviderSmoothSetupAdapter extends AbstractSmoothSetupAdapter
         Iterator<String> domainIterator = null;
         try
         {
-            domainIterator = new FilteredIterator<String>(
-                    new ConvertedIterator<String, String>(new ArrayIterator<String>(mProvider.domains()), new DomainExpansionConverter(domain)),
+            domainIterator = new Filtered<>(
+                    new Mapped<>(new ArrayIterator<>(mProvider.domains()), new DomainExpansionConverter(domain)),
                     NonNull.<String>instance());
         }
         catch (ProtocolException e)

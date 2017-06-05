@@ -17,8 +17,7 @@
 package com.smoothsync.smoothsetup.autocomplete;
 
 import org.dmfs.iterators.ArrayIterator;
-import org.dmfs.iterators.ConvertedIterator;
-import org.dmfs.iterators.FilteredIterator;
+import org.dmfs.iterators.decorators.Fluent;
 import org.dmfs.iterators.filters.NonNull;
 
 import java.util.Iterator;
@@ -37,9 +36,10 @@ public final class AutoCompleteArrayIterator implements Iterator<String>
 
     public AutoCompleteArrayIterator(String[] autoCompleteDomains, String localPart, String domainPart)
     {
-        mIterator = new ConvertedIterator<>(new FilteredIterator<>(new FilteredIterator<>(
-                new ConvertedIterator<>(new ArrayIterator<>(autoCompleteDomains), new DomainExpansionConverter(domainPart)),
-                NonNull.<String>instance()), DomainFilter.INSTANCE), new LocalPartConverter(localPart));
+        mIterator = new Fluent<>(new ArrayIterator<>(autoCompleteDomains))
+                .mapped(new DomainExpansionConverter(domainPart))
+                .filtered(NonNull.<String>instance())
+                .mapped(new LocalPartConverter(localPart));
     }
 
 

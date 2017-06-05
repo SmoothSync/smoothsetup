@@ -18,8 +18,8 @@ package com.smoothsync.smoothsetup.utils;
 
 import org.dmfs.httpessentials.types.Link;
 import org.dmfs.iterators.AbstractBaseIterator;
-import org.dmfs.iterators.AbstractFilteredIterator;
-import org.dmfs.iterators.FilteredIterator;
+import org.dmfs.iterators.Filter;
+import org.dmfs.iterators.decorators.Filtered;
 
 import java.util.Iterator;
 
@@ -36,7 +36,7 @@ public final class Related extends AbstractBaseIterator<Link>
 
     public Related(Iterator<Link> delegate, final String rel)
     {
-        mDelegate = new FilteredIterator<>(delegate, new AbstractFilteredIterator.IteratorFilter<Link>()
+        mDelegate = new Filtered<>(delegate, new Filter<Link>()
         {
             @Override
             public boolean iterate(Link element)

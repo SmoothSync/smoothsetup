@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.smoothsync.smoothsetup">
-
-    <uses-sdk android:minSdkVersion="14"/>
+        package="com.smoothsync.smoothsetup">
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
@@ -11,8 +9,7 @@
                 android:name=".MicroFragmentHostActivity"
                 android:excludeFromRecents="false"
                 android:exported="false"
-                android:theme="@style/SmoothSetupTheme">
-        </activity>
+                android:theme="@style/SmoothSetupTheme"/>
         <activity
                 android:name=".SmoothSetupDispatchActivity"
                 android:excludeFromRecents="false"
