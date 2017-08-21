@@ -28,6 +28,12 @@
             </intent-filter>
         </activity>
 
+        <activity
+                android:name=".SmoothUpdateAuthDispatchActivity"
+                android:excludeFromRecents="false"
+                android:exported="false"
+                android:theme="@android:style/Theme.NoDisplay"/>
+
         <receiver
                 android:name=".InstallReferrerBroadcastReceiver"
                 android:exported="true">

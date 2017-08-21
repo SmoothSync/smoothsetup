@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.smoothsync.smoothsetup.demo">
+        package="com.smoothsync.smoothsetup.demo">
 
     <application
             android:allowBackup="true"
@@ -8,12 +9,16 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity
-                android:name="com.smoothsync.smoothsetup.SmoothSetupDispatchActivity">
+                android:name="com.smoothsync.smoothsetup.demo.DemoActivity"
+                android:label="@string/title_activity_demo"
+                android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-
+        </activity>
+        <activity android:name="com.smoothsync.smoothsetup.SmoothSetupDispatchActivity">
             <meta-data
                     android:name="com.smoothsync.PROVIDERx"
                     android:value="https://smoothsync-services-test.appspot.com/setup/e71c750d1e544665ad0ebfd598260b51?provider=2276a344b3324d558581e61b076fcdaa&amp;account=test"/>
@@ -26,7 +31,6 @@
                 <action android:name="com.smoothsync.action.BIND_API"/>
             </intent-filter>
         </service>
-
         <service
                 android:name=".AccountService"
                 android:exported="false">
@@ -39,6 +43,7 @@
                 android:exported="false">
             <intent-filter>
                 <action android:name="com.smoothsync.SERVICE_TEST_SERVICE"/>
+
                 <data android:scheme="com.smoothsync.authenticate"/>
             </intent-filter>
         </service>

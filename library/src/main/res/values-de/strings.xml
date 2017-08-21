@@ -8,11 +8,11 @@
     <string name="smoothsetup_wizard_title_setup_completed">Glückwunsch</string>
     <string name="smoothsetup_wizard_title_error">Fehler</string>
 
-    <string name="smoothsetup_prompt_login">Gib deine E-Mail-Adresse oder Benutzernamen ein und wähle deinen Provider</string>
-    <string name="smoothsetup_prompt_login_at_provider">Gib deinen %1$s Benutzernamen ein</string>
-    <string name="smoothsetup_prompt_enter_password">Gib dein %1$s Passwort ein</string>
-    <string name="smoothsetup_prompt_enter_password_or_app_specific_password">Gib dein %1$s Passwort oder dein anwendungsspezifisches %1$s Passwort ein</string>
-    <string name="smoothsetup_prompt_enter_app_specific_password">Gib dein anwendungsspezifisches %1$s Passwort ein</string>
+    <string name="smoothsetup_prompt_login">Gib Deine E-Mail-Adresse oder Benutzernamen ein und wähle Deinen Provider</string>
+    <string name="smoothsetup_prompt_login_at_provider">Gib Deinen %1$s Benutzernamen ein</string>
+    <string name="smoothsetup_prompt_enter_password">Gib Dein %1$s Passwort ein</string>
+    <string name="smoothsetup_prompt_enter_password_or_app_specific_password">Gib Dein %1$s Passwort oder Dein anwendungsspezifisches %1$s Passwort ein</string>
+    <string name="smoothsetup_prompt_enter_app_specific_password">Gib Dein anwendungsspezifisches %1$s Passwort ein</string>
 
     <string name="smoothsetup_button_choose_provider">Provider wählen</string>
     <string name="smoothsetup_button_other_provider">Anderer Provider</string>
@@ -24,9 +24,7 @@
     <string name="smoothsetup_message_setup_completed">%1$s ist jetzt eingerichtet und die Synchronisation beginnt in Kürze</string>
     <string name="smoothsetup_message_please_wait">Dies kann bis zu 2 Minuten dauern.</string>
 
-    <string name="smoothsetup_error_load_provider">Konnte Providerdaten nicht laden.\n\nBitte prüfe die Internetverbindung oder versuche es später noch
-        einmal.
-    </string>
+    <string name="smoothsetup_error_load_provider">Konnte Providerdaten nicht laden.\n\nBitte prüfe die Internetverbindung oder versuche es später noch einmal.</string>
     <string name="smoothsetup_error_authentication">Anmeldung fehlgeschlagen.\n\nBitte prüfe dein Passwort und versuche es erneut.</string>
     <string name="smoothsetup_error_network">Verbindung fehlgeschlagen.\n\nBitte prüfe die Internetverbindung oder versuche es später noch einmal.</string>
 
@@ -41,4 +39,5 @@
     <string name="smoothsetup_button_copy_app_specific_password">Kopieren</string>
     <string name="smoothsetup_app_specific_password_inserted">Anwendungsspezifisches Passwort eingefügt</string>
     <string name="smoothsetup_snackbar_found_app_specific_password">Anwendungsspezifisches Passwort gefunden: %1$s</string>
+    <string name="smoothsetup_message_authentication_failure">%1$s konnte sich bei %2$s nicht mit Deinem Konto %2$s anmelden.\n\nBitte melde Dich an und autorisiere %1$s dein Konto zu synchronisieren.</string>
 </resources>

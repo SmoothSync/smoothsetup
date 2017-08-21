@@ -132,6 +132,14 @@
     -->
     <string name="smoothsetup_message_please_wait">This can take up to 2 minutes.</string>
 
+    <!--
+    Message presented to the user when an authentication error occurred.
+    %1$s will be replaced with the app name
+    %2$s will be replaced with the user name
+    %3$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_message_authentication_failure">%1$s could not authenticate your account %2$s with %3$s.\n\nPlease sign in and authorize %1$s to sync your account.</string>
+
 
     <!-- Error Messages -->
 
