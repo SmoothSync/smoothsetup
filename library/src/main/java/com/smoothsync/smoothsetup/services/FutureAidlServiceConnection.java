@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
+import java.util.Locale;
 import java.util.concurrent.TimeoutException;
 
 
@@ -33,7 +34,8 @@ import java.util.concurrent.TimeoutException;
 public final class FutureAidlServiceConnection<T extends android.os.IInterface> implements FutureServiceConnection<T>
 {
     private final Context mContext;
-    private final boolean mBindSucceeded;
+    private final Intent mIntent;
+    private boolean mBindSucceeded;
     private final StubProxy<T> mStubProxy;
     private boolean mIsConnected;
     private T mService;
@@ -78,8 +80,8 @@ public final class FutureAidlServiceConnection<T extends android.os.IInterface> 
     public FutureAidlServiceConnection(Context context, Intent intent, StubProxy<T> stubProxy)
     {
         mContext = context.getApplicationContext();
+        mIntent = intent;
         mStubProxy = stubProxy;
-        mBindSucceeded = mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
 
@@ -107,6 +109,19 @@ public final class FutureAidlServiceConnection<T extends android.os.IInterface> 
             long end = now + timeout;
             while (now < end)
             {
+                if (!mBindSucceeded)
+                {
+                    // not bound yet
+                    mBindSucceeded = mContext.bindService(mIntent, mConnection, Context.BIND_AUTO_CREATE);
+                    if (!mBindSucceeded)
+                    {
+                        // according to the docs we need to unbind explicitly in this case
+                        mContext.unbindService(mConnection);
+                        // Do we have a more appropriate exception?
+                        throw new TimeoutException("Could not connect to the service");
+                    }
+                }
+
                 mConnection.wait(end - now);
                 if (mIsConnected)
                 {
@@ -115,7 +130,7 @@ public final class FutureAidlServiceConnection<T extends android.os.IInterface> 
                 now = System.currentTimeMillis();
             }
         }
-        throw new TimeoutException();
+        throw new TimeoutException(String.format(Locale.ENGLISH, "Could not connect within %d milliseconds", timeout));
     }
 
 
@@ -126,6 +141,7 @@ public final class FutureAidlServiceConnection<T extends android.os.IInterface> 
         {
             if (mBindSucceeded)
             {
+                mBindSucceeded = false;
                 mIsConnected = false;
                 mContext.unbindService(mConnection);
             }
