@@ -39,5 +39,5 @@
     <string name="smoothsetup_button_copy_app_specific_password">Kopieren</string>
     <string name="smoothsetup_app_specific_password_inserted">Anwendungsspezifisches Passwort eingefügt</string>
     <string name="smoothsetup_snackbar_found_app_specific_password">Anwendungsspezifisches Passwort gefunden: %1$s</string>
-    <string name="smoothsetup_message_authentication_failure">%1$s konnte sich bei %2$s nicht mit Deinem Konto %2$s anmelden.\n\nBitte melde Dich an und autorisiere %1$s dein Konto zu synchronisieren.</string>
+    <string name="smoothsetup_message_authentication_failure">%1$s konnte sich bei %3$s nicht mit Deinem Konto \"%2$s\" anmelden.\n\nBitte melde Dich an um %1$s zu autorisieren dein Konto zu synchronisieren.</string>
 </resources>
