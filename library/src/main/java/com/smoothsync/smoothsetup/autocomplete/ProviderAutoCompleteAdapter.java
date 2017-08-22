@@ -103,7 +103,7 @@ public final class ProviderAutoCompleteAdapter extends AbstractAutoCompleteAdapt
             try
             {
                 Iterator<String> domainIterator = new AutoCompleteArrayIterator(mProvider.domains(), localPart, domainPart);
-                List result = new ArrayList(mProvider.domains().length);
+                List<String> result = new ArrayList<>(mProvider.domains().length);
                 while (domainIterator.hasNext())
                 {
                     result.add(domainIterator.next());

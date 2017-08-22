@@ -120,7 +120,7 @@ public final class ApiAutoCompleteAdapter extends AbstractAutoCompleteAdapter
             }
 
             Iterator<String> domainIterator = new AutoCompleteArrayIterator(autoCompleteResult.autoComplete(), localPart, domainPart);
-            List values = new ArrayList(autoCompleteResult.autoComplete().length);
+            List<String> values = new ArrayList<>(autoCompleteResult.autoComplete().length);
             while (domainIterator.hasNext())
             {
                 values.add(domainIterator.next());
