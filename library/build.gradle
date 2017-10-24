@@ -31,10 +31,10 @@ dependencies {
     compile 'org.dmfs:http-client-headers:' + HTTP_CLIENT_ESSENTIALS_VERSION
     compile 'org.dmfs:http-executor-decorators:' + HTTP_CLIENT_ESSENTIALS_VERSION
     compile 'org.dmfs:httpurlconnection-executor:' + HTTP_CLIENT_ESSENTIALS_VERSION
-    compile 'org.dmfs:oauth2-essentials:0.7'
+    compile 'org.dmfs:oauth2-essentials:' + OAUTH2_ESSENTIALS_VERSION
     compile 'org.dmfs:rfc5545-datetime:0.2.4'
-    compile 'org.dmfs:iterators:1.4'
+    compile 'org.dmfs:jems:' + JEMS_VERSION
     compile 'net.iharder:base64:2.3.9'
-    compile 'com.github.SmoothSync:smoothsync-api-client:0.6.1'
+    compile 'com.github.SmoothSync:smoothsync-api-client:f4701f83b5f2c328d23c3c9b8f36a677a5693012'
     compile 'com.github.dmfs:MicroFragments:0.2.1'
 }

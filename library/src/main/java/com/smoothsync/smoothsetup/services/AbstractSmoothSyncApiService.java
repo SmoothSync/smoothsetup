@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.SmoothSyncApiRequest;
@@ -101,8 +102,15 @@ public abstract class AbstractSmoothSyncApiService extends Service
         @Override
         public <T> T resultOf(SmoothSyncApiRequest<T> smoothSyncApiRequest) throws IOException, ProtocolError, ProtocolException
         {
-            // just forward the call.
-            return mApi.resultOf(smoothSyncApiRequest);
+            try
+            {
+                // just forward the call.
+                return mApi.resultOf(smoothSyncApiRequest);
+            }catch(Exception e)
+            {
+                Log.v("xxxxx", "fail", e);
+                throw e;
+            }
         }
     }
 }
