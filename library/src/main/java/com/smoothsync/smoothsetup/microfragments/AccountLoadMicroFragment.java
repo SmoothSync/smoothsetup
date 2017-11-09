@@ -32,11 +32,12 @@ import android.view.ViewGroup;
 
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.services.AccountService;
-import com.smoothsync.smoothsetup.services.FutureAidlServiceConnection;
-import com.smoothsync.smoothsetup.services.FutureServiceConnection;
 import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
+import org.dmfs.android.bolts.service.FutureServiceConnection;
+import org.dmfs.android.bolts.service.StubProxy;
+import org.dmfs.android.bolts.service.elementary.FutureAidlServiceConnection;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
@@ -154,7 +155,7 @@ public final class AccountLoadMicroFragment implements MicroFragment<Account>
             // this must be a retained Fragment, we don't want to create accounts more than once
             mAccountService = new FutureAidlServiceConnection<AccountService>(getContext(),
                     new Intent("com.smoothsync.action.ACCOUNT_SERVICE").setPackage(getContext().getPackageName()),
-                    new FutureAidlServiceConnection.StubProxy<AccountService>()
+                    new StubProxy<AccountService>()
                     {
                         @Override
                         public AccountService asInterface(IBinder service)

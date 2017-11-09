@@ -24,7 +24,8 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.smoothsync.api.model.Provider;
-import com.smoothsync.smoothsetup.model.HttpAuthorizationFactory;
+
+import org.dmfs.httpessentials.executors.authorizing.AuthStrategy;
 
 
 /**
@@ -94,9 +95,9 @@ public abstract class AbstractVerificationService extends Service
 
 
         @Override
-        public boolean verify(Provider provider, HttpAuthorizationFactory authorizationFactory) throws Exception
+        public boolean verify(Provider provider, AuthStrategy authStrategy) throws Exception
         {
-            return mVerificationService.verify(provider, authorizationFactory);
+            return mVerificationService.verify(provider, authStrategy);
         }
     }
 }

@@ -34,11 +34,13 @@ import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.model.HttpAuthorizationFactory;
 import com.smoothsync.smoothsetup.services.AccountService;
-import com.smoothsync.smoothsetup.services.FutureAidlServiceConnection;
-import com.smoothsync.smoothsetup.services.FutureServiceConnection;
 import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
+import com.smoothsync.smoothsetup.utils.usercredentials.Parcelable;
 
+import org.dmfs.android.bolts.service.FutureServiceConnection;
+import org.dmfs.android.bolts.service.StubProxy;
+import org.dmfs.android.bolts.service.elementary.FutureAidlServiceConnection;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
@@ -49,6 +51,7 @@ import org.dmfs.android.microfragments.transitions.ForwardResetTransition;
 import org.dmfs.android.microfragments.transitions.FragmentTransition;
 import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.android.microfragments.transitions.XFaded;
+import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
 
 
 /**
@@ -64,7 +67,7 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
         public CreateAccountMicroFragment createFromParcel(Parcel source)
         {
             ClassLoader classLoader = getClass().getClassLoader();
-            return new CreateAccountMicroFragment((Account) source.readParcelable(classLoader), (HttpAuthorizationFactory) source.readParcelable(classLoader));
+            return new CreateAccountMicroFragment((Account) source.readParcelable(classLoader), (UserCredentials) source.readParcelable(classLoader));
         }
 
 
@@ -75,13 +78,13 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
         }
     };
     private final Account mAccount;
-    private final HttpAuthorizationFactory mHttpAuthorizationFactory;
+    private final UserCredentials mUserCredentials;
 
 
-    public CreateAccountMicroFragment(@NonNull Account account, @NonNull HttpAuthorizationFactory httpAuthorizationFactory)
+    public CreateAccountMicroFragment(@NonNull Account account, @NonNull UserCredentials userCredentials)
     {
         mAccount = account;
-        mHttpAuthorizationFactory = httpAuthorizationFactory;
+        mUserCredentials = userCredentials;
     }
 
 
@@ -122,11 +125,10 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
             }
 
 
-            @NonNull
             @Override
-            public HttpAuthorizationFactory httpAuthorizationFactory()
+            public UserCredentials credentials()
             {
-                return mHttpAuthorizationFactory;
+                return mUserCredentials;
             }
         };
     }
@@ -143,7 +145,7 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
     public void writeToParcel(Parcel dest, int flags)
     {
         dest.writeParcelable(mAccount, 0);
-        dest.writeParcelable(mHttpAuthorizationFactory, 0);
+        dest.writeParcelable(new Parcelable(mUserCredentials), 0);
     }
 
 
@@ -173,7 +175,7 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
             // this must be a retained Fragment, we don't want to create accounts more than once
             mAccountService = new FutureAidlServiceConnection<AccountService>(getContext(),
                     new Intent("com.smoothsync.action.ACCOUNT_SERVICE").setPackage(getContext().getPackageName()),
-                    new FutureAidlServiceConnection.StubProxy<AccountService>()
+                    new StubProxy<AccountService>()
                     {
                         @Override
                         public AccountService asInterface(IBinder service)
@@ -217,7 +219,7 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
                         AccountService service = mAccountService.service(10000);
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("account", mParams.account());
-                        bundle.putParcelable("auth_factory", mParams.httpAuthorizationFactory());
+                        bundle.putParcelable("credentials", new Parcelable(mParams.credentials()));
                         service.createAccount(bundle);
                         return true;
                     }

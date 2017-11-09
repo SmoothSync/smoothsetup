@@ -40,12 +40,12 @@ import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.AbstractAutoCompleteAdapter;
 import com.smoothsync.smoothsetup.model.BasicAccount;
 import com.smoothsync.smoothsetup.services.FutureApiServiceConnection;
-import com.smoothsync.smoothsetup.services.FutureServiceConnection;
 import com.smoothsync.smoothsetup.services.SmoothSyncApiProxy;
 import com.smoothsync.smoothsetup.setupbuttons.AbstractSmoothSetupAdapter;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter;
 
+import org.dmfs.android.bolts.service.FutureServiceConnection;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;

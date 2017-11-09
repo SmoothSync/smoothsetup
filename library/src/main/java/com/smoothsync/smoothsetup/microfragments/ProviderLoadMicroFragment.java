@@ -33,11 +33,11 @@ import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.ProviderLoadTask;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.services.FutureApiServiceConnection;
-import com.smoothsync.smoothsetup.services.FutureServiceConnection;
 import com.smoothsync.smoothsetup.services.SmoothSyncApiProxy;
 import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
+import org.dmfs.android.bolts.service.FutureServiceConnection;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;

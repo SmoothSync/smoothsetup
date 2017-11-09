@@ -35,7 +35,6 @@ import android.widget.TextView;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.microfragments.appspecificpassword.AppSpecificWebviewFragment;
 import com.smoothsync.smoothsetup.model.Account;
-import com.smoothsync.smoothsetup.model.BasicHttpAuthorizationFactory;
 import com.smoothsync.smoothsetup.utils.Default;
 import com.smoothsync.smoothsetup.utils.Related;
 
@@ -46,6 +45,7 @@ import org.dmfs.android.microfragments.MicroFragmentHost;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
+import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
 import org.dmfs.httpessentials.types.Link;
 import org.dmfs.iterators.Function;
 import org.dmfs.iterators.decorators.Mapped;
@@ -268,7 +268,21 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
                             .execute(getActivity(),
                                     new Swiped(new ForwardTransition<>(
                                             new ApproveAuthorizationMicroFragment(mAccount,
-                                                    new BasicHttpAuthorizationFactory(mAccount.accountId(), mPassword.getText().toString())))));
+                                                    new UserCredentials()
+                                                    {
+                                                        @Override
+                                                        public CharSequence userName()
+                                                        {
+                                                            return mAccount.accountId();
+                                                        }
+
+
+                                                        @Override
+                                                        public CharSequence password()
+                                                        {
+                                                            return mPassword.getText().toString();
+                                                        }
+                                                    }))));
                 }
                 else if (id == R.id.smoothsetup_forgot_password)
                 {

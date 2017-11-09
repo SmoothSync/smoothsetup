@@ -33,20 +33,25 @@ import android.view.ViewGroup;
 import com.smoothsync.api.model.Service;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.Account;
-import com.smoothsync.smoothsetup.model.HttpAuthorizationFactory;
-import com.smoothsync.smoothsetup.services.FutureLocalServiceConnection;
-import com.smoothsync.smoothsetup.services.FutureServiceConnection;
 import com.smoothsync.smoothsetup.services.VerificationService;
 import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
 import com.smoothsync.smoothsetup.utils.IndirectServiceIntentIterable;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
+import com.smoothsync.smoothsetup.utils.usercredentials.Parcelable;
 
+import org.dmfs.android.bolts.service.FutureServiceConnection;
+import org.dmfs.android.bolts.service.elementary.FutureLocalServiceConnection;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.XFaded;
+import org.dmfs.httpessentials.executors.authorizing.AuthScope;
+import org.dmfs.httpessentials.executors.authorizing.ServiceScope;
+import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
+import org.dmfs.httpessentials.executors.authorizing.credentialsstores.SimpleCredentialsStore;
+import org.dmfs.httpessentials.executors.authorizing.strategies.UserCredentialsAuthStrategy;
 import org.dmfs.iterators.Filter;
 import org.dmfs.iterators.Function;
 import org.dmfs.iterators.decorators.Filtered;
@@ -70,7 +75,7 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
         {
             ClassLoader classLoader = getClass().getClassLoader();
             return new ApproveAuthorizationMicroFragment((Account) source.readParcelable(classLoader),
-                    (HttpAuthorizationFactory) source.readParcelable(classLoader));
+                    (UserCredentials) source.readParcelable(classLoader));
         }
 
 
@@ -81,13 +86,13 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
         }
     };
     private final Account mAccount;
-    private final HttpAuthorizationFactory mHttpAuthorizationFactory;
+    private final UserCredentials mUserCredentials;
 
 
-    public ApproveAuthorizationMicroFragment(@NonNull Account account, @NonNull HttpAuthorizationFactory httpAuthorizationFactory)
+    public ApproveAuthorizationMicroFragment(@NonNull Account account, @NonNull UserCredentials userCredentials)
     {
         mAccount = account;
-        mHttpAuthorizationFactory = httpAuthorizationFactory;
+        mUserCredentials = userCredentials;
     }
 
 
@@ -128,9 +133,9 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
 
 
             @Override
-            public HttpAuthorizationFactory httpAuthorizationFactory()
+            public UserCredentials credentials()
             {
-                return mHttpAuthorizationFactory;
+                return mUserCredentials;
             }
         };
     }
@@ -147,7 +152,7 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
     public void writeToParcel(Parcel dest, int flags)
     {
         dest.writeParcelable(mAccount, 0);
-        dest.writeParcelable(mHttpAuthorizationFactory, 0);
+        dest.writeParcelable(new Parcelable(mUserCredentials), 0);
     }
 
 
@@ -234,7 +239,17 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                     {
                         throw new RuntimeException("No verification service found");
                     }
-                    return serviceConnections.next().service(1000).verify(mParams.account().provider(), mParams.httpAuthorizationFactory());
+                    return serviceConnections.next()
+                            .service(1000)
+                            .verify(mParams.account().provider(), new UserCredentialsAuthStrategy(new SimpleCredentialsStore<>(new ServiceScope()
+                            {
+                                @Override
+                                public boolean contains(AuthScope authScope)
+                                {
+                                    // Consider creating a ServiceScope which covers all service-URLs of the given provider
+                                    return true;
+                                }
+                            }, mParams.credentials())));
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
@@ -261,7 +276,7 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                                 .execute(getActivity(),
                                         new XFaded(
                                                 new ForwardTransition<>(
-                                                        new CreateAccountMicroFragment(mParams.account(), mParams.httpAuthorizationFactory()))));
+                                                        new CreateAccountMicroFragment(mParams.account(), mParams.credentials()))));
                     }
                     else
                     {
@@ -288,7 +303,7 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
         {
             Account account();
 
-            HttpAuthorizationFactory httpAuthorizationFactory();
+            UserCredentials credentials();
         }
     }
 }

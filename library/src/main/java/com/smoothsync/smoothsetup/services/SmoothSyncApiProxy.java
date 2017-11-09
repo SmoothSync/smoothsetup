@@ -19,6 +19,8 @@ package com.smoothsync.smoothsetup.services;
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.SmoothSyncApiRequest;
 
+import org.dmfs.android.bolts.service.FutureServiceConnection;
+import org.dmfs.android.bolts.service.exceptions.BindFailed;
 import org.dmfs.httpessentials.exceptions.ProtocolError;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 
@@ -58,6 +60,10 @@ public final class SmoothSyncApiProxy implements SmoothSyncApi
         catch (TimeoutException e)
         {
             throw new RuntimeException("Couldn't connect to SmoothSyncApiService within a reasonable time.", e);
+        }
+        catch (BindFailed bindFailed)
+        {
+            throw new RuntimeException("Couldn't connect to SmoothSyncApiService.", bindFailed);
         }
     }
 }

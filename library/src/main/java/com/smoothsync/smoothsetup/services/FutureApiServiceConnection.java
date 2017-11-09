@@ -21,6 +21,10 @@ import android.content.Intent;
 
 import com.smoothsync.api.SmoothSyncApi;
 
+import org.dmfs.android.bolts.service.FutureServiceConnection;
+import org.dmfs.android.bolts.service.elementary.FutureLocalServiceConnection;
+import org.dmfs.android.bolts.service.exceptions.BindFailed;
+
 import java.util.concurrent.TimeoutException;
 
 
@@ -49,7 +53,7 @@ public final class FutureApiServiceConnection implements FutureServiceConnection
 
 
     @Override
-    public SmoothSyncApi service(long timeout) throws TimeoutException, InterruptedException
+    public SmoothSyncApi service(long timeout) throws TimeoutException, InterruptedException, BindFailed
     {
         return mDelegate.service(timeout);
     }

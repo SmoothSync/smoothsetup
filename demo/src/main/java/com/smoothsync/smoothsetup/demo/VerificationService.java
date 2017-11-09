@@ -21,7 +21,6 @@ import android.content.Context;
 
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.api.model.Service;
-import com.smoothsync.smoothsetup.model.HttpAuthorizationFactory;
 import com.smoothsync.smoothsetup.services.AbstractVerificationService;
 import com.smoothsync.smoothsetup.utils.Trusted;
 
@@ -35,6 +34,9 @@ import org.dmfs.httpessentials.client.HttpResponseHandler;
 import org.dmfs.httpessentials.entities.EmptyHttpRequestEntity;
 import org.dmfs.httpessentials.exceptions.ProtocolError;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
+import org.dmfs.httpessentials.exceptions.UnauthorizedException;
+import org.dmfs.httpessentials.executors.authorizing.AuthStrategy;
+import org.dmfs.httpessentials.executors.authorizing.Authorizing;
 import org.dmfs.httpessentials.executors.following.Following;
 import org.dmfs.httpessentials.executors.following.policies.FollowRedirectPolicy;
 import org.dmfs.httpessentials.executors.following.policies.Secure;
@@ -69,7 +71,7 @@ public final class VerificationService extends AbstractVerificationService
                 return new com.smoothsync.smoothsetup.services.VerificationService()
                 {
                     @Override
-                    public boolean verify(Provider provider, HttpAuthorizationFactory authorizationFactory) throws Exception
+                    public boolean verify(Provider provider, AuthStrategy authStrategy) throws Exception
                     {
 
                         Service service = new Filtered<>(provider.services(), new Filter<Service>()
@@ -81,41 +83,51 @@ public final class VerificationService extends AbstractVerificationService
                             }
                         }).next();
                         HttpRequestExecutor executor = new Following(
-                                new Retrying(
-                                        new HttpUrlConnectionExecutor(
-                                                new Trusted(new Finite(new DefaultHttpUrlConnectionFactory(), 10000, 10000), service.keyStore())),
-                                        new DefaultRetryPolicy(3)),
+                                new Authorizing(
+                                        new Retrying(
+                                                new HttpUrlConnectionExecutor(
+                                                        new Trusted(new Finite(new DefaultHttpUrlConnectionFactory(), 10000, 10000), service.keyStore())),
+                                                new DefaultRetryPolicy(3)),
+                                        authStrategy),
                                 new Secure(new FollowRedirectPolicy(5)));
 
-                        return executor.execute(service.uri(), authorizationFactory.authenticate(new HttpRequest<Boolean>()
+                        try
                         {
-                            @Override
-                            public HttpMethod method()
+                            return executor.execute(service.uri(), new HttpRequest<Boolean>()
                             {
-                                return HttpMethod.GET;
-                            }
+                                @Override
+                                public HttpMethod method()
+                                {
+                                    return HttpMethod.GET;
+                                }
 
 
-                            @Override
-                            public Headers headers()
-                            {
-                                return EmptyHeaders.INSTANCE;
-                            }
+                                @Override
+                                public Headers headers()
+                                {
+                                    return EmptyHeaders.INSTANCE;
+                                }
 
 
-                            @Override
-                            public HttpRequestEntity requestEntity()
-                            {
-                                return EmptyHttpRequestEntity.INSTANCE;
-                            }
+                                @Override
+                                public HttpRequestEntity requestEntity()
+                                {
+                                    return EmptyHttpRequestEntity.INSTANCE;
+                                }
 
 
-                            @Override
-                            public HttpResponseHandler<Boolean> responseHandler(HttpResponse response) throws IOException, ProtocolError, ProtocolException
-                            {
-                                return new TrivialResponseHandler<>(!HttpStatus.UNAUTHORIZED.equals(response.status()));
-                            }
-                        }));
+                                @Override
+                                public HttpResponseHandler<Boolean> responseHandler(HttpResponse response) throws IOException, ProtocolError, ProtocolException
+                                {
+                                    return new TrivialResponseHandler<>(!HttpStatus.UNAUTHORIZED.equals(response.status()));
+                                }
+                            });
+                        }
+                        catch (UnauthorizedException e)
+                        {
+                            // not authenticated
+                            return false;
+                        }
                     }
                 };
             }

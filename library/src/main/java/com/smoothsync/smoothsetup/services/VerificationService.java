@@ -18,7 +18,8 @@ package com.smoothsync.smoothsetup.services;
 
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.api.model.Service;
-import com.smoothsync.smoothsetup.model.HttpAuthorizationFactory;
+
+import org.dmfs.httpessentials.executors.authorizing.AuthStrategy;
 
 
 /**
@@ -30,5 +31,5 @@ public interface VerificationService
 {
     String ACTION = "com.smoothsync.SERVICE_TEST_SERVICE";
 
-    boolean verify(Provider provider, HttpAuthorizationFactory authorizationFactory) throws Exception;
+    boolean verify(Provider provider, AuthStrategy authorizationStrategy) throws Exception;
 }

@@ -37,4 +37,6 @@ dependencies {
     compile 'net.iharder:base64:2.3.9'
     compile 'com.github.SmoothSync:smoothsync-api-client:f4701f83b5f2c328d23c3c9b8f36a677a5693012'
     compile 'com.github.dmfs:MicroFragments:0.2.1'
+    compile 'com.github.dmfs.Bolts:service-bolts:a43822bd6a'
+
 }
