@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.3"
 
     defaultConfig {
         applicationId "com.smoothsync.smoothsetup.demo"
@@ -32,6 +31,10 @@ android {
     }
     lintOptions {
         abortOnError false
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
     }
 }
 

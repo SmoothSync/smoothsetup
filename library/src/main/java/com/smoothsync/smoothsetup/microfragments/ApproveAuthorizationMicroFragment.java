@@ -32,12 +32,11 @@ import android.view.ViewGroup;
 
 import com.smoothsync.api.model.Service;
 import com.smoothsync.smoothsetup.R;
-import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.services.VerificationService;
+import com.smoothsync.smoothsetup.utils.AccountDetails;
 import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
 import com.smoothsync.smoothsetup.utils.IndirectServiceIntentIterable;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
-import com.smoothsync.smoothsetup.utils.usercredentials.Parcelable;
 
 import org.dmfs.android.bolts.service.FutureServiceConnection;
 import org.dmfs.android.bolts.service.elementary.FutureLocalServiceConnection;
@@ -47,16 +46,15 @@ import org.dmfs.android.microfragments.MicroFragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.XFaded;
+import org.dmfs.android.microwizard.MicroWizard;
+import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.httpessentials.executors.authorizing.AuthScope;
 import org.dmfs.httpessentials.executors.authorizing.ServiceScope;
-import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
 import org.dmfs.httpessentials.executors.authorizing.credentialsstores.SimpleCredentialsStore;
 import org.dmfs.httpessentials.executors.authorizing.strategies.UserCredentialsAuthStrategy;
-import org.dmfs.iterators.Filter;
-import org.dmfs.iterators.Function;
 import org.dmfs.iterators.decorators.Filtered;
-import org.dmfs.iterators.decorators.Mapped;
 import org.dmfs.iterators.decorators.Serialized;
+import org.dmfs.jems.iterator.decorators.Mapped;
 
 import java.util.Iterator;
 
@@ -66,16 +64,14 @@ import java.util.Iterator;
  *
  * @author Marten Gajda
  */
-public final class ApproveAuthorizationMicroFragment implements MicroFragment<ApproveAuthorizationMicroFragment.LoadFragment.Params>
+public final class ApproveAuthorizationMicroFragment implements MicroFragment<ApproveAuthorizationMicroFragment.Params>
 {
     public final static Creator<ApproveAuthorizationMicroFragment> CREATOR = new Creator<ApproveAuthorizationMicroFragment>()
     {
         @Override
         public ApproveAuthorizationMicroFragment createFromParcel(Parcel source)
         {
-            ClassLoader classLoader = getClass().getClassLoader();
-            return new ApproveAuthorizationMicroFragment((Account) source.readParcelable(classLoader),
-                    (UserCredentials) source.readParcelable(classLoader));
+            return new ApproveAuthorizationMicroFragment(new Unboxed<AccountDetails>(source).value(), new Unboxed<MicroWizard<AccountDetails>>(source).value());
         }
 
 
@@ -85,14 +81,14 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
             return new ApproveAuthorizationMicroFragment[size];
         }
     };
-    private final Account mAccount;
-    private final UserCredentials mUserCredentials;
+    private final AccountDetails mAccountDetails;
+    private final MicroWizard<AccountDetails> mNext;
 
 
-    public ApproveAuthorizationMicroFragment(@NonNull Account account, @NonNull UserCredentials userCredentials)
+    public ApproveAuthorizationMicroFragment(@NonNull AccountDetails accountDetails, MicroWizard<AccountDetails> next)
     {
-        mAccount = account;
-        mUserCredentials = userCredentials;
+        mAccountDetails = accountDetails;
+        mNext = next;
     }
 
 
@@ -121,21 +117,21 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
 
     @NonNull
     @Override
-    public LoadFragment.Params parameter()
+    public Params parameter()
     {
-        return new LoadFragment.Params()
+        return new Params()
         {
             @Override
-            public Account account()
+            public AccountDetails accountDetails()
             {
-                return mAccount;
+                return mAccountDetails;
             }
 
 
             @Override
-            public UserCredentials credentials()
+            public MicroWizard<AccountDetails> next()
             {
-                return mUserCredentials;
+                return mNext;
             }
         };
     }
@@ -151,22 +147,15 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        dest.writeParcelable(mAccount, 0);
-        dest.writeParcelable(new Parcelable(mUserCredentials), 0);
+        dest.writeParcelable(mAccountDetails.boxed(), 0);
+        dest.writeParcelable(mNext.boxed(), 0);
     }
 
 
     public static class LoadFragment extends Fragment implements ThrowingAsyncTask.OnResultCallback<Boolean>
     {
         private final static int DELAY_WAIT_MESSAGE = 2500;
-        private final Runnable mShowWaitMessage = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                getView().findViewById(android.R.id.message).animate().alpha(1f).start();
-            }
-        };
+        private final Runnable mShowWaitMessage = () -> getView().findViewById(android.R.id.message).animate().alpha(1f).start();
         private Handler mHandler = new Handler();
         private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
         private Params mParams;
@@ -204,52 +193,34 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                 {
                     Iterator<FutureServiceConnection<VerificationService>> serviceConnections =
                             new Mapped<>(
+                                    element -> new FutureLocalServiceConnection<>(context, element),
                                     new Serialized<>(
-                                            new Mapped<>(
+                                            new Mapped<Service, Iterator<Intent>>(
+                                                    element -> new IndirectServiceIntentIterable(context,
+                                                            new Intent(VerificationService.ACTION)
+                                                                    .setData(Uri.fromParts(element.serviceType(), element.uri().toASCIIString(), null))
+                                                                    .setPackage(context.getPackageName())).iterator(),
                                                     new Filtered<>(
-                                                            mParams.account().provider().services(),
-                                                            new Filter<Service>()
-                                                            {
-                                                                @Override
-                                                                public boolean iterate(Service element)
-                                                                {
-                                                                    return "com.smoothsync.authenticate".equals(element.serviceType());
-                                                                }
-                                                            }),
-                                                    new Function<Service, Iterator<Intent>>()
-                                                    {
-                                                        @Override
-                                                        public Iterator<Intent> apply(Service element)
-                                                        {
-                                                            return new IndirectServiceIntentIterable(context,
-                                                                    new Intent(VerificationService.ACTION)
-                                                                            .setData(Uri.fromParts(element.serviceType(), element.uri().toASCIIString(), null))
-                                                                            .setPackage(context.getPackageName())).iterator();
-                                                        }
-                                                    })),
-                                    new Function<Intent, FutureServiceConnection<VerificationService>>()
-                                    {
-                                        @Override
-                                        public FutureServiceConnection<VerificationService> apply(Intent element)
-                                        {
-                                            return new FutureLocalServiceConnection<>(context, element);
-                                        }
-                                    });
+                                                            mParams.accountDetails().account().provider().services(),
+                                                            element -> "com.smoothsync.authenticate".equals(element.serviceType()))
+                                            ))
+                            );
                     if (!serviceConnections.hasNext())
                     {
                         throw new RuntimeException("No verification service found");
                     }
                     return serviceConnections.next()
                             .service(1000)
-                            .verify(mParams.account().provider(), new UserCredentialsAuthStrategy(new SimpleCredentialsStore<>(new ServiceScope()
-                            {
-                                @Override
-                                public boolean contains(AuthScope authScope)
-                                {
-                                    // Consider creating a ServiceScope which covers all service-URLs of the given provider
-                                    return true;
-                                }
-                            }, mParams.credentials())));
+                            .verify(mParams.accountDetails().account().provider(),
+                                    new UserCredentialsAuthStrategy(new SimpleCredentialsStore<>(new ServiceScope()
+                                    {
+                                        @Override
+                                        public boolean contains(AuthScope authScope)
+                                        {
+                                            // Consider creating a ServiceScope which covers all service-URLs of the given provider
+                                            return true;
+                                        }
+                                    }, mParams.accountDetails().credentials())));
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
@@ -275,8 +246,7 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                         mMicroFragmentEnvironment.host()
                                 .execute(getActivity(),
                                         new XFaded(
-                                                new ForwardTransition<>(
-                                                        new CreateAccountMicroFragment(mParams.account(), mParams.credentials()))));
+                                                new ForwardTransition<>(mParams.next().microFragment(getActivity(), mParams.accountDetails()))));
                     }
                     else
                     {
@@ -297,13 +267,13 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                 }
             }
         }
+    }
 
 
-        interface Params
-        {
-            Account account();
+    public interface Params
+    {
+        AccountDetails accountDetails();
 
-            UserCredentials credentials();
-        }
+        MicroWizard<AccountDetails> next();
     }
 }

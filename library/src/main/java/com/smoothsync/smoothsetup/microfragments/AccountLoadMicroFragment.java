@@ -21,7 +21,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -36,7 +35,6 @@ import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
 import org.dmfs.android.bolts.service.FutureServiceConnection;
-import org.dmfs.android.bolts.service.StubProxy;
 import org.dmfs.android.bolts.service.elementary.FutureAidlServiceConnection;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
@@ -46,6 +44,8 @@ import org.dmfs.android.microfragments.Timestamp;
 import org.dmfs.android.microfragments.timestamps.UiTimestamp;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.XFaded;
+import org.dmfs.android.microwizard.MicroWizard;
+import org.dmfs.android.microwizard.box.Unboxed;
 
 
 /**
@@ -53,7 +53,7 @@ import org.dmfs.android.microfragments.transitions.XFaded;
  *
  * @author Marten Gajda
  */
-public final class AccountLoadMicroFragment implements MicroFragment<Account>
+public final class AccountLoadMicroFragment implements MicroFragment<AccountLoadMicroFragment.Params>
 {
     public final static Creator<AccountLoadMicroFragment> CREATOR = new Creator<AccountLoadMicroFragment>()
     {
@@ -61,7 +61,7 @@ public final class AccountLoadMicroFragment implements MicroFragment<Account>
         public AccountLoadMicroFragment createFromParcel(Parcel source)
         {
             Account account = source.readParcelable(getClass().getClassLoader());
-            return new AccountLoadMicroFragment(account);
+            return new AccountLoadMicroFragment(account, new Unboxed<MicroWizard<com.smoothsync.smoothsetup.model.Account>>(source).value());
         }
 
 
@@ -72,6 +72,7 @@ public final class AccountLoadMicroFragment implements MicroFragment<Account>
         }
     };
     private final Account mAccount;
+    private final MicroWizard<com.smoothsync.smoothsetup.model.Account> mNext;
 
 
     /**
@@ -79,10 +80,12 @@ public final class AccountLoadMicroFragment implements MicroFragment<Account>
      *
      * @param account
      *         The android account to load.
+     * @param next
      */
-    public AccountLoadMicroFragment(@NonNull Account account)
+    public AccountLoadMicroFragment(@NonNull Account account, MicroWizard<com.smoothsync.smoothsetup.model.Account> next)
     {
         mAccount = account;
+        mNext = next;
     }
 
 
@@ -111,9 +114,23 @@ public final class AccountLoadMicroFragment implements MicroFragment<Account>
 
     @NonNull
     @Override
-    public Account parameter()
+    public Params parameter()
     {
-        return mAccount;
+        return new Params()
+        {
+            @Override
+            public Account account()
+            {
+                return mAccount;
+            }
+
+
+            @Override
+            public MicroWizard<com.smoothsync.smoothsetup.model.Account> next()
+            {
+                return mNext;
+            }
+        };
     }
 
 
@@ -128,23 +145,17 @@ public final class AccountLoadMicroFragment implements MicroFragment<Account>
     public void writeToParcel(Parcel dest, int flags)
     {
         dest.writeParcelable(mAccount, flags);
+        dest.writeParcelable(mNext.boxed(), flags);
     }
 
 
     public final static class LoadFragment extends Fragment implements ThrowingAsyncTask.OnResultCallback<com.smoothsync.smoothsetup.model.Account>
     {
         private final static int DELAY_WAIT_MESSAGE = 2500;
-        private final Runnable mShowWaitMessage = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                getView().findViewById(android.R.id.message).animate().alpha(1f).start();
-            }
-        };
+        private final Runnable mShowWaitMessage = () -> getView().findViewById(android.R.id.message).animate().alpha(1f).start();
         private Handler mHandler = new Handler();
         private FutureServiceConnection<AccountService> mAccountService;
-        private MicroFragmentEnvironment<Account> mMicroFragmentEnvironment;
+        private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
         private Timestamp mTimestamp = new UiTimestamp();
 
 
@@ -152,17 +163,10 @@ public final class AccountLoadMicroFragment implements MicroFragment<Account>
         public void onCreate(@Nullable Bundle savedInstanceState)
         {
             super.onCreate(savedInstanceState);
-            // this must be a retained Fragment, we don't want to create accounts more than once
-            mAccountService = new FutureAidlServiceConnection<AccountService>(getContext(),
+            mAccountService = new FutureAidlServiceConnection<>(
+                    getContext(),
                     new Intent("com.smoothsync.action.ACCOUNT_SERVICE").setPackage(getContext().getPackageName()),
-                    new StubProxy<AccountService>()
-                    {
-                        @Override
-                        public AccountService asInterface(IBinder service)
-                        {
-                            return AccountService.Stub.asInterface(service);
-                        }
-                    });
+                    AccountService.Stub::asInterface);
             mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
         }
 
@@ -188,7 +192,7 @@ public final class AccountLoadMicroFragment implements MicroFragment<Account>
                 {
                     return mAccountService.service(5000).providerForAccount(params[0]);
                 }
-            }.execute(mMicroFragmentEnvironment.microFragment().parameter());
+            }.execute(mMicroFragmentEnvironment.microFragment().parameter().account());
         }
 
 
@@ -218,7 +222,8 @@ public final class AccountLoadMicroFragment implements MicroFragment<Account>
                     mMicroFragmentEnvironment.host()
                             .execute(getActivity(),
                                     new XFaded(new ForwardTransition<>(
-                                            new AuthErrorMicroFragment(result.value()), mTimestamp)));
+                                            mMicroFragmentEnvironment.microFragment().parameter().next().microFragment(getActivity(), result.value()),
+                                            mTimestamp)));
                 }
                 catch (Exception e)
                 {
@@ -228,5 +233,13 @@ public final class AccountLoadMicroFragment implements MicroFragment<Account>
                 }
             }
         }
+    }
+
+
+    protected interface Params
+    {
+        Account account();
+
+        MicroWizard<com.smoothsync.smoothsetup.model.Account> next();
     }
 }

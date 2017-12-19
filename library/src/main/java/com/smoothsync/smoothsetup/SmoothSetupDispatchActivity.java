@@ -16,20 +16,32 @@
 
 package com.smoothsync.smoothsetup;
 
-import android.content.ComponentName;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
-import com.smoothsync.smoothsetup.microfragments.GenericProviderMicroFragment;
-import com.smoothsync.smoothsetup.microfragments.ProviderLoadMicroFragment;
-import com.smoothsync.smoothsetup.microfragments.WaitForReferrerMicroFragment;
+import com.smoothsync.smoothsetup.model.Account;
+import com.smoothsync.smoothsetup.utils.ActivityInfo;
+import com.smoothsync.smoothsetup.utils.LoginInfo;
+import com.smoothsync.smoothsetup.utils.SimpleLoginRequest;
+import com.smoothsync.smoothsetup.wizard.VerifyLogin;
+import com.smoothsync.smoothsetup.wizard.ChooseProvider;
+import com.smoothsync.smoothsetup.wizard.CreateAccount;
+import com.smoothsync.smoothsetup.wizard.GenericLogin;
+import com.smoothsync.smoothsetup.wizard.LoadProvider;
+import com.smoothsync.smoothsetup.wizard.LoadProviders;
+import com.smoothsync.smoothsetup.wizard.UsernameLogin;
+import com.smoothsync.smoothsetup.wizard.EnterPassword;
+import com.smoothsync.smoothsetup.wizard.Congratulations;
+import com.smoothsync.smoothsetup.wizard.WaitForReferrer;
 
 import org.dmfs.android.microfragments.MicroFragment;
+import org.dmfs.android.microwizard.MicroWizard;
+import org.dmfs.optional.NullSafe;
+import org.dmfs.optional.Optional;
 
 
 /**
@@ -53,31 +65,37 @@ public final class SmoothSetupDispatchActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
+        MicroWizard<Account> passwordWizard = new EnterPassword(new VerifyLogin(new CreateAccount(new Congratulations())));
+        MicroWizard<LoginInfo> loginWizard = new UsernameLogin(passwordWizard);
+
         // check if meta data contains a specific provider url, if the url is hard coded, we don't allow to override it
-        PackageManager pm = getPackageManager();
-        try
+        Optional<Bundle> metaData = new NullSafe<>(new ActivityInfo(this, PackageManager.GET_META_DATA).value().metaData);
+        if (metaData.value(Bundle.EMPTY).containsKey(META_PROVIDER))
         {
-            ActivityInfo ai = pm.getActivityInfo(new ComponentName(this, this.getClass()), PackageManager.GET_META_DATA);
-            if (ai.metaData != null && ai.metaData.containsKey(META_PROVIDER))
-            {
-                Uri uri = Uri.parse(ai.metaData.getString(META_PROVIDER));
-                launchStep(new ProviderLoadMicroFragment(uri.getQueryParameter(PARAM_PROVIDER), uri.getQueryParameter(PARAM_ACCOUNT)));
-                return;
-            }
-        }
-        catch (PackageManager.NameNotFoundException e)
-        {
-            throw new RuntimeException("Can't load own activity info", e);
+            Uri uri = Uri.parse(metaData.value().getString(META_PROVIDER));
+            launchStep(
+                    new LoadProvider(loginWizard)
+                            .microFragment(this,
+                                    new SimpleLoginRequest(
+                                            uri.getQueryParameter(PARAM_PROVIDER),
+                                            new NullSafe<>(uri.getQueryParameter(PARAM_ACCOUNT)))));
+            return;
         }
 
         // check if intent data has a provider id
         Uri data = getIntent().getData();
         if (data != null && data.getQueryParameter(PARAM_PROVIDER) != null)
         {
-            launchStep(new ProviderLoadMicroFragment(data.getQueryParameter(PARAM_PROVIDER), data.getQueryParameter(PARAM_ACCOUNT)));
+            launchStep(
+                    new LoadProvider(loginWizard)
+                            .microFragment(this,
+                                    new SimpleLoginRequest(
+                                            data.getQueryParameter(PARAM_PROVIDER),
+                                            new NullSafe<>(data.getQueryParameter(PARAM_ACCOUNT)))));
             return;
         }
 
+        MicroWizard<Void> genericLogin = new GenericLogin(passwordWizard, new LoadProviders(new ChooseProvider(loginWizard)));
         // check if shared preferences contain a provider id
         SharedPreferences pref = getSharedPreferences("com.smoothsync.smoothsetup.prefs", 0);
         if (pref.contains(PREF_REFERRER))
@@ -88,20 +106,25 @@ public final class SmoothSetupDispatchActivity extends AppCompatActivity
                 Uri uri = Uri.parse(referrer);
                 if (uri.getQueryParameter(PARAM_PROVIDER) != null)
                 {
-                    launchStep(new ProviderLoadMicroFragment(uri.getQueryParameter(PARAM_PROVIDER), uri.getQueryParameter(PARAM_ACCOUNT)));
+                    launchStep(
+                            new LoadProvider(loginWizard)
+                                    .microFragment(this,
+                                            new SimpleLoginRequest(
+                                                    uri.getQueryParameter(PARAM_PROVIDER),
+                                                    new NullSafe<>(uri.getQueryParameter(PARAM_ACCOUNT)))));
                     return;
                 }
             }
             else
             {
                 // no referrer
-                launchStep(new GenericProviderMicroFragment());
+                launchStep(genericLogin.microFragment(this, null));
                 return;
             }
         }
 
         // launch wait fo the referrer braodcast
-        launchStep(new WaitForReferrerMicroFragment());
+        launchStep(new WaitForReferrer(new LoadProvider(loginWizard), genericLogin).microFragment(this, null));
     }
 
 

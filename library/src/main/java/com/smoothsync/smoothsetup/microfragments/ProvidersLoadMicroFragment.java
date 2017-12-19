@@ -46,6 +46,10 @@ import org.dmfs.android.microfragments.Timestamp;
 import org.dmfs.android.microfragments.timestamps.UiTimestamp;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.XFaded;
+import org.dmfs.android.microwizard.MicroWizard;
+import org.dmfs.android.microwizard.box.Unboxed;
+import org.dmfs.optional.NullSafe;
+import org.dmfs.optional.Optional;
 
 import java.util.List;
 
@@ -55,14 +59,15 @@ import java.util.List;
  *
  * @author Marten Gajda
  */
-public final class ProvidersLoadMicroFragment implements MicroFragment<String>
+public final class ProvidersLoadMicroFragment implements MicroFragment<ProvidersLoadMicroFragment.Params>
 {
     public final static Creator<ProvidersLoadMicroFragment> CREATOR = new Creator<ProvidersLoadMicroFragment>()
     {
         @Override
         public ProvidersLoadMicroFragment createFromParcel(Parcel source)
         {
-            return new ProvidersLoadMicroFragment(source.readString());
+            return new ProvidersLoadMicroFragment(new NullSafe<>(source.readString()),
+                    new Unboxed<MicroWizard<ChooseProviderMicroFragment.ProviderSelection>>(source).value());
         }
 
 
@@ -73,7 +78,16 @@ public final class ProvidersLoadMicroFragment implements MicroFragment<String>
         }
     };
     @Nullable
-    private final String mAccount;
+    private final Optional<String> mAccount;
+    private final MicroWizard<ChooseProviderMicroFragment.ProviderSelection> mNext;
+
+
+    protected interface Params
+    {
+        Optional<String> username();
+
+        MicroWizard<ChooseProviderMicroFragment.ProviderSelection> next();
+    }
 
 
     /**
@@ -81,10 +95,12 @@ public final class ProvidersLoadMicroFragment implements MicroFragment<String>
      *
      * @param account
      *         An optional account identifier to set up.
+     * @param next
      */
-    public ProvidersLoadMicroFragment(@Nullable String account)
+    public ProvidersLoadMicroFragment(@Nullable Optional<String> account, MicroWizard<ChooseProviderMicroFragment.ProviderSelection> next)
     {
         mAccount = account;
+        mNext = next;
     }
 
 
@@ -113,9 +129,23 @@ public final class ProvidersLoadMicroFragment implements MicroFragment<String>
 
     @NonNull
     @Override
-    public String parameter()
+    public Params parameter()
     {
-        return mAccount == null ? "" : mAccount;
+        return new Params()
+        {
+            @Override
+            public Optional<String> username()
+            {
+                return mAccount;
+            }
+
+
+            @Override
+            public MicroWizard<ChooseProviderMicroFragment.ProviderSelection> next()
+            {
+                return mNext;
+            }
+        };
     }
 
 
@@ -129,7 +159,8 @@ public final class ProvidersLoadMicroFragment implements MicroFragment<String>
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        dest.writeString(mAccount);
+        dest.writeString(mAccount.value(null));
+        dest.writeParcelable(mNext.boxed(), flags);
     }
 
 
@@ -146,7 +177,7 @@ public final class ProvidersLoadMicroFragment implements MicroFragment<String>
         };
         private Handler mHandler = new Handler();
         private FutureServiceConnection<SmoothSyncApi> mApiService;
-        private MicroFragmentEnvironment<String> mMicroFragmentEnvironment;
+        private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
         private Timestamp mTimestamp = new UiTimestamp();
 
 
@@ -206,8 +237,26 @@ public final class ProvidersLoadMicroFragment implements MicroFragment<String>
                 mMicroFragmentEnvironment.host().execute(getActivity(),
                         new XFaded(
                                 new ForwardTransition<>(
-                                        new ChooseProviderMicroFragment(providers.toArray(new Provider[providers.size()]),
-                                                mMicroFragmentEnvironment.microFragment().parameter()), mTimestamp)));
+                                        mMicroFragmentEnvironment.microFragment().parameter().next().microFragment(
+                                                getActivity(),
+                                                new ChooseProviderMicroFragment.ProviderSelection()
+                                                {
+                                                    @NonNull
+                                                    @Override
+                                                    public Provider[] providers()
+                                                    {
+                                                        return providers.toArray(new Provider[providers.size()]);
+                                                    }
+
+
+                                                    @NonNull
+                                                    @Override
+                                                    public Optional<String> username()
+                                                    {
+                                                        return mMicroFragmentEnvironment.microFragment().parameter().username();
+                                                    }
+                                                }
+                                        ))));
             }
             catch (Exception e)
             {

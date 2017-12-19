@@ -32,6 +32,8 @@ import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.ParcelableProvider;
 import com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter;
+import com.smoothsync.smoothsetup.utils.LoginInfo;
+import com.smoothsync.smoothsetup.utils.ProvidersRecyclerViewAdapter;
 
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
@@ -39,10 +41,13 @@ import org.dmfs.android.microfragments.MicroFragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.Swiped;
+import org.dmfs.android.microwizard.MicroWizard;
+import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
+import org.dmfs.optional.NullSafe;
+import org.dmfs.optional.Optional;
 
 import java.util.Arrays;
-import java.util.Comparator;
 
 
 /**
@@ -57,7 +62,27 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
         @Override
         public ChooseProviderMicroFragment createFromParcel(Parcel source)
         {
-            return new ChooseProviderMicroFragment((Provider[]) source.readParcelableArray(getClass().getClassLoader()), source.readString());
+            Provider[] providers = (ParcelableProvider[]) source.readParcelableArray(getClass().getClassLoader());
+            Optional<String> username = new NullSafe<>(source.readString());
+            return new ChooseProviderMicroFragment(
+                    new ProviderSelection()
+                    {
+                        @NonNull
+                        @Override
+                        public Provider[] providers()
+                        {
+                            return providers;
+                        }
+
+
+                        @NonNull
+                        @Override
+                        public Optional<String> username()
+                        {
+                            return username;
+                        }
+                    },
+                    new Unboxed<MicroWizard<LoginInfo>>(source).value());
         }
 
 
@@ -67,16 +92,30 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
             return new ChooseProviderMicroFragment[size];
         }
     };
-    private final ParcelableProvider[] mProviders;
-    private final String mAccount;
 
 
-    public ChooseProviderMicroFragment(@NonNull Provider[] providers, @NonNull String account)
+    public interface ProviderSelection
     {
-        mProviders = new ParcelableProvider[providers.length];
-        for (int i = 0, count = providers.length; i < count; ++i)
+        @NonNull
+        Provider[] providers();
+
+        @NonNull
+        Optional<String> username();
+    }
+
+
+    private final ParcelableProvider[] mProviders;
+    private final Optional<String> mAccount;
+    private final MicroWizard<LoginInfo> mNext;
+
+
+    public ChooseProviderMicroFragment(@NonNull ProviderSelection selection, MicroWizard<LoginInfo> next)
+    {
+        mProviders = new ParcelableProvider[selection.providers().length];
+        this.mNext = next;
+        for (int i = 0, count = selection.providers().length; i < count; ++i)
         {
-            Provider p = providers[i];
+            Provider p = selection.providers()[i];
             if (!(p instanceof Parcelable))
             {
                 mProviders[i] = new ParcelableProvider(p);
@@ -86,22 +125,18 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
                 mProviders[i] = (ParcelableProvider) p;
             }
         }
-        Arrays.sort(mProviders, new Comparator<ParcelableProvider>()
+        Arrays.sort(mProviders, (lhs, rhs) ->
         {
-            @Override
-            public int compare(ParcelableProvider lhs, ParcelableProvider rhs)
+            try
             {
-                try
-                {
-                    return lhs.name().compareToIgnoreCase(rhs.name());
-                }
-                catch (ProtocolException e)
-                {
-                    throw new RuntimeException("can't read provider name ", e);
-                }
+                return lhs.name().compareToIgnoreCase(rhs.name());
+            }
+            catch (ProtocolException e)
+            {
+                throw new RuntimeException("can't read provider name ", e);
             }
         });
-        mAccount = account;
+        mAccount = selection.username();
     }
 
 
@@ -144,9 +179,17 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
 
             @NonNull
             @Override
-            public String account()
+            public Optional<String> account()
             {
                 return mAccount;
+            }
+
+
+            @NonNull
+            @Override
+            public MicroWizard<LoginInfo> next()
+            {
+                return mNext;
             }
         };
     }
@@ -163,7 +206,8 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
     public void writeToParcel(Parcel dest, int flags)
     {
         dest.writeParcelableArray(mProviders, flags);
-        dest.writeString(mAccount);
+        dest.writeString(mAccount.value(null));
+        dest.writeParcelable(mNext.boxed(), flags);
     }
 
 
@@ -196,7 +240,10 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
                     .execute(getActivity(),
                             new Swiped(
                                     new ForwardTransition<>(
-                                            new ProviderLoginMicroFragment(provider, mMicroFragmentEnvironment.microFragment().parameter().account()))));
+                                            mMicroFragmentEnvironment.microFragment().parameter().next().microFragment(
+                                                    getActivity(),
+                                                    new ProviderLoadMicroFragment.SimpleProviderInfo(provider,
+                                                            mMicroFragmentEnvironment.microFragment().parameter().account())))));
         }
 
 
@@ -213,7 +260,10 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
             Provider[] provider();
 
             @NonNull
-            String account();
+            Optional<String> account();
+
+            @NonNull
+            MicroWizard<LoginInfo> next();
         }
     }
 }

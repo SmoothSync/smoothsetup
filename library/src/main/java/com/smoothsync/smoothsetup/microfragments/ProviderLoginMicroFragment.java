@@ -19,7 +19,6 @@ package com.smoothsync.smoothsetup.microfragments;
 import android.content.Context;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Adapter;
@@ -29,14 +28,19 @@ import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.ProviderAutoCompleteAdapter;
+import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.model.ParcelableProvider;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.ProviderSmoothSetupAdapter;
+import com.smoothsync.smoothsetup.utils.LoginInfo;
 
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
+import org.dmfs.android.microwizard.MicroWizard;
+import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
+import org.dmfs.optional.Optional;
 
 
 /**
@@ -51,7 +55,7 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
         @Override
         public ProviderLoginMicroFragment createFromParcel(Parcel source)
         {
-            return new ProviderLoginMicroFragment((Provider) source.readParcelable(getClass().getClassLoader()), source.readString());
+            return new ProviderLoginMicroFragment(new Unboxed<LoginInfo>(source).value(), new Unboxed<MicroWizard<Account>>(source).value());
         }
 
 
@@ -62,15 +66,15 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
         }
     };
     @NonNull
-    private final Provider mProvider;
-    @Nullable
-    private final String mAccount;
+    private final LoginInfo mLoginInfo;
+    @NonNull
+    private final MicroWizard<Account> mNext;
 
 
-    public ProviderLoginMicroFragment(@NonNull Provider provider, @Nullable String account)
+    public ProviderLoginMicroFragment(@NonNull LoginInfo loginInfo, MicroWizard<Account> next)
     {
-        mProvider = provider;
-        mAccount = account;
+        mLoginInfo = loginInfo;
+        mNext = next;
     }
 
 
@@ -80,7 +84,7 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
     {
         try
         {
-            return mProvider.name();
+            return mLoginInfo.provider().name();
         }
         catch (ProtocolException e)
         {
@@ -114,15 +118,28 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
             @Override
             public LoginFragment.LoginFormAdapterFactory loginFormAdapterFactory()
             {
-                return new ProviderLoginFormAdapterFactory(mProvider);
+                return new ProviderLoginFormAdapterFactory(mLoginInfo.provider());
             }
 
 
-            @NonNull
             @Override
-            public String accountName()
+            public Optional<String> username()
             {
-                return mAccount == null ? "" : mAccount;
+                return mLoginInfo.username();
+            }
+
+
+            @Override
+            public MicroWizard<Account> next()
+            {
+                return mNext;
+            }
+
+
+            @Override
+            public MicroWizard<Optional<String>> fallback()
+            {
+                throw new RuntimeException("This should not be called");
             }
         };
     }
@@ -138,8 +155,8 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        dest.writeParcelable(new ParcelableProvider(mProvider), flags);
-        dest.writeString(mAccount);
+        dest.writeParcelable(mLoginInfo.boxed(), flags);
+        dest.writeParcelable(mNext.boxed(), flags);
     }
 
 
@@ -150,7 +167,7 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
             @Override
             public LoginFragment.LoginFormAdapterFactory createFromParcel(Parcel source)
             {
-                return new ProviderLoginFormAdapterFactory((Provider) source.readParcelable(getClass().getClassLoader()));
+                return new ProviderLoginFormAdapterFactory(source.readParcelable(getClass().getClassLoader()));
             }
 
 

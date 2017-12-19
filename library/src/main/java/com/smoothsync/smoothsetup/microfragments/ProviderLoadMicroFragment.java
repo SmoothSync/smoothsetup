@@ -35,6 +35,8 @@ import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.services.FutureApiServiceConnection;
 import com.smoothsync.smoothsetup.services.SmoothSyncApiProxy;
 import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
+import com.smoothsync.smoothsetup.utils.LoginInfo;
+import com.smoothsync.smoothsetup.utils.LoginRequest;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
 import org.dmfs.android.bolts.service.FutureServiceConnection;
@@ -46,6 +48,10 @@ import org.dmfs.android.microfragments.Timestamp;
 import org.dmfs.android.microfragments.timestamps.UiTimestamp;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.XFaded;
+import org.dmfs.android.microwizard.MicroWizard;
+import org.dmfs.android.microwizard.box.Box;
+import org.dmfs.android.microwizard.box.Unboxed;
+import org.dmfs.optional.Optional;
 
 
 /**
@@ -60,7 +66,7 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
         @Override
         public ProviderLoadMicroFragment createFromParcel(Parcel source)
         {
-            return new ProviderLoadMicroFragment(source.readString(), source.readString());
+            return new ProviderLoadMicroFragment(new Unboxed<LoginRequest>(source).value(), new Unboxed<MicroWizard<LoginInfo>>(source).value());
         }
 
 
@@ -70,22 +76,17 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
             return new ProviderLoadMicroFragment[size];
         }
     };
-    private final String mProviderId;
-    private final String mAccount;
+    private final LoginRequest mLoginRequest;
+    private final MicroWizard<LoginInfo> mNext;
 
 
     /**
      * Create a ProviderLoadWizardStep that loads the provider with the given id.
-     *
-     * @param providerId
-     *         The provider id.
-     * @param account
-     *         An optional account to set up.
      */
-    public ProviderLoadMicroFragment(@NonNull String providerId, @NonNull String account)
+    public ProviderLoadMicroFragment(@NonNull LoginRequest loginRequest, MicroWizard<LoginInfo> next)
     {
-        mProviderId = providerId;
-        mAccount = account;
+        mLoginRequest = loginRequest;
+        mNext = next;
     }
 
 
@@ -119,16 +120,16 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
         return new Params()
         {
             @Override
-            public String providerId()
+            public LoginRequest loginRequest()
             {
-                return mProviderId;
+                return mLoginRequest;
             }
 
 
             @Override
-            public String account()
+            public MicroWizard<LoginInfo> next()
             {
-                return mAccount;
+                return mNext;
             }
         };
     }
@@ -144,16 +145,16 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        dest.writeString(mProviderId);
-        dest.writeString(mAccount);
+        dest.writeParcelable(mLoginRequest.boxed(), flags);
+        dest.writeParcelable(mNext.boxed(), flags);
     }
 
 
     interface Params
     {
-        String providerId();
+        LoginRequest loginRequest();
 
-        String account();
+        MicroWizard<LoginInfo> next();
     }
 
 
@@ -198,7 +199,7 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
         {
             super.onResume();
             new ProviderLoadTask(new SmoothSyncApiProxy(mApiService), this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
-                    mMicroFragmentEnvironment.microFragment().parameter().providerId());
+                    mMicroFragmentEnvironment.microFragment().parameter().loginRequest().providerId());
         }
 
 
@@ -228,7 +229,11 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
                     mMicroFragmentEnvironment.host()
                             .execute(getActivity(),
                                     new XFaded(new ForwardTransition<>(
-                                            new ProviderLoginMicroFragment(result.value(), mMicroFragmentEnvironment.microFragment().parameter().account()),
+                                            mMicroFragmentEnvironment.microFragment()
+                                                    .parameter()
+                                                    .next()
+                                                    .microFragment(getActivity(), new SimpleProviderInfo(result.value(),
+                                                            mMicroFragmentEnvironment.microFragment().parameter().loginRequest().username())),
                                             mTimestamp)));
                 }
                 catch (Exception e)
@@ -238,6 +243,41 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
                                     new XFaded(new ForwardTransition<>(new ErrorResetMicroFragment(mMicroFragmentEnvironment.microFragment()), mTimestamp)));
                 }
             }
+        }
+    }
+
+
+    public final static class SimpleProviderInfo implements LoginInfo
+    {
+        private final Provider mProvider;
+        private final Optional<String> mUsername;
+
+
+        public SimpleProviderInfo(Provider provider, Optional<String> musername)
+        {
+            mProvider = provider;
+            mUsername = musername;
+        }
+
+
+        @Override
+        public Provider provider()
+        {
+            return mProvider;
+        }
+
+
+        @Override
+        public Optional<String> username()
+        {
+            return mUsername;
+        }
+
+
+        @Override
+        public Box<LoginInfo> boxed()
+        {
+            return null;
         }
     }
 }

@@ -71,15 +71,11 @@ public final class MicroFragmentHostActivity extends AppCompatActivity implement
         setSupportActionBar((Toolbar) mCollapsingToolbar.findViewById(R.id.toolbar));
         mActionBar = getSupportActionBar();
         mMicroFragmentStateDovecote = new ParcelableDovecote<>(this, "hostactivity", this);
-        mBackDovecote = new BooleanDovecote(this, "backresult", new Dovecote.OnPigeonReturnCallback<Boolean>()
+        mBackDovecote = new BooleanDovecote(this, "backresult", aBoolean ->
         {
-            @Override
-            public void onPigeonReturn(@NonNull Boolean aBoolean)
+            if (!aBoolean)
             {
-                if (!aBoolean)
-                {
-                    finish();
-                }
+                finish();
             }
         });
 

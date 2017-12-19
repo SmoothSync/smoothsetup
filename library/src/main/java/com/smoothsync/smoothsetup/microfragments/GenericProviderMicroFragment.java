@@ -27,12 +27,19 @@ import android.widget.Filterable;
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.ApiAutoCompleteAdapter;
+import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.setupbuttons.ApiSmoothSetupAdapter;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.FixedButtonSetupAdapter;
 
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
+import org.dmfs.android.microwizard.MicroWizard;
+import org.dmfs.android.microwizard.box.FactoryBox;
+import org.dmfs.android.microwizard.box.Unboxed;
+import org.dmfs.optional.Optional;
+
+import static org.dmfs.optional.Absent.absent;
 
 
 /**
@@ -47,7 +54,8 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
         @Override
         public GenericProviderMicroFragment createFromParcel(Parcel source)
         {
-            return new GenericProviderMicroFragment();
+            return new GenericProviderMicroFragment(new Unboxed<MicroWizard<Account>>(source).value(),
+                    new Unboxed<MicroWizard<Optional<String>>>(source).value());
         }
 
 
@@ -58,10 +66,14 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
         }
     };
 
+    private final MicroWizard<Account> mNext;
+    private final MicroWizard<Optional<String>> mFallback;
 
-    public GenericProviderMicroFragment()
+
+    public GenericProviderMicroFragment(MicroWizard<Account> next, MicroWizard<Optional<String>> fallback)
     {
-        // nothing to do
+        mNext = next;
+        mFallback = fallback;
     }
 
 
@@ -102,10 +114,25 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
 
 
             @Override
-            public String accountName()
+            public Optional<String> username()
             {
-                return "";
+                return absent();
             }
+
+
+            @Override
+            public MicroWizard<Account> next()
+            {
+                return mNext;
+            }
+
+
+            @Override
+            public MicroWizard<Optional<String>> fallback()
+            {
+                return mFallback;
+            }
+
         };
     }
 
@@ -120,26 +147,15 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
+        dest.writeParcelable(mNext.boxed(), flags);
+        dest.writeParcelable(mFallback.boxed(), flags);
     }
 
 
     private final static class ApiLoginFormAdapterFactory implements LoginFragment.LoginFormAdapterFactory
     {
-        public final static Creator<LoginFragment.LoginFormAdapterFactory> CREATOR = new Creator<LoginFragment.LoginFormAdapterFactory>()
-        {
-            @Override
-            public LoginFragment.LoginFormAdapterFactory createFromParcel(Parcel source)
-            {
-                return new ApiLoginFormAdapterFactory();
-            }
-
-
-            @Override
-            public LoginFragment.LoginFormAdapterFactory[] newArray(int size)
-            {
-                return new ApiLoginFormAdapterFactory[size];
-            }
-        };
+        public final static Creator<LoginFragment.LoginFormAdapterFactory> CREATOR = new FactoryBox.FactoryBoxCreator<>(ApiLoginFormAdapterFactory::new,
+                ApiLoginFormAdapterFactory[]::new);
 
 
         @NonNull

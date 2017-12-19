@@ -16,11 +16,14 @@
 
 package com.smoothsync.smoothsetup;
 
-import android.accounts.Account;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.smoothsync.smoothsetup.microfragments.AccountLoadMicroFragment;
+import com.smoothsync.smoothsetup.wizard.VerifyLogin;
+import com.smoothsync.smoothsetup.wizard.CreateAccount;
+import com.smoothsync.smoothsetup.wizard.LoadAccount;
+import com.smoothsync.smoothsetup.wizard.EnterPassword;
+import com.smoothsync.smoothsetup.wizard.Congratulations;
 
 import org.dmfs.android.microfragments.MicroFragment;
 
@@ -40,8 +43,17 @@ public final class SmoothUpdateAuthDispatchActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
-        Account account = getIntent().getParcelableExtra(PARAM_ACCOUNT);
-        launchStep(new AccountLoadMicroFragment(account));
+        launchStep(
+                new LoadAccount(
+                        new EnterPassword(
+                                new VerifyLogin(
+                                        // TODO: replace with UpdateCredentialsWizard
+                                        new CreateAccount(
+                                                // TODO: replace with simple success message
+                                                new Congratulations()))))
+                        .microFragment(
+                                this,
+                                getIntent().getParcelableExtra(PARAM_ACCOUNT)));
     }
 
 

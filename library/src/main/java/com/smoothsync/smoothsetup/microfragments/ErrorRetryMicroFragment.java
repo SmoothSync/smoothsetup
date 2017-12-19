@@ -153,23 +153,20 @@ public final class ErrorRetryMicroFragment implements MicroFragment<ErrorRetryMi
     /**
      * A Fragment that shows an error and a button to return to the previous step.
      */
-    public final static class ErrorFragment extends Fragment implements View.OnClickListener
+    public final static class ErrorFragment extends Fragment
     {
-        private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
-
-
-        @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
         {
-            mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
-            Params params = mMicroFragmentEnvironment.microFragment().parameter();
             View result = inflater.inflate(R.layout.smoothsetup_microfragment_error, container, false);
+
+            MicroFragmentEnvironment<Params> microFragmentEnvironment = new FragmentEnvironment<>(this);
+            Params params = microFragmentEnvironment.microFragment().parameter();
 
             ((TextView) result.findViewById(android.R.id.message)).setText(params.error());
 
             Button button = ((Button) result.findViewById(android.R.id.button1));
-            button.setOnClickListener(this);
+            button.setOnClickListener(v -> microFragmentEnvironment.host().execute(getActivity(), new BackTransition()));
 
             String buttonText = params.buttonText();
             if (buttonText != null)
@@ -178,13 +175,6 @@ public final class ErrorRetryMicroFragment implements MicroFragment<ErrorRetryMi
             }
 
             return result;
-        }
-
-
-        @Override
-        public void onClick(View v)
-        {
-            mMicroFragmentEnvironment.host().execute(getActivity(), new BackTransition());
         }
 
 

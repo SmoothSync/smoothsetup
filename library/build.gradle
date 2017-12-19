@@ -2,7 +2,6 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.3"
 
     defaultConfig {
         minSdkVersion 14
@@ -18,6 +17,10 @@ android {
     }
     lintOptions {
         abortOnError false
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
     }
 }
 
@@ -38,8 +41,8 @@ dependencies {
     compile 'org.dmfs:rfc5545-datetime:0.2.4'
     compile 'org.dmfs:jems:' + JEMS_VERSION
     compile 'net.iharder:base64:2.3.9'
-    compile 'com.github.SmoothSync:smoothsync-api-client:f4701f83b5f2c328d23c3c9b8f36a677a5693012'
-    compile 'com.github.dmfs:MicroFragments:0.2.1'
+    compile 'com.github.SmoothSync:smoothsync-api-client:0.8'
+    compile 'com.github.dmfs.MicroFragments:microwizard:0ea6ab1b6cad428217072e9b4988865ff6aa4c19'
     compile 'com.github.dmfs.Bolts:service-bolts:a43822bd6a'
 
 }

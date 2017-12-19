@@ -35,8 +35,10 @@ import android.widget.TextView;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.microfragments.appspecificpassword.AppSpecificWebviewFragment;
 import com.smoothsync.smoothsetup.model.Account;
+import com.smoothsync.smoothsetup.utils.AccountDetails;
 import com.smoothsync.smoothsetup.utils.Default;
 import com.smoothsync.smoothsetup.utils.Related;
+import com.smoothsync.smoothsetup.utils.usercredentials.Parcelable;
 
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
@@ -44,11 +46,12 @@ import org.dmfs.android.microfragments.MicroFragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.Swiped;
+import org.dmfs.android.microwizard.MicroWizard;
+import org.dmfs.android.microwizard.box.Box;
+import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
-import org.dmfs.httpessentials.types.Link;
-import org.dmfs.iterators.Function;
-import org.dmfs.iterators.decorators.Mapped;
+import org.dmfs.jems.iterator.decorators.Mapped;
 import org.dmfs.pigeonpost.Dovecote;
 import org.dmfs.pigeonpost.localbroadcast.ParcelableDovecote;
 
@@ -58,14 +61,15 @@ import org.dmfs.pigeonpost.localbroadcast.ParcelableDovecote;
  *
  * @author Marten Gajda
  */
-public final class PasswordMicroFragment implements MicroFragment<Account>
+public final class PasswordMicroFragment implements MicroFragment<PasswordMicroFragment.Params>
 {
     public final static Creator<PasswordMicroFragment> CREATOR = new Creator<PasswordMicroFragment>()
     {
         @Override
         public PasswordMicroFragment createFromParcel(Parcel source)
         {
-            return new PasswordMicroFragment((Account) source.readParcelable(getClass().getClassLoader()));
+            return new PasswordMicroFragment((Account) source.readParcelable(getClass().getClassLoader()),
+                    new Unboxed<MicroWizard<AccountDetails>>(source).value());
         }
 
 
@@ -78,10 +82,14 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
     @NonNull
     private final Account mAccount;
 
+    @NonNull
+    private final MicroWizard<AccountDetails> mNext;
 
-    public PasswordMicroFragment(@NonNull Account account)
+
+    public PasswordMicroFragment(@NonNull Account account, @NonNull MicroWizard<AccountDetails> next)
     {
         mAccount = account;
+        mNext = next;
     }
 
 
@@ -110,9 +118,23 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
 
     @NonNull
     @Override
-    public Account parameter()
+    public Params parameter()
     {
-        return mAccount;
+        return new Params()
+        {
+            @Override
+            public Account account()
+            {
+                return mAccount;
+            }
+
+
+            @Override
+            public MicroWizard<AccountDetails> next()
+            {
+                return mNext;
+            }
+        };
     }
 
 
@@ -127,6 +149,7 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
     public void writeToParcel(Parcel dest, int flags)
     {
         dest.writeParcelable(mAccount, flags);
+        dest.writeParcelable(mNext.boxed(), flags);
     }
 
 
@@ -136,10 +159,10 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
     public final static class PasswordFragment extends Fragment implements View.OnClickListener, Dovecote.OnPigeonReturnCallback<AppSpecificWebviewFragment.PasswordResult>
     {
 
-        private Account mAccount;
+        private Params mParams;
         private EditText mPassword;
         private Button mButton;
-        private MicroFragmentEnvironment<Account> mMicroFragmentEnvironment;
+        private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
         private Dovecote<AppSpecificWebviewFragment.PasswordResult> mDovecote;
 
 
@@ -148,11 +171,10 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
         {
             super.onCreate(savedInstanceState);
             mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
-            mAccount = mMicroFragmentEnvironment.microFragment().parameter();
+            mParams = mMicroFragmentEnvironment.microFragment().parameter();
         }
 
 
-        @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
         {
@@ -191,42 +213,37 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
             try
             {
                 String appSpecificPasswordOption = new Default<>(new Mapped<>(
-                        new Related(mAccount.provider().links(), "http://smoothsync.com/rel/app-specific-password"),
-                        new Function<Link, String>()
-                        {
-                            @Override
-                            public String apply(Link element)
-                            {
-                                return element.target().toASCIIString();
-                            }
-                        }), "no").next();
+                        element -> element.target().toASCIIString(),
+                        new Related(mParams.account().provider().links(), "http://smoothsync.com/rel/app-specific-password")),
+                        "no").next();
 
                 switch (appSpecificPasswordOption)
                 {
                     case "mandatory":
-                        if (new Related(mAccount.provider().links(), "http://smoothsync.com/rel/manage-password").hasNext())
+                        if (new Related(mParams.account().provider().links(), "http://smoothsync.com/rel/manage-password").hasNext())
                         {
                             setupClickableTextView(result, R.id.smoothsetup_create_app_specific_password);
                         }
-                        messageView.setText(getString(R.string.smoothsetup_prompt_enter_app_specific_password, mAccount.provider().name()));
+                        messageView.setText(getString(R.string.smoothsetup_prompt_enter_app_specific_password, mParams.account().provider().name()));
                         break;
                     case "optional":
-                        if (new Related(mAccount.provider().links(), "http://smoothsync.com/rel/manage-password").hasNext())
+                        if (new Related(mParams.account().provider().links(), "http://smoothsync.com/rel/manage-password").hasNext())
                         {
                             setupClickableTextView(result, R.id.smoothsetup_create_app_specific_password);
                         }
-                        if (new Related(mAccount.provider().links(), "http://smoothsync.com/rel/forgot-password").hasNext())
+                        if (new Related(mParams.account().provider().links(), "http://smoothsync.com/rel/forgot-password").hasNext())
                         {
                             setupClickableTextView(result, R.id.smoothsetup_forgot_password);
                         }
-                        messageView.setText(getString(R.string.smoothsetup_prompt_enter_password_or_app_specific_password, mAccount.provider().name()));
+                        messageView.setText(
+                                getString(R.string.smoothsetup_prompt_enter_password_or_app_specific_password, mParams.account().provider().name()));
                         break;
                     default:
-                        if (new Related(mAccount.provider().links(), "http://smoothsync.com/rel/forgot-password").hasNext())
+                        if (new Related(mParams.account().provider().links(), "http://smoothsync.com/rel/forgot-password").hasNext())
                         {
                             setupClickableTextView(result, R.id.smoothsetup_forgot_password);
                         }
-                        messageView.setText(getContext().getString(R.string.smoothsetup_prompt_enter_password, mAccount.provider().name()));
+                        messageView.setText(getContext().getString(R.string.smoothsetup_prompt_enter_password, mParams.account().provider().name()));
                 }
             }
             catch (ProtocolException e)
@@ -239,7 +256,7 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
                     {
                         mMicroFragmentEnvironment.host()
                                 .execute(getActivity(),
-                                        new Swiped(new ForwardTransition(new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_network)))));
+                                        new Swiped(new ForwardTransition<>(new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_network)))));
                     }
                 });
             }
@@ -267,30 +284,52 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
                     mMicroFragmentEnvironment.host()
                             .execute(getActivity(),
                                     new Swiped(new ForwardTransition<>(
-                                            new ApproveAuthorizationMicroFragment(mAccount,
-                                                    new UserCredentials()
+                                            mParams.next().microFragment(
+                                                    getActivity(),
+                                                    new AccountDetails()
                                                     {
                                                         @Override
-                                                        public CharSequence userName()
+                                                        public Account account()
                                                         {
-                                                            return mAccount.accountId();
+                                                            return mParams.account();
                                                         }
 
 
                                                         @Override
-                                                        public CharSequence password()
+                                                        public UserCredentials credentials()
                                                         {
-                                                            return mPassword.getText().toString();
+                                                            return new UserCredentials()
+                                                            {
+                                                                @Override
+                                                                public CharSequence userName()
+                                                                {
+                                                                    return mParams.account().accountId();
+                                                                }
+
+
+                                                                @Override
+                                                                public CharSequence password()
+                                                                {
+                                                                    return mPassword.getText().toString();
+                                                                }
+                                                            };
+                                                        }
+
+
+                                                        @Override
+                                                        public Box<AccountDetails> boxed()
+                                                        {
+                                                            return new AccountDetailsBox(this);
                                                         }
                                                     }))));
                 }
                 else if (id == R.id.smoothsetup_forgot_password)
                 {
-                    openLink(mAccount.provider().name(), "http://smoothsync.com/rel/forgot-password");
+                    openLink(mParams.account().provider().name(), "http://smoothsync.com/rel/forgot-password");
                 }
                 else if (id == R.id.smoothsetup_create_app_specific_password)
                 {
-                    openLink(mAccount.provider().name(), "http://smoothsync.com/rel/manage-password");
+                    openLink(mParams.account().provider().name(), "http://smoothsync.com/rel/manage-password");
                 }
             }
             catch (ProtocolException e)
@@ -321,7 +360,7 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
                                 new Swiped(
                                         new ForwardTransition<>(
                                                 new CreateAppSpecificPasswordMicroFragment(title,
-                                                        mDovecote.cage(), new Related(mAccount.provider().links(), name).next().target()))));
+                                                        mDovecote.cage(), new Related(mParams.account().provider().links(), name).next().target()))));
             }
             catch (ProtocolException e)
             {
@@ -338,5 +377,88 @@ public final class PasswordMicroFragment implements MicroFragment<Account>
             mPassword.setSelection(password.length());
             Snackbar.make(getView(), R.string.smoothsetup_app_specific_password_inserted, Snackbar.LENGTH_LONG).show();
         }
+
+
+        private static class AccountDetailsBox implements Box<AccountDetails>
+        {
+            private final AccountDetails mAccountDetails;
+
+
+            private AccountDetailsBox(AccountDetails accountDetails)
+            {
+                mAccountDetails = accountDetails;
+            }
+
+
+            @Override
+            public int describeContents()
+            {
+                return 0;
+            }
+
+
+            @Override
+            public void writeToParcel(Parcel dest, int flags)
+            {
+                dest.writeParcelable(mAccountDetails.account(), flags);
+                dest.writeParcelable(new Parcelable(mAccountDetails.credentials()), flags);
+            }
+
+
+            @Override
+            public AccountDetails value()
+            {
+                return mAccountDetails;
+            }
+
+
+            public final static Creator<AccountDetailsBox> CREATOR = new Creator<AccountDetailsBox>()
+            {
+                @Override
+                public AccountDetailsBox createFromParcel(Parcel source)
+                {
+                    ClassLoader classLoader = getClass().getClassLoader();
+                    Account account = source.readParcelable(classLoader);
+                    UserCredentials userCredentials = source.readParcelable(classLoader);
+                    return new AccountDetailsBox(new AccountDetails()
+                    {
+                        @Override
+                        public Account account()
+                        {
+                            return account;
+                        }
+
+
+                        @Override
+                        public UserCredentials credentials()
+                        {
+                            return userCredentials;
+                        }
+
+
+                        @Override
+                        public Box<AccountDetails> boxed()
+                        {
+                            return new AccountDetailsBox(this);
+                        }
+                    });
+                }
+
+
+                @Override
+                public AccountDetailsBox[] newArray(int size)
+                {
+                    return new AccountDetailsBox[size];
+                }
+            };
+        }
+    }
+
+
+    protected interface Params
+    {
+        Account account();
+
+        MicroWizard<AccountDetails> next();
     }
 }

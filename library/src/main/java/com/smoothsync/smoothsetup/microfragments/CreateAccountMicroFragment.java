@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,14 +31,13 @@ import android.view.ViewGroup;
 
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.Account;
-import com.smoothsync.smoothsetup.model.HttpAuthorizationFactory;
 import com.smoothsync.smoothsetup.services.AccountService;
+import com.smoothsync.smoothsetup.utils.AccountDetails;
 import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 import com.smoothsync.smoothsetup.utils.usercredentials.Parcelable;
 
 import org.dmfs.android.bolts.service.FutureServiceConnection;
-import org.dmfs.android.bolts.service.StubProxy;
 import org.dmfs.android.bolts.service.elementary.FutureAidlServiceConnection;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
@@ -51,7 +49,8 @@ import org.dmfs.android.microfragments.transitions.ForwardResetTransition;
 import org.dmfs.android.microfragments.transitions.FragmentTransition;
 import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.android.microfragments.transitions.XFaded;
-import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
+import org.dmfs.android.microwizard.MicroWizard;
+import org.dmfs.android.microwizard.box.Unboxed;
 
 
 /**
@@ -59,15 +58,14 @@ import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-public final class CreateAccountMicroFragment implements MicroFragment<ApproveAuthorizationMicroFragment.LoadFragment.Params>
+public final class CreateAccountMicroFragment implements MicroFragment<AccountDetails>
 {
     public final static Creator<CreateAccountMicroFragment> CREATOR = new Creator<CreateAccountMicroFragment>()
     {
         @Override
         public CreateAccountMicroFragment createFromParcel(Parcel source)
         {
-            ClassLoader classLoader = getClass().getClassLoader();
-            return new CreateAccountMicroFragment((Account) source.readParcelable(classLoader), (UserCredentials) source.readParcelable(classLoader));
+            return new CreateAccountMicroFragment(new Unboxed<AccountDetails>(source).value(), new Unboxed<MicroWizard<Account>>(source).value());
         }
 
 
@@ -77,14 +75,14 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
             return new CreateAccountMicroFragment[size];
         }
     };
-    private final Account mAccount;
-    private final UserCredentials mUserCredentials;
+    private final AccountDetails mAccountDetails;
+    private final MicroWizard<Account> mNext;
 
 
-    public CreateAccountMicroFragment(@NonNull Account account, @NonNull UserCredentials userCredentials)
+    public CreateAccountMicroFragment(@NonNull AccountDetails accountDetails, MicroWizard<Account> next)
     {
-        mAccount = account;
-        mUserCredentials = userCredentials;
+        mAccountDetails = accountDetails;
+        mNext = next;
     }
 
 
@@ -113,24 +111,9 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
 
     @NonNull
     @Override
-    public ApproveAuthorizationMicroFragment.LoadFragment.Params parameter()
+    public AccountDetails parameter()
     {
-        return new ApproveAuthorizationMicroFragment.LoadFragment.Params()
-        {
-            @NonNull
-            @Override
-            public Account account()
-            {
-                return mAccount;
-            }
-
-
-            @Override
-            public UserCredentials credentials()
-            {
-                return mUserCredentials;
-            }
-        };
+        return mAccountDetails;
     }
 
 
@@ -144,8 +127,8 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        dest.writeParcelable(mAccount, 0);
-        dest.writeParcelable(new Parcelable(mUserCredentials), 0);
+        dest.writeParcelable(mAccountDetails.boxed(), 0);
+        dest.writeParcelable(mNext.boxed(), 0);
     }
 
 
@@ -153,18 +136,11 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
     {
         private final static int DELAY_WAIT_MESSAGE = 2500;
         private final Timestamp mTimestamp = new UiTimestamp();
-        private final Runnable mShowWaitMessage = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                getView().findViewById(android.R.id.message).animate().alpha(1f).start();
-            }
-        };
+        private final Runnable mShowWaitMessage = () -> getView().findViewById(android.R.id.message).animate().alpha(1f).start();
         private Handler mHandler = new Handler();
         private FutureServiceConnection<AccountService> mAccountService;
-        private MicroFragmentEnvironment<ApproveAuthorizationMicroFragment.LoadFragment.Params> mMicroFragmentEnvironment;
-        private ApproveAuthorizationMicroFragment.LoadFragment.Params mParams;
+        private MicroFragmentEnvironment<AccountDetails> mMicroFragmentEnvironment;
+        private AccountDetails mAccountDetails;
         private FragmentTransition mFragmentTransition;
 
 
@@ -173,18 +149,11 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
         {
             super.onCreate(savedInstanceState);
             // this must be a retained Fragment, we don't want to create accounts more than once
-            mAccountService = new FutureAidlServiceConnection<AccountService>(getContext(),
+            mAccountService = new FutureAidlServiceConnection<>(getContext(),
                     new Intent("com.smoothsync.action.ACCOUNT_SERVICE").setPackage(getContext().getPackageName()),
-                    new StubProxy<AccountService>()
-                    {
-                        @Override
-                        public AccountService asInterface(IBinder service)
-                        {
-                            return AccountService.Stub.asInterface(service);
-                        }
-                    });
+                    AccountService.Stub::asInterface);
             mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
-            mParams = mMicroFragmentEnvironment.microFragment().parameter();
+            mAccountDetails = mMicroFragmentEnvironment.microFragment().parameter();
         }
 
 
@@ -218,8 +187,8 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
                     {
                         AccountService service = mAccountService.service(10000);
                         Bundle bundle = new Bundle();
-                        bundle.putParcelable("account", mParams.account());
-                        bundle.putParcelable("credentials", new Parcelable(mParams.credentials()));
+                        bundle.putParcelable("account", mAccountDetails.account());
+                        bundle.putParcelable("credentials", new Parcelable(mAccountDetails.credentials()));
                         service.createAccount(bundle);
                         return true;
                     }
@@ -255,7 +224,7 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
                 context.getSharedPreferences("com.smoothsync.smoothsetup.prefs", 0).edit().putString("referrer", null).apply();
 
                 // Go to the next step, but reset the back stack, so there is no way back.
-                transition = new Swiped(new ForwardResetTransition<>(new SetupCompleteMicroFragment(), mTimestamp));
+                transition = new Swiped(new ForwardResetTransition<>(new SetupCompleteMicroFragment(mAccountDetails.account()), mTimestamp));
             }
             catch (Exception e)
             {
@@ -269,16 +238,6 @@ public final class CreateAccountMicroFragment implements MicroFragment<ApproveAu
             {
                 mFragmentTransition = transition;
             }
-        }
-
-
-        interface Params
-        {
-            @NonNull
-            Account account();
-
-            @NonNull
-            HttpAuthorizationFactory httpAuthorizationFactory();
         }
     }
 }

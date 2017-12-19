@@ -38,6 +38,7 @@ import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.AbstractAutoCompleteAdapter;
+import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.model.BasicAccount;
 import com.smoothsync.smoothsetup.services.FutureApiServiceConnection;
 import com.smoothsync.smoothsetup.services.SmoothSyncApiProxy;
@@ -50,7 +51,11 @@ import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.Swiped;
+import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
+import org.dmfs.optional.Optional;
+
+import java.util.NoSuchElementException;
 
 
 /**
@@ -131,7 +136,7 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
             }
         });
 
-        mLogin.setText(mMicroFragmentEnvironment.microFragment().parameter().accountName());
+        mLogin.setText(mMicroFragmentEnvironment.microFragment().parameter().username().value(null));
 
         ((TextView) result.findViewById(android.R.id.message)).setText(loginFormAdapterFactory.promptText(getContext()));
 
@@ -154,7 +159,9 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
                 getActivity(),
                 new Swiped(
                         new ForwardTransition<>(
-                                new PasswordMicroFragment(new BasicAccount(mLogin.getText().toString(), provider)))));
+                                mMicroFragmentEnvironment.microFragment().parameter().next().microFragment(
+                                        getActivity(),
+                                        new BasicAccount(mLogin.getText().toString(), provider)))));
     }
 
 
@@ -165,7 +172,28 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
                 getActivity(),
                 new Swiped(
                         new ForwardTransition<>(
-                                new ProvidersLoadMicroFragment(mLogin.getText().toString()))));
+                                mMicroFragmentEnvironment.microFragment().parameter().fallback().microFragment(getActivity(), new Optional<String>()
+                                {
+                                    @Override
+                                    public boolean isPresent()
+                                    {
+                                        return mLogin.getText().toString().isEmpty();
+                                    }
+
+
+                                    @Override
+                                    public String value(String defaultValue)
+                                    {
+                                        return isPresent() ? value() : defaultValue;
+                                    }
+
+
+                                    @Override
+                                    public String value() throws NoSuchElementException
+                                    {
+                                        return mLogin.getText().toString();
+                                    }
+                                }))));
     }
 
 
@@ -173,7 +201,11 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
     {
         LoginFormAdapterFactory loginFormAdapterFactory();
 
-        String accountName();
+        Optional<String> username();
+
+        MicroWizard<Account> next();
+
+        MicroWizard<Optional<String>> fallback();
     }
 
 

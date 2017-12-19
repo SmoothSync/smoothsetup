@@ -163,7 +163,7 @@ public final class AuthErrorMicroFragment implements MicroFragment<Account>
         {
             if (isResumed())
             {
-                new FragmentEnvironment<>(this).host().execute(getContext(), new Swiped(new ForwardTransition<>(new PasswordMicroFragment(mAccount))));
+                //     new FragmentEnvironment<>(this).host().execute(getContext(), new Swiped(new ForwardTransition<>(new PasswordMicroFragment(mAccount, mNext))));
             }
         }
     }

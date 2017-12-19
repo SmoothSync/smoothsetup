@@ -30,9 +30,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.smoothsync.smoothsetup.R;
+import com.smoothsync.smoothsetup.model.Account;
+import com.smoothsync.smoothsetup.utils.AppLabel;
 
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
+import org.dmfs.android.microwizard.box.FactoryBox;
 
 
 /**
@@ -43,24 +46,16 @@ import org.dmfs.android.microfragments.MicroFragmentHost;
 public final class SetupCompleteMicroFragment implements MicroFragment<Void>
 {
 
-    public final static Creator<SetupCompleteMicroFragment> CREATOR = new Creator<SetupCompleteMicroFragment>()
+    public final static Creator<SetupCompleteMicroFragment> CREATOR = new FactoryBox.FactoryBoxCreator<>(SetupCompleteMicroFragment::new,
+            SetupCompleteMicroFragment[]::new);
+
+
+    private SetupCompleteMicroFragment()
     {
-        @Override
-        public SetupCompleteMicroFragment createFromParcel(Parcel source)
-        {
-            return new SetupCompleteMicroFragment();
-        }
+    }
 
 
-        @Override
-        public SetupCompleteMicroFragment[] newArray(int size)
-        {
-            return new SetupCompleteMicroFragment[size];
-        }
-    };
-
-
-    public SetupCompleteMicroFragment()
+    public SetupCompleteMicroFragment(Account account)
     {
         // nothing to do here
     }
@@ -113,31 +108,26 @@ public final class SetupCompleteMicroFragment implements MicroFragment<Void>
     /**
      * A Fragment that shows a message.
      */
-    public final static class MessageFragment extends Fragment implements View.OnClickListener
+    public final static class MessageFragment extends Fragment
     {
 
-        @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
         {
             View result = inflater.inflate(R.layout.smoothsetup_microfragment_setup_completed, container, false);
 
             ((TextView) result.findViewById(android.R.id.message))
-                    .setText(getString(R.string.smoothsetup_message_setup_completed, getString(getContext().getApplicationInfo().labelRes)));
+                    .setText(getString(R.string.smoothsetup_message_setup_completed, new AppLabel(getActivity()).value()));
 
             Button button = ((Button) result.findViewById(android.R.id.button1));
-            button.setOnClickListener(this);
+            button.setOnClickListener(v ->
+            {
+                Activity activity = getActivity();
+                activity.setResult(Activity.RESULT_OK);
+                activity.finish();
+            });
 
             return result;
-        }
-
-
-        @Override
-        public void onClick(View v)
-        {
-            Activity activity = getActivity();
-            activity.setResult(Activity.RESULT_OK);
-            activity.finish();
         }
     }
 }

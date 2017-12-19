@@ -114,24 +114,21 @@ public final class ErrorResetMicroFragment implements MicroFragment<MicroFragmen
     /**
      * A Fragment that shows an error with an option to retry.
      */
-    public final static class ErrorFragment extends Fragment implements View.OnClickListener
+    public final static class ErrorFragment extends Fragment
     {
 
-        @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
         {
             View result = inflater.inflate(R.layout.smoothsetup_microfragment_error, container, false);
-            result.findViewById(android.R.id.button1).setOnClickListener(this);
+            MicroFragmentEnvironment<MicroFragment<?>> mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
+
+            result.findViewById(android.R.id.button1)
+                    .setOnClickListener(
+                            v -> mMicroFragmentEnvironment.host().execute(
+                                    getActivity(),
+                                    new ResetTransition<>(mMicroFragmentEnvironment.microFragment().parameter())));
             return result;
-        }
-
-
-        @Override
-        public void onClick(View v)
-        {
-            MicroFragmentEnvironment<MicroFragment<?>> fragmentEnvironment = new FragmentEnvironment<>(this);
-            fragmentEnvironment.host().execute(getActivity(), new ResetTransition<>(fragmentEnvironment.microFragment().parameter()));
         }
     }
 }

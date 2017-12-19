@@ -106,7 +106,8 @@ public abstract class AbstractSmoothSyncApiService extends Service
             {
                 // just forward the call.
                 return mApi.resultOf(smoothSyncApiRequest);
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Log.v("xxxxx", "fail", e);
                 throw e;

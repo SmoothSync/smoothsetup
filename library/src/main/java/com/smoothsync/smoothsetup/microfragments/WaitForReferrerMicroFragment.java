@@ -31,6 +31,8 @@ import android.view.ViewGroup;
 
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.SmoothSetupDispatchActivity;
+import com.smoothsync.smoothsetup.utils.LoginRequest;
+import com.smoothsync.smoothsetup.utils.SimpleLoginRequest;
 
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
@@ -40,6 +42,9 @@ import org.dmfs.android.microfragments.Timestamp;
 import org.dmfs.android.microfragments.timestamps.UiTimestamp;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.XFaded;
+import org.dmfs.android.microwizard.MicroWizard;
+import org.dmfs.android.microwizard.box.Unboxed;
+import org.dmfs.optional.NullSafe;
 
 
 /**
@@ -47,7 +52,7 @@ import org.dmfs.android.microfragments.transitions.XFaded;
  *
  * @author Marten Gajda
  */
-public final class WaitForReferrerMicroFragment implements MicroFragment<Void>
+public final class WaitForReferrerMicroFragment implements MicroFragment<WaitForReferrerMicroFragment.Params>
 {
 
     public final static Creator<WaitForReferrerMicroFragment> CREATOR = new Creator<WaitForReferrerMicroFragment>()
@@ -55,7 +60,7 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<Void>
         @Override
         public WaitForReferrerMicroFragment createFromParcel(Parcel source)
         {
-            return new WaitForReferrerMicroFragment();
+            return new WaitForReferrerMicroFragment(new Unboxed<MicroWizard<LoginRequest>>(source).value(), new Unboxed<MicroWizard<Void>>(source).value());
         }
 
 
@@ -65,11 +70,14 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<Void>
             return new WaitForReferrerMicroFragment[size];
         }
     };
+    private final MicroWizard<LoginRequest> mNext;
+    private final MicroWizard<Void> mFallback;
 
 
-    public WaitForReferrerMicroFragment()
+    public WaitForReferrerMicroFragment(MicroWizard<LoginRequest> next, MicroWizard<Void> fallback)
     {
-        // nothing to do here
+        mNext = next;
+        mFallback = fallback;
     }
 
 
@@ -97,9 +105,23 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<Void>
 
     @NonNull
     @Override
-    public Void parameter()
+    public Params parameter()
     {
-        return null;
+        return new Params()
+        {
+            @Override
+            public MicroWizard<LoginRequest> next()
+            {
+                return mNext;
+            }
+
+
+            @Override
+            public MicroWizard<Void> fallback()
+            {
+                return mFallback;
+            }
+        };
     }
 
 
@@ -113,7 +135,8 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<Void>
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        // nothing to do
+        dest.writeParcelable(mNext.boxed(), flags);
+        dest.writeParcelable(mFallback.boxed(), flags);
     }
 
 
@@ -123,7 +146,7 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<Void>
 
         private final Handler mHandler = new Handler();
         private SharedPreferences mPreferences;
-        private MicroFragmentEnvironment<Void> mMicroFragmentEnvironment;
+        private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
         private Timestamp mTimeStamp = new UiTimestamp();
         /**
          * A Runnable that's executed when the waiting time is up and no broadcast was received.
@@ -139,7 +162,10 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<Void>
                 mPreferences.edit().putString("referrer", "").apply();
 
                 // move on without provider
-                mMicroFragmentEnvironment.host().execute(getActivity(), new XFaded(new ForwardTransition<>(new GenericProviderMicroFragment(), mTimeStamp)));
+                mMicroFragmentEnvironment.host()
+                        .execute(getActivity(), new XFaded(new ForwardTransition<>(
+                                mMicroFragmentEnvironment.microFragment().parameter().fallback().microFragment(getActivity(), null),
+                                mTimeStamp)));
             }
         };
 
@@ -211,9 +237,19 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<Void>
                     .execute(getActivity(),
                             new XFaded(
                                     new ForwardTransition<>(
-                                            new ProviderLoadMicroFragment(
-                                                    uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_PROVIDER),
-                                                    uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_ACCOUNT)), mTimeStamp)));
+                                            mMicroFragmentEnvironment.microFragment().parameter().next().microFragment(getActivity(),
+                                                    new SimpleLoginRequest(
+                                                            uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_PROVIDER),
+                                                            new NullSafe<>(uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_ACCOUNT))
+                                                    )), mTimeStamp)));
         }
+    }
+
+
+    protected interface Params
+    {
+        MicroWizard<LoginRequest> next();
+
+        MicroWizard<Void> fallback();
     }
 }

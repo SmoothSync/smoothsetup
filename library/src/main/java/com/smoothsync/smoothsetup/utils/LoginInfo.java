@@ -14,28 +14,20 @@
  * limitations under the License.
  */
 
-package com.smoothsync.smoothsetup.model;
+package com.smoothsync.smoothsetup.utils;
 
-import android.os.Parcelable;
+import com.smoothsync.api.model.Provider;
 
-import org.dmfs.httpessentials.client.HttpRequest;
+import org.dmfs.android.microwizard.box.Boxable;
+import org.dmfs.optional.Optional;
 
 
 /**
- * An interface of a class that knows how to authenticate an HttpRequest.
- *
  * @author Marten Gajda
  */
-public interface HttpAuthorizationFactory extends Parcelable
+public interface LoginInfo extends Boxable<LoginInfo>
 {
-    /**
-     * Authenticate the given HttpRequest.
-     *
-     * @param request
-     *         The HttpRequest to authenticate.
-     * @param <T>
-     *
-     * @return An authentcated HttpRequest.
-     */
-    <T> HttpRequest<T> authenticate(HttpRequest<T> request);
+    Provider provider();
+
+    Optional<String> username();
 }
