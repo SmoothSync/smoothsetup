@@ -184,7 +184,7 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
                                     @Override
                                     public boolean isPresent()
                                     {
-                                        return mLogin.getText().toString().isEmpty();
+                                        return !mLogin.getText().toString().isEmpty();
                                     }
 
 
