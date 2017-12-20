@@ -58,22 +58,6 @@ public final class AutoCompleteLruCache extends LruCache<String, AutoCompleteRes
     @Override
     protected AutoCompleteResult create(String key)
     {
-        return new AutoCompleteResult()
-        {
-            @Override
-            public String domainFragment()
-            {
-                return "";
-            }
-
-
-            @Override
-            public String[] autoComplete()
-            {
-                return new String[]{"fastmail.com", "fastmail.fm", "fastmail.de", "fastmail.com.tw", "fanmail.de", "fanfare.com", "fanfare.de", "fanmile.de"};
-            }
-        };
-        /*
         try
         {
             // if the key doesn't have a . at the last position, we can use the result of the key minus one char and filter on the client
@@ -87,6 +71,6 @@ public final class AutoCompleteLruCache extends LruCache<String, AutoCompleteRes
         {
             // ignore any error and just don't auto-complete
             return null;
-        }*/
+        }
     }
 }
