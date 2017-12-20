@@ -18,7 +18,6 @@ package com.smoothsync.smoothsetup.microfragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -90,6 +89,14 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
         LoginFormAdapterFactory loginFormAdapterFactory = mMicroFragmentEnvironment.microFragment().parameter().loginFormAdapterFactory();
         AbstractAutoCompleteAdapter autoCompleteAdapter = loginFormAdapterFactory.autoCompleteAdapter(getContext(), new SmoothSyncApiProxy(mApiService));
         mLogin.setAdapter(autoCompleteAdapter);
+        mLogin.setOnItemClickListener((parent, view, position, id) -> mLogin.post(() ->
+        {
+            // an autocomplete item has been clicked, trigger autocomplete once again by setting the same text.
+            int start = mLogin.getSelectionStart();
+            int end = mLogin.getSelectionEnd();
+            mLogin.setText(mLogin.getText());
+            mLogin.setSelection(start, end);
+        }));
 
         RecyclerView list = (RecyclerView) result.findViewById(android.R.id.list);
 
@@ -209,7 +216,7 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
     }
 
 
-    public interface LoginFormAdapterFactory extends Parcelable
+    public interface LoginFormAdapterFactory
     {
         @NonNull
         <T extends Adapter & Filterable> T autoCompleteAdapter(@NonNull Context context, @NonNull SmoothSyncApi api);

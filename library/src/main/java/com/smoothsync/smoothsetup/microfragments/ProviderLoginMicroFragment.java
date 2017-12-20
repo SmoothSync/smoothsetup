@@ -29,7 +29,6 @@ import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.ProviderAutoCompleteAdapter;
 import com.smoothsync.smoothsetup.model.Account;
-import com.smoothsync.smoothsetup.model.ParcelableProvider;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.ProviderSmoothSetupAdapter;
 import com.smoothsync.smoothsetup.utils.LoginInfo;
@@ -162,21 +161,6 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
 
     private final static class ProviderLoginFormAdapterFactory implements LoginFragment.LoginFormAdapterFactory
     {
-        public final static Creator<LoginFragment.LoginFormAdapterFactory> CREATOR = new Creator<LoginFragment.LoginFormAdapterFactory>()
-        {
-            @Override
-            public LoginFragment.LoginFormAdapterFactory createFromParcel(Parcel source)
-            {
-                return new ProviderLoginFormAdapterFactory(source.readParcelable(getClass().getClassLoader()));
-            }
-
-
-            @Override
-            public LoginFragment.LoginFormAdapterFactory[] newArray(int size)
-            {
-                return new ProviderLoginFormAdapterFactory[size];
-            }
-        };
         private final Provider mProvider;
         private MicroFragmentEnvironment<ChooseProviderMicroFragment.ProviderListFragment.Params> mMicroFragmentEnvironment;
 
@@ -216,20 +200,6 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
             {
                 throw new RuntimeException("Can't retrieve provider name", e);
             }
-        }
-
-
-        @Override
-        public int describeContents()
-        {
-            return 0;
-        }
-
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags)
-        {
-            dest.writeParcelable(new ParcelableProvider(mProvider), flags);
         }
     }
 }

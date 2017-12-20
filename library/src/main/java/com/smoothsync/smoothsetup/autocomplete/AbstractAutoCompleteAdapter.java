@@ -16,12 +16,15 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filterable;
 import android.widget.TextView;
+
+import com.smoothsync.smoothsetup.R;
 
 
 /**
@@ -31,6 +34,14 @@ import android.widget.TextView;
  */
 public abstract class AbstractAutoCompleteAdapter extends BaseAdapter implements Filterable
 {
+
+    public interface AutoCompleteItem
+    {
+        String autoComplete();
+
+        Iterable<String> extensions();
+    }
+
 
     @Override
     public final long getItemId(int position)
@@ -45,9 +56,12 @@ public abstract class AbstractAutoCompleteAdapter extends BaseAdapter implements
         View result = convertView;
         if (result == null)
         {
-            result = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_dropdown_item_1line, parent, false);
+            result = LayoutInflater.from(parent.getContext()).inflate(R.layout.smoothsetup_autocomplete, parent, false);
         }
-        ((TextView) result.findViewById(android.R.id.text1)).setText(getItem(position).toString());
+        AutoCompleteItem item = (AutoCompleteItem) getItem(position);
+        ((TextView) result.findViewById(R.id.text_autocomplete)).setText(item.autoComplete());
+        String extensions = TextUtils.join(", …", item.extensions());
+        ((TextView) result.findViewById(R.id.text_extensions)).setText(extensions.isEmpty() ? "" : "…" + extensions);
         return result;
     }
 

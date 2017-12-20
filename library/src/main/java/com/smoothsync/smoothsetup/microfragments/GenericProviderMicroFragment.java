@@ -35,7 +35,6 @@ import com.smoothsync.smoothsetup.setupbuttons.FixedButtonSetupAdapter;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
 import org.dmfs.android.microwizard.MicroWizard;
-import org.dmfs.android.microwizard.box.FactoryBox;
 import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.optional.Optional;
 
@@ -154,10 +153,6 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
 
     private final static class ApiLoginFormAdapterFactory implements LoginFragment.LoginFormAdapterFactory
     {
-        public final static Creator<LoginFragment.LoginFormAdapterFactory> CREATOR = new FactoryBox.FactoryBoxCreator<>(ApiLoginFormAdapterFactory::new,
-                ApiLoginFormAdapterFactory[]::new);
-
-
         @NonNull
         @Override
         public <T extends RecyclerView.Adapter<BasicButtonViewHolder>, SetupButtonAdapter> T setupButtonAdapter(@NonNull Context context,
@@ -180,19 +175,6 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
         public String promptText(@NonNull Context context)
         {
             return context.getString(R.string.smoothsetup_prompt_login);
-        }
-
-
-        @Override
-        public int describeContents()
-        {
-            return 0;
-        }
-
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags)
-        {
         }
     }
 }

@@ -16,8 +16,9 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
-import org.dmfs.iterators.ArrayIterator;
-import org.dmfs.iterators.decorators.Fluent;
+import org.dmfs.iterables.decorators.DelegatingIterable;
+import org.dmfs.iterables.decorators.Fluent;
+import org.dmfs.iterables.elementary.Seq;
 import org.dmfs.iterators.filters.NonNull;
 
 import java.util.Iterator;
@@ -28,38 +29,15 @@ import java.util.Iterator;
  *
  * @author Marten Gajda
  */
-public final class AutoCompleteArrayIterator implements Iterator<String>
+public final class AutoCompleteArrayIterable extends DelegatingIterable<String>
 {
 
-    private final Iterator<String> mIterator;
-
-
-    public AutoCompleteArrayIterator(String[] autoCompleteDomains, String localPart, String domainPart)
+    public AutoCompleteArrayIterable(String[] autoCompleteDomains, String localPart, String domainPart)
     {
-        mIterator = new Fluent<>(new ArrayIterator<>(autoCompleteDomains))
+        super(new Fluent<>(new Seq<>(autoCompleteDomains))
+                .filtered(element -> !element.startsWith("@"))
                 .mapped(new DomainExpansionConverter(domainPart))
-                .filtered(NonNull.<String>instance())
-                .mapped(new LocalPartConverter(localPart));
-    }
-
-
-    @Override
-    public boolean hasNext()
-    {
-        return mIterator.hasNext();
-    }
-
-
-    @Override
-    public String next()
-    {
-        return mIterator.next();
-    }
-
-
-    @Override
-    public void remove()
-    {
-        mIterator.remove();
+                .filtered(NonNull.instance())
+                .mapped(new LocalPartConverter(localPart)));
     }
 }
