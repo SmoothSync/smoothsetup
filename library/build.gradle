@@ -37,11 +37,15 @@ dependencies {
     compile 'org.dmfs:http-client-headers:' + HTTP_CLIENT_ESSENTIALS_VERSION
     compile 'org.dmfs:http-executor-decorators:' + HTTP_CLIENT_ESSENTIALS_VERSION
     compile 'org.dmfs:httpurlconnection-executor:' + HTTP_CLIENT_ESSENTIALS_VERSION
-    compile 'org.dmfs:oauth2-essentials:' + OAUTH2_ESSENTIALS_VERSION
+    compile('org.dmfs:oauth2-essentials:' + OAUTH2_ESSENTIALS_VERSION) {
+        exclude group: 'org.dmfs'
+    }
     compile 'org.dmfs:rfc5545-datetime:0.2.4'
     compile 'org.dmfs:jems:' + JEMS_VERSION
     compile 'net.iharder:base64:2.3.9'
-    compile 'com.github.SmoothSync:smoothsync-api-client:0.8'
+    compile ('com.github.SmoothSync:smoothsync-api-client:0.8') {
+        exclude group: 'org.dmfs'
+    }
     compile 'com.github.dmfs.MicroFragments:microwizard:0ea6ab1b6cad428217072e9b4988865ff6aa4c19'
     compile 'com.github.dmfs.Bolts:service-bolts:a43822bd6a'
 
