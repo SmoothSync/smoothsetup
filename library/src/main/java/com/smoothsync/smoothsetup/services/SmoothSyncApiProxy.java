@@ -40,7 +40,7 @@ public final class SmoothSyncApiProxy implements SmoothSyncApi
 
     public SmoothSyncApiProxy(FutureServiceConnection<SmoothSyncApi> connection)
     {
-        this.mConnection = connection;
+        mConnection = connection;
     }
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 dmfs GmbH
+ * Copyright (c) 2018 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,36 +14,30 @@
  * limitations under the License.
  */
 
-package com.smoothsync.smoothsetup;
+package com.smoothsync.smoothsetup.services.defaults;
 
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-
-import com.smoothsync.smoothsetup.wizard.VerifyLogin;
-import com.smoothsync.smoothsetup.wizard.CreateAccount;
-import com.smoothsync.smoothsetup.wizard.LoadAccount;
-import com.smoothsync.smoothsetup.wizard.EnterPassword;
+import com.smoothsync.smoothsetup.services.WizardService;
+import com.smoothsync.smoothsetup.services.delegating.DelegatingWizardService;
 import com.smoothsync.smoothsetup.wizard.Congratulations;
-
-import org.dmfs.android.microfragments.MicroFragment;
+import com.smoothsync.smoothsetup.wizard.CreateAccount;
+import com.smoothsync.smoothsetup.wizard.EnterPassword;
+import com.smoothsync.smoothsetup.wizard.LoadAccount;
+import com.smoothsync.smoothsetup.wizard.VerifyLogin;
 
 
 /**
- * An activity taking an account and asking the user to update his/her credentials.
+ * The default {@link WizardService} to update an account password.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
-public final class SmoothUpdateAuthDispatchActivity extends AppCompatActivity
+public final class DefaultPasswordUpdateWizardService extends DelegatingWizardService
 {
     public final static String PARAM_ACCOUNT = "account";
 
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState)
+    public DefaultPasswordUpdateWizardService()
     {
-        super.onCreate(savedInstanceState);
-
-        launchStep(
+        super(() -> (context, intent) ->
                 new LoadAccount(
                         new EnterPassword(
                                 new VerifyLogin(
@@ -52,14 +46,8 @@ public final class SmoothUpdateAuthDispatchActivity extends AppCompatActivity
                                                 // TODO: replace with simple success message
                                                 new Congratulations()))))
                         .microFragment(
-                                this,
-                                getIntent().getParcelableExtra(PARAM_ACCOUNT)));
-    }
-
-
-    private void launchStep(MicroFragment<?> microFragment)
-    {
-        MicroFragmentHostActivity.launch(this, microFragment);
-        finish();
+                                context,
+                                intent.getParcelableExtra(PARAM_ACCOUNT))
+        );
     }
 }

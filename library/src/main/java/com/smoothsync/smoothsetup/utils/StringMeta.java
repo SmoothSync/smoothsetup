@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 dmfs GmbH
+ * Copyright (c) 2018 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,40 +16,44 @@
 
 package com.smoothsync.smoothsetup.utils;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 
 import org.dmfs.jems.single.Single;
-
-import java.util.Locale;
 
 
 /**
  * @author Marten Gajda
  */
-public class ActivityInfo implements Single<android.content.pm.ActivityInfo>
+public final class StringMeta implements Single<String>
 {
-    private final Activity mActivity;
-    private final int mFlags;
+    private final String mKey;
+    private final Single<Bundle> mMetaData;
 
 
-    public ActivityInfo(Activity activity, int flags)
+    public StringMeta(Context context, String key)
     {
-        mActivity = activity;
-        mFlags = flags;
+        this(key, new ApplicationInfo(context, PackageManager.GET_META_DATA));
+    }
+
+
+    private StringMeta(String key, ApplicationInfo mAppInfo)
+    {
+        this(key, new MetaData(mAppInfo));
+    }
+
+
+    private StringMeta(String key, Single<Bundle> metaData)
+    {
+        mKey = key;
+        mMetaData = metaData;
     }
 
 
     @Override
-    public android.content.pm.ActivityInfo value()
+    public String value()
     {
-        try
-        {
-            return mActivity.getPackageManager().getActivityInfo(mActivity.getComponentName(), mFlags);
-        }
-        catch (PackageManager.NameNotFoundException e)
-        {
-            throw new RuntimeException(String.format(Locale.ENGLISH, "Could not load ActivityInfo of activity %s.", mActivity.getClass().getCanonicalName()));
-        }
+        return mMetaData.value().getString(mKey);
     }
 }

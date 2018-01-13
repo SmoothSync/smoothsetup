@@ -43,10 +43,10 @@ dependencies {
     compile 'org.dmfs:rfc5545-datetime:0.2.4'
     compile 'org.dmfs:jems:' + JEMS_VERSION
     compile 'net.iharder:base64:2.3.9'
-    compile ('com.github.SmoothSync:smoothsync-api-client:0.8') {
+    compile('com.github.SmoothSync:smoothsync-api-client:0.8') {
         exclude group: 'org.dmfs'
     }
     compile 'com.github.dmfs.MicroFragments:microwizard:0ea6ab1b6cad428217072e9b4988865ff6aa4c19'
-    compile 'com.github.dmfs.Bolts:service-bolts:a43822bd6a'
-
+    compile 'com.github.dmfs.Bolts:service-bolts:d4e38c020581a6bad38f0906095f968ab0501263'
+    compile 'com.github.dmfs.Bolts:package-bolts:d4e38c020581a6bad38f0906095f968ab0501263'
 }

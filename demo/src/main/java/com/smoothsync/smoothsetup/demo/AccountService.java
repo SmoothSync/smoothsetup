@@ -1,14 +1,13 @@
 package com.smoothsync.smoothsetup.demo;
 
 import android.accounts.Account;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.RemoteException;
 
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.api.model.Service;
 import com.smoothsync.smoothsetup.model.BasicAccount;
-import com.smoothsync.smoothsetup.services.AbstractAccountService;
+import com.smoothsync.smoothsetup.services.delegating.DelegatingAccountService;
 
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.httpessentials.types.Link;
@@ -26,108 +25,101 @@ import java.util.Iterator;
  *
  * @author Marten Gajda
  */
-public class AccountService extends AbstractAccountService
+public class AccountService extends DelegatingAccountService
 {
     public AccountService()
     {
-        super(new AccountServiceFactory()
+        super(context -> new com.smoothsync.smoothsetup.services.AccountService.Stub()
         {
             @Override
-            public com.smoothsync.smoothsetup.services.AccountService accountService(Context context)
+            public BasicAccount providerForAccount(Account account) throws RemoteException
             {
-                return new com.smoothsync.smoothsetup.services.AccountService.Stub()
+                return new BasicAccount("sogo1", new Provider()
                 {
                     @Override
-                    public BasicAccount providerForAccount(Account account) throws RemoteException
+                    public String id() throws ProtocolException
                     {
-                        return new BasicAccount("sogo1", new Provider()
+                        return "xxy";
+                    }
+
+
+                    @Override
+                    public String name() throws ProtocolException
+                    {
+                        return "SOGo";
+                    }
+
+
+                    @Override
+                    public String[] domains() throws ProtocolException
+                    {
+                        return new String[0];
+                    }
+
+
+                    @Override
+                    public Iterator<Link> links() throws ProtocolException
+                    {
+                        return EmptyIterator.instance();
+                    }
+
+
+                    @Override
+                    public Iterator<Service> services() throws ProtocolException
+                    {
+                        return new ArrayIterator<Service>(new Service()
                         {
                             @Override
-                            public String id() throws ProtocolException
+                            public String name()
                             {
-                                return "xxy";
+                                return "caldav";
                             }
 
 
                             @Override
-                            public String name() throws ProtocolException
+                            public String serviceType()
                             {
-                                return "SOGo";
+                                return "com.smoothsync.authenticate";
                             }
 
 
                             @Override
-                            public String[] domains() throws ProtocolException
+                            public URI uri()
                             {
-                                return new String[0];
+                                return URI.create("http://sogo-demo.inverse.ca/SOGo/dav");
                             }
 
 
                             @Override
-                            public Iterator<Link> links() throws ProtocolException
+                            public KeyStore keyStore()
                             {
-                                return EmptyIterator.instance();
-                            }
-
-
-                            @Override
-                            public Iterator<Service> services() throws ProtocolException
-                            {
-                                return new ArrayIterator<Service>(new Service()
-                                {
-                                    @Override
-                                    public String name()
-                                    {
-                                        return "caldav";
-                                    }
-
-
-                                    @Override
-                                    public String serviceType()
-                                    {
-                                        return "com.smoothsync.authenticate";
-                                    }
-
-
-                                    @Override
-                                    public URI uri()
-                                    {
-                                        return URI.create("http://sogo-demo.inverse.ca/SOGo/dav");
-                                    }
-
-
-                                    @Override
-                                    public KeyStore keyStore()
-                                    {
-                                        return null;
-                                    }
-                                });
-                            }
-
-
-                            @Override
-                            public DateTime lastModified() throws ProtocolException
-                            {
-                                return DateTime.now();
+                                return null;
                             }
                         });
                     }
 
 
                     @Override
-                    public void createAccount(Bundle bundle) throws RemoteException
+                    public DateTime lastModified() throws ProtocolException
                     {
-                        try
-                        {
-                            // wait a little to emulate the account setup
-                            Thread.sleep(2000);
-                        }
-                        catch (InterruptedException e)
-                        {
-                            e.printStackTrace();
-                        }
+                        return DateTime.now();
                     }
-                };
+                });
+            }
+
+
+            @Override
+            public void createAccount(Bundle bundle) throws RemoteException
+            {
+                try
+                {
+                    // wait a little to emulate the account setup
+                    Thread.sleep(2000);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
             }
         });
     }

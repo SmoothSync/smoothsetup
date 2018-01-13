@@ -17,13 +17,13 @@
 package com.smoothsync.smoothsetup.demo;
 
 import android.accounts.Account;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.smoothsync.smoothsetup.SmoothSetupDispatchActivity;
-import com.smoothsync.smoothsetup.SmoothUpdateAuthDispatchActivity;
+import com.smoothsync.smoothsetup.microfragments.SetupDispatchMicroFragment;
 
 
 public class DemoActivity extends AppCompatActivity
@@ -39,13 +39,18 @@ public class DemoActivity extends AppCompatActivity
 
     public void add(View view)
     {
-        startActivity(new Intent(this, SmoothSetupDispatchActivity.class));
+        startActivity(
+                new Intent()
+                        .setComponent(new ComponentName(getPackageName(), "com.smoothsync.smoothsetup.SmoothSetupDispatchActivity")));
     }
 
 
     public void update(View view)
     {
-        startActivity(new Intent(this, SmoothUpdateAuthDispatchActivity.class).putExtra(SmoothUpdateAuthDispatchActivity.PARAM_ACCOUNT, new Account("x", "y")));
+        startActivity(
+                new Intent()
+                        .setComponent(new ComponentName(getPackageName(), "com.smoothsync.smoothsetup.SmoothUpdateAuthDispatchActivity"))
+                        .putExtra(SetupDispatchMicroFragment.DispatchFragment.PARAM_ACCOUNT, new Account("x", "y")));
     }
 
 }

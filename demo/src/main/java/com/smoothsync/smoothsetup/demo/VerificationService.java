@@ -17,11 +17,8 @@
 
 package com.smoothsync.smoothsetup.demo;
 
-import android.content.Context;
-
-import com.smoothsync.api.model.Provider;
 import com.smoothsync.api.model.Service;
-import com.smoothsync.smoothsetup.services.AbstractVerificationService;
+import com.smoothsync.smoothsetup.services.delegating.DelegatingVerificationService;
 import com.smoothsync.smoothsetup.utils.Trusted;
 
 import org.dmfs.httpessentials.HttpMethod;
@@ -35,7 +32,6 @@ import org.dmfs.httpessentials.entities.EmptyHttpRequestEntity;
 import org.dmfs.httpessentials.exceptions.ProtocolError;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.httpessentials.exceptions.UnauthorizedException;
-import org.dmfs.httpessentials.executors.authorizing.AuthStrategy;
 import org.dmfs.httpessentials.executors.authorizing.Authorizing;
 import org.dmfs.httpessentials.executors.following.Following;
 import org.dmfs.httpessentials.executors.following.policies.FollowRedirectPolicy;
@@ -48,7 +44,6 @@ import org.dmfs.httpessentials.httpurlconnection.HttpUrlConnectionExecutor;
 import org.dmfs.httpessentials.httpurlconnection.factories.DefaultHttpUrlConnectionFactory;
 import org.dmfs.httpessentials.httpurlconnection.factories.decorators.Finite;
 import org.dmfs.httpessentials.responsehandlers.TrivialResponseHandler;
-import org.dmfs.iterators.Filter;
 import org.dmfs.iterators.decorators.Filtered;
 
 import java.io.IOException;
@@ -59,77 +54,59 @@ import java.io.IOException;
  *
  * @author Marten Gajda
  */
-public final class VerificationService extends AbstractVerificationService
+public final class VerificationService extends DelegatingVerificationService
 {
     public VerificationService()
     {
-        super(new VerificationServiceFactory()
+        super(context -> (provider, authStrategy) ->
         {
-            @Override
-            public com.smoothsync.smoothsetup.services.VerificationService accountService(Context context)
+
+            Service service = new Filtered<>(provider.services(), element -> "com.smoothsync.authenticate".equals(element.serviceType())).next();
+            HttpRequestExecutor executor = new Following(
+                    new Authorizing(
+                            new Retrying(
+                                    new HttpUrlConnectionExecutor(
+                                            new Trusted(new Finite(new DefaultHttpUrlConnectionFactory(), 10000, 10000), service.keyStore())),
+                                    new DefaultRetryPolicy(3)),
+                            authStrategy),
+                    new Secure(new FollowRedirectPolicy(5)));
+
+            try
             {
-                return new com.smoothsync.smoothsetup.services.VerificationService()
+                return executor.execute(service.uri(), new HttpRequest<Boolean>()
                 {
                     @Override
-                    public boolean verify(Provider provider, AuthStrategy authStrategy) throws Exception
+                    public HttpMethod method()
                     {
-
-                        Service service = new Filtered<>(provider.services(), new Filter<Service>()
-                        {
-                            @Override
-                            public boolean iterate(Service element)
-                            {
-                                return "com.smoothsync.authenticate".equals(element.serviceType());
-                            }
-                        }).next();
-                        HttpRequestExecutor executor = new Following(
-                                new Authorizing(
-                                        new Retrying(
-                                                new HttpUrlConnectionExecutor(
-                                                        new Trusted(new Finite(new DefaultHttpUrlConnectionFactory(), 10000, 10000), service.keyStore())),
-                                                new DefaultRetryPolicy(3)),
-                                        authStrategy),
-                                new Secure(new FollowRedirectPolicy(5)));
-
-                        try
-                        {
-                            return executor.execute(service.uri(), new HttpRequest<Boolean>()
-                            {
-                                @Override
-                                public HttpMethod method()
-                                {
-                                    return HttpMethod.GET;
-                                }
-
-
-                                @Override
-                                public Headers headers()
-                                {
-                                    return EmptyHeaders.INSTANCE;
-                                }
-
-
-                                @Override
-                                public HttpRequestEntity requestEntity()
-                                {
-                                    return EmptyHttpRequestEntity.INSTANCE;
-                                }
-
-
-                                @Override
-                                public HttpResponseHandler<Boolean> responseHandler(HttpResponse response) throws IOException, ProtocolError, ProtocolException
-                                {
-                                    return new TrivialResponseHandler<>(!HttpStatus.UNAUTHORIZED.equals(response.status()));
-                                }
-                            });
-                        }
-                        catch (UnauthorizedException e)
-                        {
-                            // not authenticated
-                            return false;
-                        }
+                        return HttpMethod.GET;
                     }
-                };
+
+
+                    @Override
+                    public Headers headers()
+                    {
+                        return EmptyHeaders.INSTANCE;
+                    }
+
+
+                    @Override
+                    public HttpRequestEntity requestEntity()
+                    {
+                        return EmptyHttpRequestEntity.INSTANCE;
+                    }
+
+
+                    @Override
+                    public HttpResponseHandler<Boolean> responseHandler(HttpResponse response) throws IOException, ProtocolError, ProtocolException
+                    {
+                        return new TrivialResponseHandler<>(!HttpStatus.UNAUTHORIZED.equals(response.status()));
+                    }
+                });
+            }
+            catch (UnauthorizedException e)
+            {
+                // not authenticated
+                return false;
             }
         });
     }

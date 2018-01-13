@@ -30,7 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.smoothsync.smoothsetup.R;
-import com.smoothsync.smoothsetup.SmoothSetupDispatchActivity;
 import com.smoothsync.smoothsetup.utils.LoginRequest;
 import com.smoothsync.smoothsetup.utils.SimpleLoginRequest;
 
@@ -185,9 +184,9 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<WaitFor
             super.onResume();
             mPreferences = getActivity().getSharedPreferences("com.smoothsync.smoothsetup.prefs", 0);
             mPreferences.registerOnSharedPreferenceChangeListener(this);
-            if (mPreferences.contains(SmoothSetupDispatchActivity.PREF_REFERRER))
+            if (mPreferences.contains(SetupDispatchMicroFragment.DispatchFragment.PREF_REFERRER))
             {
-                onSharedPreferenceChanged(mPreferences, SmoothSetupDispatchActivity.PREF_REFERRER);
+                onSharedPreferenceChanged(mPreferences, SetupDispatchMicroFragment.DispatchFragment.PREF_REFERRER);
             }
             mHandler.postDelayed(mMoveOn, WAIT_TIME);
         }
@@ -211,13 +210,13 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<WaitFor
                 return;
             }
 
-            if (!SmoothSetupDispatchActivity.PREF_REFERRER.equals(key))
+            if (!SetupDispatchMicroFragment.DispatchFragment.PREF_REFERRER.equals(key))
             {
                 // not the right key
                 return;
             }
 
-            String referrer = sharedPreferences.getString(SmoothSetupDispatchActivity.PREF_REFERRER, null);
+            String referrer = sharedPreferences.getString(SetupDispatchMicroFragment.DispatchFragment.PREF_REFERRER, null);
             if (referrer == null || referrer.isEmpty())
             {
                 // referrer is null
@@ -225,7 +224,7 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<WaitFor
             }
 
             Uri uri = Uri.parse(referrer);
-            if (uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_PROVIDER) == null)
+            if (uri.getQueryParameter(SetupDispatchMicroFragment.DispatchFragment.PARAM_PROVIDER) == null)
             {
                 // no provider present
                 return;
@@ -239,8 +238,8 @@ public final class WaitForReferrerMicroFragment implements MicroFragment<WaitFor
                                     new ForwardTransition<>(
                                             mMicroFragmentEnvironment.microFragment().parameter().next().microFragment(getActivity(),
                                                     new SimpleLoginRequest(
-                                                            uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_PROVIDER),
-                                                            new NullSafe<>(uri.getQueryParameter(SmoothSetupDispatchActivity.PARAM_ACCOUNT))
+                                                            uri.getQueryParameter(SetupDispatchMicroFragment.DispatchFragment.PARAM_PROVIDER),
+                                                            new NullSafe<>(uri.getQueryParameter(SetupDispatchMicroFragment.DispatchFragment.PARAM_ACCOUNT))
                                                     )), mTimeStamp)));
         }
     }

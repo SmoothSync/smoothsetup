@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 dmfs GmbH
+ * Copyright (c) 2018 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.smoothsync.smoothsetup.services;
+package com.smoothsync.smoothsetup.services.delegating;
 
 import android.app.Service;
 import android.content.Context;
@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.SmoothSyncApiRequest;
@@ -38,14 +37,14 @@ import java.io.IOException;
  *
  * @author Marten Gajda
  */
-public abstract class AbstractSmoothSyncApiService extends Service
+public abstract class DelegatingSmoothSyncApiService extends Service
 {
 
     private SmoothSyncApiServiceBinder mBinder;
     private SmoothSyncApiFactory mApiFactory;
 
 
-    public AbstractSmoothSyncApiService(SmoothSyncApiFactory apiFactory)
+    public DelegatingSmoothSyncApiService(SmoothSyncApiFactory apiFactory)
     {
         mApiFactory = apiFactory;
     }
@@ -80,7 +79,7 @@ public abstract class AbstractSmoothSyncApiService extends Service
          *
          * @return
          */
-        public SmoothSyncApi smoothSyncApi(Context context);
+        SmoothSyncApi smoothSyncApi(Context context);
     }
 
 
@@ -95,23 +94,15 @@ public abstract class AbstractSmoothSyncApiService extends Service
 
         public SmoothSyncApiServiceBinder(SmoothSyncApi api)
         {
-            this.mApi = api;
+            mApi = api;
         }
 
 
         @Override
         public <T> T resultOf(SmoothSyncApiRequest<T> smoothSyncApiRequest) throws IOException, ProtocolError, ProtocolException
         {
-            try
-            {
-                // just forward the call.
-                return mApi.resultOf(smoothSyncApiRequest);
-            }
-            catch (Exception e)
-            {
-                Log.v("xxxxx", "fail", e);
-                throw e;
-            }
+            // just forward the call.
+            return mApi.resultOf(smoothSyncApiRequest);
         }
     }
 }

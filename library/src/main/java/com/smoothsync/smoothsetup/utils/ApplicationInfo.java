@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 dmfs GmbH
+ * Copyright (c) 2018 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,40 +16,40 @@
 
 package com.smoothsync.smoothsetup.utils;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 
 import org.dmfs.jems.single.Single;
-
-import java.util.Locale;
 
 
 /**
  * @author Marten Gajda
  */
-public class ActivityInfo implements Single<android.content.pm.ActivityInfo>
+public final class ApplicationInfo implements Single<android.content.pm.ApplicationInfo>
 {
-    private final Activity mActivity;
+    private final Context mContext;
     private final int mFlags;
 
 
-    public ActivityInfo(Activity activity, int flags)
+    public ApplicationInfo(@NonNull Context context, int flags)
     {
-        mActivity = activity;
+        mContext = context.getApplicationContext();
         mFlags = flags;
     }
 
 
+    @NonNull
     @Override
-    public android.content.pm.ActivityInfo value()
+    public android.content.pm.ApplicationInfo value()
     {
         try
         {
-            return mActivity.getPackageManager().getActivityInfo(mActivity.getComponentName(), mFlags);
+            return mContext.getPackageManager().getApplicationInfo(mContext.getPackageName(), mFlags);
         }
         catch (PackageManager.NameNotFoundException e)
         {
-            throw new RuntimeException(String.format(Locale.ENGLISH, "Could not load ActivityInfo of activity %s.", mActivity.getClass().getCanonicalName()));
+            throw new RuntimeException("Couldn't find own package name.");
         }
     }
 }

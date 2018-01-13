@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 dmfs GmbH
+ * Copyright (c) 2018 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.smoothsync.smoothsetup.services;
+package com.smoothsync.smoothsetup.services.delegating;
 
 import android.app.Service;
 import android.content.Context;
@@ -24,6 +24,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.smoothsync.api.model.Provider;
+import com.smoothsync.smoothsetup.services.VerificationService;
 
 import org.dmfs.httpessentials.executors.authorizing.AuthStrategy;
 
@@ -33,14 +34,14 @@ import org.dmfs.httpessentials.executors.authorizing.AuthStrategy;
  *
  * @author Marten Gajda
  */
-public abstract class AbstractVerificationService extends Service
+public abstract class DelegatingVerificationService extends Service
 {
 
     private AccountServiceBinder mBinder;
     private VerificationServiceFactory mVerificationServiceFactory;
 
 
-    public AbstractVerificationService(VerificationServiceFactory verificationServiceFactory)
+    public DelegatingVerificationService(VerificationServiceFactory verificationServiceFactory)
     {
         mVerificationServiceFactory = verificationServiceFactory;
     }
@@ -50,7 +51,7 @@ public abstract class AbstractVerificationService extends Service
     public final void onCreate()
     {
         super.onCreate();
-        mBinder = new AccountServiceBinder(mVerificationServiceFactory.accountService(this));
+        mBinder = new AccountServiceBinder(mVerificationServiceFactory.verificationService(this));
     }
 
 
@@ -63,7 +64,7 @@ public abstract class AbstractVerificationService extends Service
 
 
     /**
-     * A factory that creates AccountService instances.
+     * A factory that creates {@link VerificationService} instances.
      */
     public interface VerificationServiceFactory
     {
@@ -75,7 +76,7 @@ public abstract class AbstractVerificationService extends Service
          *
          * @return
          */
-        VerificationService accountService(Context context);
+        VerificationService verificationService(Context context);
     }
 
 

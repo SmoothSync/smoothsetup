@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 dmfs GmbH
+ * Copyright (c) 2018 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.smoothsync.smoothsetup.services;
+package com.smoothsync.smoothsetup.services.delegating;
 
 import android.app.Service;
 import android.content.Context;
@@ -26,21 +26,22 @@ import android.os.RemoteException;
 import android.support.annotation.Nullable;
 
 import com.smoothsync.smoothsetup.model.BasicAccount;
+import com.smoothsync.smoothsetup.services.AccountService;
 
 
 /**
- * An abstract service that provides an AccountService interface.
+ * An abstract service which delegates to another {@link AccountService}.
  *
  * @author Marten Gajda
  */
-public abstract class AbstractAccountService extends Service
+public abstract class DelegatingAccountService extends Service
 {
 
     private AccountServiceBinder mBinder;
     private AccountServiceFactory mAccountServiceFactory;
 
 
-    public AbstractAccountService(AccountServiceFactory accountServiceFactory)
+    public DelegatingAccountService(AccountServiceFactory accountServiceFactory)
     {
         mAccountServiceFactory = accountServiceFactory;
     }
@@ -63,7 +64,7 @@ public abstract class AbstractAccountService extends Service
 
 
     /**
-     * A factory that creates AccountService instances.
+     * A factory which creates AccountService instances.
      */
     public interface AccountServiceFactory
     {
@@ -75,7 +76,7 @@ public abstract class AbstractAccountService extends Service
          *
          * @return
          */
-        public AccountService accountService(Context context);
+        AccountService accountService(Context context);
     }
 
 
@@ -90,7 +91,7 @@ public abstract class AbstractAccountService extends Service
 
         public AccountServiceBinder(AccountService accountService)
         {
-            this.mAccountService = accountService;
+            mAccountService = accountService;
         }
 
 
