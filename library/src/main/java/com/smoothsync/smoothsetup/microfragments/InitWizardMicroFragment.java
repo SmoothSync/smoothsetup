@@ -18,34 +18,19 @@ package com.smoothsync.smoothsetup.microfragments;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Handler;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
-import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.services.WizardService;
-import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
+import com.smoothsync.smoothsetup.utils.LoadingFragment;
 import com.smoothsync.smoothsetup.utils.StringMeta;
-import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
-import org.dmfs.android.bolts.service.FutureServiceConnection;
 import org.dmfs.android.bolts.service.elementary.FutureLocalServiceConnection;
-import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
-import org.dmfs.android.microfragments.MicroFragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
-import org.dmfs.android.microfragments.Timestamp;
-import org.dmfs.android.microfragments.timestamps.UiTimestamp;
 import org.dmfs.android.microfragments.transitions.ForwardResetTransition;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;
-import org.dmfs.android.microfragments.transitions.FragmentTransition;
 
 
 /**
@@ -152,101 +137,29 @@ public final class InitWizardMicroFragment implements MicroFragment<InitWizardMi
     }
 
 
-    public final static class LoadWizardFragment extends Fragment implements ThrowingAsyncTask.OnResultCallback<MicroFragment<?>>
+    public final static class LoadWizardFragment extends LoadingFragment<Params, MicroFragment<?>>
     {
-        private final static int DELAY_WAIT_MESSAGE = 2500;
-        private final Timestamp mTimestamp = new UiTimestamp();
-        private final Runnable mShowWaitMessage = () -> getView().findViewById(android.R.id.message).animate().alpha(1f).start();
-        private Handler mHandler = new Handler();
-        private FutureServiceConnection<WizardService> mWizardService;
-        private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
-        private FragmentTransition mFragmentTransition;
-
-
-        @Override
-        public void onCreate(@Nullable Bundle savedInstanceState)
+        public LoadWizardFragment()
         {
-            super.onCreate(savedInstanceState);
-            mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
-            mWizardService = new FutureLocalServiceConnection<>(getContext(),
-                    new Intent(
-                            new StringMeta(getContext(), mMicroFragmentEnvironment.microFragment().parameter().metaKey()).value())
-                            .setPackage(getContext().getPackageName()));
-        }
-
-
-        @Nullable
-        @Override
-        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
-        {
-            View result = inflater.inflate(R.layout.smoothsetup_microfragment_loading, container, false);
-            mHandler.postDelayed(mShowWaitMessage, DELAY_WAIT_MESSAGE);
-            return result;
-        }
-
-
-        @Override
-        public void onResume()
-        {
-            super.onResume();
-            if (mFragmentTransition != null)
-            {
-                // the operation completed in the background
-                mMicroFragmentEnvironment.host().execute(getActivity(), mFragmentTransition);
-            }
-            else
-            {
-                new ThrowingAsyncTask<Void, Void, MicroFragment<?>>(this)
-                {
-                    @Override
-                    protected MicroFragment<?> doInBackgroundWithException(Void... params) throws Exception
+            super((context, env) ->
+                            new FutureLocalServiceConnection<WizardService>(context,
+                                    new Intent(
+                                            new StringMeta(context, env.microFragment().parameter().metaKey()).value())
+                                            .setPackage(context.getPackageName()))
+                                    .service(1000)
+                                    .initialMicroFragment(context, env.microFragment().parameter().intent()),
+                    microFragmentAsyncTaskResult ->
                     {
-                        return mWizardService.service(1000).initialMicroFragment(getContext(), mMicroFragmentEnvironment.microFragment().parameter().intent());
-                    }
-                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            }
-        }
-
-
-        @Override
-        public void onDestroyView()
-        {
-            mHandler.removeCallbacks(mShowWaitMessage);
-            super.onDestroyView();
-        }
-
-
-        @Override
-        public void onDestroy()
-        {
-            mWizardService.disconnect();
-            super.onDestroy();
-        }
-
-
-        @Override
-        public void onResult(AsyncTaskResult<MicroFragment<?>> result)
-        {
-            FragmentTransition transition;
-            Context context = getContext();
-            try
-            {
-                // Go to the next step
-                // since this is always the first step and it's very fast, we don't use any animation for the transition
-                transition = new ForwardTransition<>(result.value(), mTimestamp);
-            }
-            catch (Exception e)
-            {
-                transition = new ForwardResetTransition<>(new ErrorRetryMicroFragment("Unexpected Exception:\n\n" + e.getMessage()), mTimestamp);
-            }
-            if (isResumed())
-            {
-                mMicroFragmentEnvironment.host().execute(context, transition);
-            }
-            else
-            {
-                mFragmentTransition = transition;
-            }
+                        try
+                        {
+                            return new ForwardTransition<>(microFragmentAsyncTaskResult.value());
+                        }
+                        catch (Exception e)
+                        {
+                            return new ForwardResetTransition<>(new ErrorRetryMicroFragment("Unexpected Exception:\n\n" + e.getMessage()));
+                        }
+                    });
         }
     }
+
 }
