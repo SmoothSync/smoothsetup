@@ -38,7 +38,6 @@ import com.smoothsync.smoothsetup.wizard.LoadProvider;
 import com.smoothsync.smoothsetup.wizard.LoadProviders;
 import com.smoothsync.smoothsetup.wizard.UsernameLogin;
 import com.smoothsync.smoothsetup.wizard.VerifyLogin;
-import com.smoothsync.smoothsetup.wizard.WaitForReferrer;
 
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
@@ -46,6 +45,7 @@ import org.dmfs.android.microfragments.MicroFragmentHost;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.XFaded;
 import org.dmfs.android.microwizard.MicroWizard;
+import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.optional.NullSafe;
 import org.dmfs.optional.Optional;
 
@@ -55,11 +55,24 @@ import org.dmfs.optional.Optional;
  *
  * @author Marten Gajda
  */
-public final class SetupDispatchMicroFragment implements MicroFragment<Void>
+public final class SetupDispatchMicroFragment implements MicroFragment<SetupDispatchMicroFragment.Params>
 {
-    public SetupDispatchMicroFragment()
+    public interface Params
     {
-        // nothing to do
+        Uri data();
+
+        MicroWizard<Void> next();
+    }
+
+
+    private final Uri mDataUri;
+    private final MicroWizard<Void> mNext;
+
+
+    public SetupDispatchMicroFragment(Uri dataUri, MicroWizard<Void> next)
+    {
+        mDataUri = dataUri;
+        mNext = next;
     }
 
 
@@ -82,9 +95,23 @@ public final class SetupDispatchMicroFragment implements MicroFragment<Void>
 
     @NonNull
     @Override
-    public Void parameter()
+    public Params parameter()
     {
-        return null;
+        return new Params()
+        {
+            @Override
+            public Uri data()
+            {
+                return mDataUri;
+            }
+
+
+            @Override
+            public MicroWizard<Void> next()
+            {
+                return mNext;
+            }
+        };
     }
 
 
@@ -105,6 +132,8 @@ public final class SetupDispatchMicroFragment implements MicroFragment<Void>
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
+        dest.writeParcelable(mDataUri, flags);
+        dest.writeParcelable(mNext.boxed(), flags);
     }
 
 
@@ -113,7 +142,7 @@ public final class SetupDispatchMicroFragment implements MicroFragment<Void>
         @Override
         public SetupDispatchMicroFragment createFromParcel(Parcel source)
         {
-            return new SetupDispatchMicroFragment();
+            return new SetupDispatchMicroFragment(source.readParcelable(getClass().getClassLoader()), new Unboxed<MicroWizard<Void>>(source).value());
         }
 
 
@@ -161,8 +190,8 @@ public final class SetupDispatchMicroFragment implements MicroFragment<Void>
                 }
 
                 // check if intent data has a provider id
-                Uri data = getActivity().getIntent().getData();
-                if (data != null && data.getQueryParameter(PARAM_PROVIDER) != null)
+                Uri data = new FragmentEnvironment<Params>(DispatchFragment.this).microFragment().parameter().data();
+                if (data.getAuthority() != null && data.getQueryParameter(PARAM_PROVIDER) != null)
                 {
                     launchWizard(
                             new LoadProvider(loginWizard),
@@ -199,8 +228,8 @@ public final class SetupDispatchMicroFragment implements MicroFragment<Void>
                     }
                 }
 
-                // launch wait fo the referrer broadcast
-                launchWizard(new WaitForReferrer(new LoadProvider(loginWizard), genericLogin), null);
+                // launch wait for the referrer broadcast
+                launchWizard(new FragmentEnvironment<Params>(this).microFragment().parameter().next(), null);
             });
         }
 

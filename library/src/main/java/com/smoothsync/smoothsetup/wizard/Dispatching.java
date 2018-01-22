@@ -17,7 +17,9 @@
 package com.smoothsync.smoothsetup.wizard;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.smoothsync.smoothsetup.microfragments.SetupDispatchMicroFragment;
 
@@ -30,7 +32,7 @@ import org.dmfs.android.microwizard.box.Box;
 /**
  * @author Marten Gajda
  */
-public final class Dispatching implements MicroWizard<Void>
+public final class Dispatching implements MicroWizard<Uri>
 {
     private final MicroWizard<Void> mNext;
 
@@ -42,20 +44,20 @@ public final class Dispatching implements MicroWizard<Void>
 
 
     @Override
-    public MicroFragment<?> microFragment(Context context, Void aVoid)
+    public MicroFragment<?> microFragment(@NonNull Context context, @NonNull Uri dataUri)
     {
-        return new SetupDispatchMicroFragment();
+        return new SetupDispatchMicroFragment(dataUri, mNext);
     }
 
 
     @Override
-    public Box<MicroWizard<Void>> boxed()
+    public Box<MicroWizard<Uri>> boxed()
     {
         return new WizardBox(mNext);
     }
 
 
-    private final static class WizardBox extends AbstractSingleBox<MicroWizard<Void>, MicroWizard<Void>>
+    private final static class WizardBox extends AbstractSingleBox<MicroWizard<Void>, MicroWizard<Uri>>
     {
 
         private WizardBox(MicroWizard<Void> next)
@@ -64,6 +66,6 @@ public final class Dispatching implements MicroWizard<Void>
         }
 
 
-        public final static Parcelable.Creator<Box<MicroWizard<Void>>> CREATOR = new SingleBoxableBoxCreator<>(WizardBox::new, WizardBox[]::new);
+        public final static Parcelable.Creator<Box<MicroWizard<Uri>>> CREATOR = new SingleBoxableBoxCreator<>(WizardBox::new, WizardBox[]::new);
     }
 }

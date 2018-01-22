@@ -16,6 +16,8 @@
 
 package com.smoothsync.smoothsetup.services.defaults;
 
+import android.net.Uri;
+
 import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.services.WizardService;
 import com.smoothsync.smoothsetup.services.delegating.DelegatingWizardService;
@@ -58,7 +60,7 @@ public final class DefaultAccountSetupWizardService extends DelegatingWizardServ
                             new GenericLogin(
                                     passwordWizard,
                                     new LoadProviders(
-                                            new ChooseProvider(loginWizard))))).microFragment(context, null);
+                                            new ChooseProvider(loginWizard))))).microFragment(context, intent.getData() == null ? Uri.EMPTY : intent.getData());
         });
     }
 }
