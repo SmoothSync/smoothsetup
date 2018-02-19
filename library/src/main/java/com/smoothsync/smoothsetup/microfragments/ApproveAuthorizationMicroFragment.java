@@ -254,7 +254,8 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                                 .execute(getActivity(),
                                         new XFaded(
                                                 new ForwardTransition<>(
-                                                        new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_authentication)))));
+                                                        new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_authentication), null,
+                                                                getString(R.string.smoothsetup_wizard_title_authentication_error)))));
                     }
                 }
                 catch (Exception e)
