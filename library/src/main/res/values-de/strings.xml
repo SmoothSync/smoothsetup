@@ -7,6 +7,7 @@
     <string name="smoothsetup_wizard_title_completing_setup">Fertigstellen …</string>
     <string name="smoothsetup_wizard_title_setup_completed">Glückwunsch</string>
     <string name="smoothsetup_wizard_title_error">Fehler</string>
+    <string name="smoothsetup_wizard_title_authentication_error">Anmeldefehler</string>
 
     <string name="smoothsetup_prompt_login">Gib Deine E-Mail-Adresse oder Benutzernamen ein und wähle Deinen Provider</string>
     <string name="smoothsetup_prompt_login_at_provider">Gib Deinen %1$s Benutzernamen ein</string>

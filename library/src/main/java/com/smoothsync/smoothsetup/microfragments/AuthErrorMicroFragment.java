@@ -36,6 +36,8 @@ import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.Swiped;
+import org.dmfs.android.microwizard.MicroWizard;
+import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 
 
@@ -44,7 +46,7 @@ import org.dmfs.httpessentials.exceptions.ProtocolException;
  *
  * @author Marten Gajda
  */
-public final class AuthErrorMicroFragment implements MicroFragment<Account>
+public final class AuthErrorMicroFragment implements MicroFragment<AuthErrorMicroFragment.Params>
 {
 
     public final static Creator<AuthErrorMicroFragment> CREATOR = new Creator<AuthErrorMicroFragment>()
@@ -53,7 +55,7 @@ public final class AuthErrorMicroFragment implements MicroFragment<Account>
         public AuthErrorMicroFragment createFromParcel(Parcel source)
         {
             Account account = source.readParcelable(getClass().getClassLoader());
-            return new AuthErrorMicroFragment(account);
+            return new AuthErrorMicroFragment(account, new Unboxed<MicroWizard<Account>>(source).value());
         }
 
 
@@ -64,12 +66,23 @@ public final class AuthErrorMicroFragment implements MicroFragment<Account>
         }
     };
 
+
+    interface Params
+    {
+        Account account();
+
+        MicroWizard<Account> next();
+    }
+
+
     private final Account mAccount;
+    private final MicroWizard<Account> mNext;
 
 
-    public AuthErrorMicroFragment(Account account)
+    public AuthErrorMicroFragment(Account account, MicroWizard<Account> next)
     {
         mAccount = account;
+        mNext = next;
     }
 
 
@@ -77,7 +90,7 @@ public final class AuthErrorMicroFragment implements MicroFragment<Account>
     @Override
     public String title(@NonNull Context context)
     {
-        return context.getString(R.string.smoothsetup_wizard_title_error);
+        return context.getString(R.string.smoothsetup_wizard_title_authentication_error);
     }
 
 
@@ -98,9 +111,23 @@ public final class AuthErrorMicroFragment implements MicroFragment<Account>
 
     @NonNull
     @Override
-    public Account parameter()
+    public Params parameter()
     {
-        return mAccount;
+        return new Params()
+        {
+            @Override
+            public Account account()
+            {
+                return mAccount;
+            }
+
+
+            @Override
+            public MicroWizard<Account> next()
+            {
+                return mNext;
+            }
+        };
     }
 
 
@@ -114,6 +141,8 @@ public final class AuthErrorMicroFragment implements MicroFragment<Account>
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
+        dest.writeParcelable(mAccount, flags);
+        dest.writeParcelable(mNext.boxed(), flags);
     }
 
 
@@ -123,7 +152,7 @@ public final class AuthErrorMicroFragment implements MicroFragment<Account>
     public final static class MessageFragment extends Fragment implements View.OnClickListener
     {
 
-        private Account mAccount;
+        private Params mParams;
 
 
         @Nullable
@@ -132,7 +161,7 @@ public final class AuthErrorMicroFragment implements MicroFragment<Account>
         {
             View result = inflater.inflate(R.layout.smoothsetup_microfragment_verify_password, container, false);
 
-            mAccount = new FragmentEnvironment<Account>(this).microFragment().parameter();
+            mParams = new FragmentEnvironment<Params>(this).microFragment().parameter();
 
             try
             {
@@ -141,8 +170,8 @@ public final class AuthErrorMicroFragment implements MicroFragment<Account>
                                 getString(
                                         R.string.smoothsetup_message_authentication_failure,
                                         getString(getContext().getApplicationInfo().labelRes),
-                                        mAccount.accountId(),
-                                        mAccount.provider().name()));
+                                        mParams.account().accountId(),
+                                        mParams.account().provider().name()));
             }
             catch (ProtocolException e)
             {
@@ -163,7 +192,8 @@ public final class AuthErrorMicroFragment implements MicroFragment<Account>
         {
             if (isResumed())
             {
-                //     new FragmentEnvironment<>(this).host().execute(getContext(), new Swiped(new ForwardTransition<>(new PasswordMicroFragment(mAccount, mNext))));
+                new FragmentEnvironment<>(this).host()
+                        .execute(getContext(), new Swiped(new ForwardTransition<>(mParams.next().microFragment(getActivity(), mParams.account()))));
             }
         }
     }

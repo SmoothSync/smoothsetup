@@ -18,6 +18,7 @@ package com.smoothsync.smoothsetup.services.defaults;
 
 import com.smoothsync.smoothsetup.services.WizardService;
 import com.smoothsync.smoothsetup.services.delegating.DelegatingWizardService;
+import com.smoothsync.smoothsetup.wizard.AuthError;
 import com.smoothsync.smoothsetup.wizard.Congratulations;
 import com.smoothsync.smoothsetup.wizard.CreateAccount;
 import com.smoothsync.smoothsetup.wizard.EnterPassword;
@@ -39,12 +40,13 @@ public final class DefaultPasswordUpdateWizardService extends DelegatingWizardSe
     {
         super(() -> (context, intent) ->
                 new LoadAccount(
-                        new EnterPassword(
-                                new VerifyLogin(
-                                        // TODO: replace with UpdateCredentialsWizard
-                                        new CreateAccount(
-                                                // TODO: replace with simple success message
-                                                new Congratulations()))))
+                        new AuthError(
+                                new EnterPassword(
+                                        new VerifyLogin(
+                                                // TODO: replace with UpdateCredentialsWizard
+                                                new CreateAccount(
+                                                        // TODO: replace with simple success message
+                                                        new Congratulations())))))
                         .microFragment(
                                 context,
                                 intent.getParcelableExtra(PARAM_ACCOUNT))

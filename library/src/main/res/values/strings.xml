@@ -50,6 +50,12 @@
     -->
     <string name="smoothsetup_wizard_title_error">Error</string>
 
+    <!--
+    Title of a wizard step that presents an authentication error to the user.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_authentication_error">Authentication Error</string>
+
 
     <!-- Prompts -->
 

@@ -34,7 +34,7 @@ import org.dmfs.httpessentials.executors.authorizing.AuthStrategy;
  *
  * @author Marten Gajda
  */
-public abstract class DelegatingVerificationService extends Service
+public abstract class   DelegatingVerificationService extends Service
 {
 
     private AccountServiceBinder mBinder;
