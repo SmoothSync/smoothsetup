@@ -43,7 +43,7 @@ dependencies {
     compile 'org.dmfs:rfc5545-datetime:0.2.4'
     compile 'org.dmfs:jems:' + JEMS_VERSION
     compile 'net.iharder:base64:2.3.9'
-    compile('com.github.SmoothSync:smoothsync-api-client:0.9') {
+    compile('com.github.SmoothSync:smoothsync-api-client:0.9.1') {
         exclude group: 'org.dmfs'
     }
     compile 'com.github.dmfs.MicroFragments:microwizard:0ea6ab1b6cad428217072e9b4988865ff6aa4c19'
