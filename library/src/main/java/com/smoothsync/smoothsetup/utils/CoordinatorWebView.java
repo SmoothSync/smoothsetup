@@ -24,6 +24,7 @@ import android.support.v4.view.NestedScrollingChild;
 import android.support.v4.view.NestedScrollingChildHelper;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.webkit.WebView;
 
@@ -76,8 +77,10 @@ public final class CoordinatorWebView extends WebView implements NestedScrolling
                 {
                     deltaY -= consumed[1];
                 }
-                dispatchNestedScroll(0, offsetInWindow[1], 0, deltaY, offsetInWindow);
-                return super.onTouchEvent(event);
+
+                boolean result = super.onTouchEvent(event);
+                dispatchNestedScroll(0, deltaY, 0, 0, offsetInWindow);
+                return result;
             }
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
