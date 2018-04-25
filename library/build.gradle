@@ -46,7 +46,7 @@ dependencies {
     compile('com.github.SmoothSync:smoothsync-api-client:0.9.1') {
         exclude group: 'org.dmfs'
     }
-    compile 'com.github.dmfs.MicroFragments:microwizard:0ea6ab1b6cad428217072e9b4988865ff6aa4c19'
+    compile 'com.github.dmfs.MicroFragments:microwizard:5a8b03bd1841302defb94bb69d50d3933ce7cc88'
     compile 'com.github.dmfs.Bolts:service-bolts:d4e38c020581a6bad38f0906095f968ab0501263'
     compile 'com.github.dmfs.Bolts:package-bolts:d4e38c020581a6bad38f0906095f968ab0501263'
 }
