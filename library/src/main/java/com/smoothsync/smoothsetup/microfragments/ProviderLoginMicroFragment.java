@@ -83,7 +83,7 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
     {
         try
         {
-            return mLoginInfo.provider().name();
+            return context.getString(R.string.smoothsetup_wizard_title_provider_login, mLoginInfo.provider().name());
         }
         catch (ProtocolException e)
         {

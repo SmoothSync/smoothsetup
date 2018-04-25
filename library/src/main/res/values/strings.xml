@@ -15,6 +15,13 @@
     <string name="smoothsetup_wizard_title_login">Log in</string>
 
     <!--
+    Title of the wizard step that asks the user to enter his/her user name when logging in to a specific provider.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_provider_login">%s</string>
+
+
+    <!--
     Title of the wizard step that asks the user to select a provider.
     Should not be longer than ~16 characters, since it has to fit on a single (title) line.
     -->
