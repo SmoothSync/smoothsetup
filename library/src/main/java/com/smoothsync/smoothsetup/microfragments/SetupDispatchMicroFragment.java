@@ -16,6 +16,7 @@
 
 package com.smoothsync.smoothsetup.microfragments;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -36,6 +37,7 @@ import com.smoothsync.smoothsetup.wizard.EnterPassword;
 import com.smoothsync.smoothsetup.wizard.GenericLogin;
 import com.smoothsync.smoothsetup.wizard.LoadProvider;
 import com.smoothsync.smoothsetup.wizard.LoadProviders;
+import com.smoothsync.smoothsetup.wizard.RequestPermissions;
 import com.smoothsync.smoothsetup.wizard.UsernameLogin;
 import com.smoothsync.smoothsetup.wizard.VerifyLogin;
 
@@ -46,6 +48,7 @@ import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.XFaded;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Unboxed;
+import org.dmfs.iterables.elementary.Seq;
 import org.dmfs.optional.NullSafe;
 import org.dmfs.optional.Optional;
 
@@ -173,7 +176,11 @@ public final class SetupDispatchMicroFragment implements MicroFragment<SetupDisp
             new Handler().post(() ->
             {
 
-                MicroWizard<Account> passwordWizard = new EnterPassword(new VerifyLogin(new CreateAccount(new Congratulations())));
+                MicroWizard<Account> passwordWizard = new EnterPassword(new VerifyLogin(new RequestPermissions<>(
+                        new Seq<>(Manifest.permission.READ_CALENDAR,
+                                Manifest.permission.WRITE_CALENDAR,
+                                Manifest.permission.READ_CONTACTS,
+                                Manifest.permission.WRITE_CONTACTS), new CreateAccount(new Congratulations()))));
                 MicroWizard<LoginInfo> loginWizard = new UsernameLogin(passwordWizard);
 
                 // check if meta data contains a specific provider url, if the url is hard coded, we don't allow to override it

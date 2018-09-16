@@ -64,6 +64,17 @@
     <string name="smoothsetup_wizard_title_authentication_error">Authentication Error</string>
 
 
+    <!--
+    Title of a wizard step which asks the use to grant required permissions.
+    -->
+    <plurals name="smoothsetup_wizard_title_grant_permissions">
+        <item quantity="one">Grant permission</item>
+        <item quantity="two">Grant permissions</item>
+        <item quantity="few">Grant permissions</item>
+        <item quantity="many">Grant permissions</item>
+        <item quantity="other">Grant permissions</item>
+    </plurals>
+
     <!-- Prompts -->
 
     <!--
@@ -95,6 +106,19 @@
     %1$s will be replaced with the provider name.
     -->
     <string name="smoothsetup_prompt_enter_app_specific_password">Enter your app-specific %1$s password</string>
+
+
+    <!--
+    Message which prompts the user to grant one or more permissions.
+    %1$s will be replaced with the app name
+    -->
+    <plurals name="smoothsetup_prompt_grant_permission">
+        <item quantity="one">%1$s needs the following permission in order to sync</item>
+        <item quantity="two">%1$s needs the following permissions in order to sync</item>
+        <item quantity="few">%1$s needs the following permissions in order to sync</item>
+        <item quantity="many">%1$s needs the following permissions in order to sync</item>
+        <item quantity="other">%1$s needs the following permissions in order to sync</item>
+    </plurals>
 
 
     <!-- Buttons -->
@@ -131,6 +155,10 @@
     -->
     <string name="smoothsetup_button_retry_now">Retry now</string>
 
+    <!--
+    Text on button to grant permissions
+    -->
+    <string name="smoothsetup_button_grant_permission">Grant</string>
 
     <!-- Messages -->
 

@@ -16,6 +16,7 @@
 
 package com.smoothsync.smoothsetup.services.defaults;
 
+import android.Manifest;
 import android.net.Uri;
 
 import com.smoothsync.smoothsetup.model.Account;
@@ -30,11 +31,13 @@ import com.smoothsync.smoothsetup.wizard.EnterPassword;
 import com.smoothsync.smoothsetup.wizard.GenericLogin;
 import com.smoothsync.smoothsetup.wizard.LoadProvider;
 import com.smoothsync.smoothsetup.wizard.LoadProviders;
+import com.smoothsync.smoothsetup.wizard.RequestPermissions;
 import com.smoothsync.smoothsetup.wizard.UsernameLogin;
 import com.smoothsync.smoothsetup.wizard.VerifyLogin;
 import com.smoothsync.smoothsetup.wizard.WaitForReferrer;
 
 import org.dmfs.android.microwizard.MicroWizard;
+import org.dmfs.iterables.elementary.Seq;
 
 
 /**
@@ -51,8 +54,13 @@ public final class DefaultAccountSetupWizardService extends DelegatingWizardServ
             MicroWizard<Account> passwordWizard =
                     new EnterPassword(
                             new VerifyLogin(
-                                    new CreateAccount(
-                                            new Congratulations())));
+                                    new RequestPermissions<>(
+                                            new Seq<>(Manifest.permission.READ_CALENDAR,
+                                                    Manifest.permission.WRITE_CALENDAR,
+                                                    Manifest.permission.READ_CONTACTS,
+                                                    Manifest.permission.WRITE_CONTACTS),
+                                            new CreateAccount(
+                                                    new Congratulations()))));
             MicroWizard<LoginInfo> loginWizard = new UsernameLogin(passwordWizard);
             return new Dispatching(
                     new WaitForReferrer(

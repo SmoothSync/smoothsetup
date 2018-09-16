@@ -84,7 +84,7 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
     {
         View result = inflater.inflate(R.layout.smoothsetup_microfragment_login, container, false);
 
-        mLogin = (AutoCompleteTextView) result.findViewById(android.R.id.input);
+        mLogin = result.findViewById(android.R.id.input);
 
         LoginFormAdapterFactory loginFormAdapterFactory = mMicroFragmentEnvironment.microFragment().parameter().loginFormAdapterFactory();
         AbstractAutoCompleteAdapter autoCompleteAdapter = loginFormAdapterFactory.autoCompleteAdapter(getContext(), new SmoothSyncApiProxy(mApiService));
@@ -98,7 +98,7 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
             mLogin.setSelection(start, end);
         }));
 
-        RecyclerView list = (RecyclerView) result.findViewById(android.R.id.list);
+        RecyclerView list = result.findViewById(android.R.id.list);
 
         list.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());

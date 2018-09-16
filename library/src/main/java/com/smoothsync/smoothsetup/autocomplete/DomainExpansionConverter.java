@@ -16,7 +16,7 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
-import org.dmfs.iterators.Function;
+import org.dmfs.jems.function.Function;
 
 
 /**
@@ -72,7 +72,7 @@ public final class DomainExpansionConverter implements Function<String, String>
 
 
     @Override
-    public String apply(String pattern)
+    public String value(String pattern)
     {
         if (pattern.charAt(0) != '*' && pattern.startsWith(mDomain))
         {

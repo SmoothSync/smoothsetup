@@ -62,7 +62,9 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
         @Override
         public ChooseProviderMicroFragment createFromParcel(Parcel source)
         {
-            Provider[] providers = (ParcelableProvider[]) source.readParcelableArray(getClass().getClassLoader());
+            Parcelable[] providers = source.readParcelableArray(getClass().getClassLoader());
+            ParcelableProvider[] parcelableProviders = new ParcelableProvider[providers.length];
+            System.arraycopy(providers, 0, parcelableProviders, 0, providers.length);
             Optional<String> username = new NullSafe<>(source.readString());
             return new ChooseProviderMicroFragment(
                     new ProviderSelection()
@@ -71,7 +73,7 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
                         @Override
                         public Provider[] providers()
                         {
-                            return providers;
+                            return parcelableProviders;
                         }
 
 

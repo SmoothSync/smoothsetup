@@ -8,12 +8,26 @@
     <string name="smoothsetup_wizard_title_setup_completed">Glückwunsch</string>
     <string name="smoothsetup_wizard_title_error">Fehler</string>
     <string name="smoothsetup_wizard_title_authentication_error">Anmeldefehler</string>
+    <plurals name="smoothsetup_wizard_title_grant_permissions">
+        <item quantity="one">Berechtigung erteilen</item>
+        <item quantity="two">Berechtigungen erteilen</item>
+        <item quantity="few">Berechtigungen erteilen</item>
+        <item quantity="many">Berechtigungen erteilen</item>
+        <item quantity="other">Berechtigungen erteilen</item>
+    </plurals>
 
     <string name="smoothsetup_prompt_login">Gib Deine E-Mail-Adresse oder Benutzernamen ein und wähle Deinen Provider</string>
     <string name="smoothsetup_prompt_login_at_provider">Gib Deinen %1$s Benutzernamen ein</string>
     <string name="smoothsetup_prompt_enter_password">Gib Dein %1$s Passwort ein</string>
     <string name="smoothsetup_prompt_enter_password_or_app_specific_password">Gib Dein %1$s Passwort oder Dein anwendungsspezifisches %1$s Passwort ein</string>
     <string name="smoothsetup_prompt_enter_app_specific_password">Gib Dein anwendungsspezifisches %1$s Passwort ein</string>
+    <plurals name="smoothsetup_prompt_grant_permission">
+        <item quantity="one">%1$s benötigt die folgende Berechtigung um synchronisieren zu können</item>
+        <item quantity="two">%1$s benötigt die folgenden Berechtigungen um synchronisieren zu können</item>
+        <item quantity="few">%1$s benötigt die folgenden Berechtigungen um synchronisieren zu können</item>
+        <item quantity="many">%1$s benötigt die folgenden Berechtigungen um synchronisieren zu können</item>
+        <item quantity="other">%1$s benötigt die folgenden Berechtigungen um synchronisieren zu können</item>
+    </plurals>
 
     <string name="smoothsetup_button_choose_provider">Provider wählen</string>
     <string name="smoothsetup_button_other_provider">Anderer Provider</string>
@@ -41,4 +55,6 @@
     <string name="smoothsetup_app_specific_password_inserted">Anwendungsspezifisches Passwort eingefügt</string>
     <string name="smoothsetup_snackbar_found_app_specific_password">Anwendungsspezifisches Passwort gefunden: %1$s</string>
     <string name="smoothsetup_message_authentication_failure">%1$s konnte sich bei %3$s nicht mit Deinem Konto \"%2$s\" anmelden.\n\nBitte melde Dich an um %1$s zu autorisieren dein Konto zu synchronisieren.</string>
+    <string name="smoothsetup_button_grant_permission">Erlauben</string>
+    <string name="smoothsetup_wizard_title_provider_login">%s</string>
 </resources>

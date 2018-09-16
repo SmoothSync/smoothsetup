@@ -16,6 +16,7 @@
 
 package com.smoothsync.smoothsetup.microfragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -237,21 +238,22 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
         @Override
         public void onResult(final AsyncTaskResult<Boolean> result)
         {
-            if (isResumed())
+            Activity activity = getActivity();
+            if (isResumed() && activity != null)
             {
                 try
                 {
                     if (result.value())
                     {
                         mMicroFragmentEnvironment.host()
-                                .execute(getActivity(),
+                                .execute(activity,
                                         new XFaded(
-                                                new ForwardTransition<>(mParams.next().microFragment(getActivity(), mParams.accountDetails()))));
+                                                new ForwardTransition<>(mParams.next().microFragment(activity, mParams.accountDetails()))));
                     }
                     else
                     {
                         mMicroFragmentEnvironment.host()
-                                .execute(getActivity(),
+                                .execute(activity,
                                         new XFaded(
                                                 new ForwardTransition<>(
                                                         new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_authentication), null,
@@ -261,7 +263,7 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                 catch (Exception e)
                 {
                     mMicroFragmentEnvironment.host()
-                            .execute(getActivity(),
+                            .execute(activity,
                                     new XFaded(
                                             new ForwardTransition<>(
                                                     new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_network)))));

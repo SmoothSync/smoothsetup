@@ -28,7 +28,7 @@
             android:hint="@string/smoothsetup_default_login_hint"
             android:padding="12dp">
 
-        <AutoCompleteTextView
+        <android.support.v7.widget.AppCompatAutoCompleteTextView
                 android:id="@android:id/input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
                 android:inputType="textEmailAddress">
 
             <requestFocus/>
-        </AutoCompleteTextView>
+        </android.support.v7.widget.AppCompatAutoCompleteTextView>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.v7.widget.RecyclerView

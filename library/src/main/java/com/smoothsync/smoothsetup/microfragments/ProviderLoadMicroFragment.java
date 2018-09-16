@@ -32,6 +32,7 @@ import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.ProviderLoadTask;
 import com.smoothsync.smoothsetup.R;
+import com.smoothsync.smoothsetup.model.ParcelableProvider;
 import com.smoothsync.smoothsetup.services.FutureApiServiceConnection;
 import com.smoothsync.smoothsetup.services.SmoothSyncApiProxy;
 import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
@@ -51,6 +52,8 @@ import org.dmfs.android.microfragments.transitions.XFaded;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Box;
 import org.dmfs.android.microwizard.box.Unboxed;
+import org.dmfs.jems.single.combined.Backed;
+import org.dmfs.optional.NullSafe;
 import org.dmfs.optional.Optional;
 
 
@@ -277,7 +280,58 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
         @Override
         public Box<LoginInfo> boxed()
         {
-            return null;
+            return new LoginInfoBox(this);
         }
+    }
+
+
+    private final static class LoginInfoBox implements Box<LoginInfo>
+    {
+        private final LoginInfo mLoginInfo;
+
+
+        private LoginInfoBox(LoginInfo loginInfo)
+        {
+            mLoginInfo = loginInfo;
+        }
+
+
+        @Override
+        public int describeContents()
+        {
+            return 0;
+        }
+
+
+        @Override
+        public void writeToParcel(Parcel parcel, int i)
+        {
+            parcel.writeParcelable(new ParcelableProvider(mLoginInfo.provider()), i);
+            parcel.writeString(new Backed<String>(mLoginInfo.username(), () -> null).value());
+        }
+
+
+        @Override
+        public LoginInfo value()
+        {
+            return mLoginInfo;
+        }
+
+
+        public final static Creator<LoginInfoBox> CREATOR = new Creator<LoginInfoBox>()
+        {
+            @Override
+            public LoginInfoBox createFromParcel(Parcel parcel)
+            {
+                return new LoginInfoBox(new SimpleProviderInfo(parcel.readParcelable(getClass().getClassLoader()), new NullSafe<>(parcel.readString())));
+            }
+
+
+            @Override
+            public LoginInfoBox[] newArray(int i)
+            {
+                return new LoginInfoBox[i];
+            }
+        };
     }
 }

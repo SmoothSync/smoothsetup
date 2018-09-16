@@ -36,7 +36,8 @@ public final class AutoCompleteArrayIterable extends DelegatingIterable<String>
     {
         super(new Fluent<>(new Seq<>(autoCompleteDomains))
                 .filtered(element -> !element.startsWith("@"))
-                .mapped(new DomainExpansionConverter(domainPart))
+                // TODO: replace with new fluent to allow using the new function directly
+                .mapped(s -> new DomainExpansionConverter(domainPart).value(s))
                 .filtered(NonNull.instance())
                 .mapped(new LocalPartConverter(localPart)));
     }
