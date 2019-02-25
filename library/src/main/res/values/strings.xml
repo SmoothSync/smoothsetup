@@ -113,11 +113,11 @@
     %1$s will be replaced with the app name
     -->
     <plurals name="smoothsetup_prompt_grant_permission">
-        <item quantity="one">%1$s needs the following permission in order to sync</item>
-        <item quantity="two">%1$s needs the following permissions in order to sync</item>
-        <item quantity="few">%1$s needs the following permissions in order to sync</item>
-        <item quantity="many">%1$s needs the following permissions in order to sync</item>
-        <item quantity="other">%1$s needs the following permissions in order to sync</item>
+        <item quantity="one">Please grant the following permission</item>
+        <item quantity="two">Please grant the following permissions</item>
+        <item quantity="few">Please grant the following permissions</item>
+        <item quantity="many">Please grant the following permissions</item>
+        <item quantity="other">Please grant the following permissions</item>
     </plurals>
 
 

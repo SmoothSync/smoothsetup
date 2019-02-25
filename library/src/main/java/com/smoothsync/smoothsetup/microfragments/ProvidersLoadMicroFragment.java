@@ -42,6 +42,8 @@ import org.dmfs.android.microfragments.MicroFragmentHost;
 import org.dmfs.android.microfragments.Timestamp;
 import org.dmfs.android.microfragments.timestamps.UiTimestamp;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;
+import org.dmfs.android.microfragments.transitions.FragmentTransition;
+import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.android.microfragments.transitions.XFaded;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Unboxed;
@@ -53,6 +55,8 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 
 /**
@@ -235,29 +239,33 @@ public final class ProvidersLoadMicroFragment implements MicroFragment<Providers
             try
             {
                 List<Provider> providers = result.value();
+
+                FragmentTransition transition = new ForwardTransition<>(
+                        mMicroFragmentEnvironment.microFragment().parameter().next().microFragment(
+                                getActivity(),
+                                new ChooseProviderMicroFragment.ProviderSelection()
+                                {
+                                    @NonNull
+                                    @Override
+                                    public Provider[] providers()
+                                    {
+                                        return providers.toArray(new Provider[providers.size()]);
+                                    }
+
+
+                                    @NonNull
+                                    @Override
+                                    public Optional<String> username()
+                                    {
+                                        return mMicroFragmentEnvironment.microFragment().parameter().username();
+                                    }
+                                }
+                        ));
+
                 mMicroFragmentEnvironment.host().execute(getActivity(),
-                        new XFaded(
-                                new ForwardTransition<>(
-                                        mMicroFragmentEnvironment.microFragment().parameter().next().microFragment(
-                                                getActivity(),
-                                                new ChooseProviderMicroFragment.ProviderSelection()
-                                                {
-                                                    @NonNull
-                                                    @Override
-                                                    public Provider[] providers()
-                                                    {
-                                                        return providers.toArray(new Provider[providers.size()]);
-                                                    }
-
-
-                                                    @NonNull
-                                                    @Override
-                                                    public Optional<String> username()
-                                                    {
-                                                        return mMicroFragmentEnvironment.microFragment().parameter().username();
-                                                    }
-                                                }
-                                        ))));
+                        // if we were quick, swipe, otherwise fade
+                        mTimestamp.nanoSeconds() + MILLISECONDS.toNanos(200) < System.nanoTime() ?
+                                new XFaded(transition) : new Swiped(transition));
             }
             catch (Exception e)
             {

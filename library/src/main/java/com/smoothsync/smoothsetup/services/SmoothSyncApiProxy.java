@@ -49,8 +49,8 @@ public final class SmoothSyncApiProxy implements SmoothSyncApi
     {
         try
         {
-            // Note, if the service takes longer than 2 seconds to connect there is something wrong
-            return mConnection.service(2 * 1000L).resultOf(smoothSyncApiRequest);
+            // Note, if the service takes longer than 5 seconds to connect there is something wrong
+            return mConnection.service(5 * 1000L).resultOf(smoothSyncApiRequest);
         }
         catch (InterruptedException e)
         {

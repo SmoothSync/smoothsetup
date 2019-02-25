@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,9 +30,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
+import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.microfragments.appspecificpassword.AppSpecificWebviewFragment;
 import com.smoothsync.smoothsetup.model.Account;
+import com.smoothsync.smoothsetup.restrictions.AccountRestriction;
+import com.smoothsync.smoothsetup.restrictions.ProviderAccountRestrictions;
 import com.smoothsync.smoothsetup.utils.AccountDetails;
 import com.smoothsync.smoothsetup.utils.Default;
 import com.smoothsync.smoothsetup.utils.Related;
@@ -49,6 +54,9 @@ import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
 import org.dmfs.jems.iterator.decorators.Mapped;
+import org.dmfs.jems.optional.decorators.MapCollapsed;
+import org.dmfs.optional.First;
+import org.dmfs.optional.Optional;
 import org.dmfs.pigeonpost.Dovecote;
 import org.dmfs.pigeonpost.localbroadcast.ParcelableDovecote;
 
@@ -210,6 +218,36 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
                 }
             });
 
+            Provider provider = mMicroFragmentEnvironment.microFragment().parameter().account().provider();
+            try
+            {
+                String providerId = provider.id();
+                Optional<UserCredentials> credentialsRestrictions = new MapCollapsed<>(
+                        AccountRestriction::credentials,
+                        new First<>(
+                                new ProviderAccountRestrictions(getActivity(), providerId)));
+
+                if (credentialsRestrictions.isPresent() && credentialsRestrictions.value().password().length() > 0)
+                {
+                    // can't override any restriction for this account
+                    mPassword.setText(credentialsRestrictions.value().password());
+                    mPassword.setEnabled(false);
+                    TextInputLayout til = result.findViewById(R.id.text_input_layout);
+                    til.setHelperText("Provided by Managed Profile ");
+                    til.setEnabled(false);
+                    // fast forward view
+          //          result.post(() -> authenticate(credentialsRestrictions.value().password().toString()));
+                }
+                else
+                {
+                    Log.i("LoginFragment", "no restrictions found");
+                }
+            }
+            catch (Exception e)
+            {
+                Log.e("LoginFragment", "error reading profile", e);
+            }
+
             mButton.setEnabled(!mPassword.getText().toString().isEmpty());
             try
             {
@@ -281,48 +319,7 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
             {
                 if (id == R.id.button)
                 {
-                    // verify entered password
-                    mMicroFragmentEnvironment.host()
-                            .execute(getActivity(),
-                                    new Swiped(new ForwardTransition<>(
-                                            mParams.next().microFragment(
-                                                    getActivity(),
-                                                    new AccountDetails()
-                                                    {
-                                                        @Override
-                                                        public Account account()
-                                                        {
-                                                            return mParams.account();
-                                                        }
-
-
-                                                        @Override
-                                                        public UserCredentials credentials()
-                                                        {
-                                                            return new UserCredentials()
-                                                            {
-                                                                @Override
-                                                                public CharSequence userName()
-                                                                {
-                                                                    return mParams.account().accountId();
-                                                                }
-
-
-                                                                @Override
-                                                                public CharSequence password()
-                                                                {
-                                                                    return mPassword.getText().toString();
-                                                                }
-                                                            };
-                                                        }
-
-
-                                                        @Override
-                                                        public Box<AccountDetails> boxed()
-                                                        {
-                                                            return new AccountDetailsBox(this);
-                                                        }
-                                                    }))));
+                    authenticate(mPassword.getText().toString());
                 }
                 else if (id == R.id.smoothsetup_forgot_password)
                 {
@@ -341,6 +338,53 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
                                         new ForwardTransition<>(
                                                 new ErrorRetryMicroFragment(e.getMessage()))));
             }
+        }
+
+
+        private void authenticate(String password)
+        {
+            // verify entered password
+            mMicroFragmentEnvironment.host()
+                    .execute(getActivity(),
+                            new Swiped(new ForwardTransition<>(
+                                    mParams.next().microFragment(
+                                            getActivity(),
+                                            new AccountDetails()
+                                            {
+                                                @Override
+                                                public Account account()
+                                                {
+                                                    return mParams.account();
+                                                }
+
+
+                                                @Override
+                                                public UserCredentials credentials()
+                                                {
+                                                    return new UserCredentials()
+                                                    {
+                                                        @Override
+                                                        public CharSequence userName()
+                                                        {
+                                                            return mParams.account().accountId();
+                                                        }
+
+
+                                                        @Override
+                                                        public CharSequence password()
+                                                        {
+                                                            return password;
+                                                        }
+                                                    };
+                                                }
+
+
+                                                @Override
+                                                public Box<AccountDetails> boxed()
+                                                {
+                                                    return new AccountDetailsBox(this);
+                                                }
+                                            }))));
         }
 
 
