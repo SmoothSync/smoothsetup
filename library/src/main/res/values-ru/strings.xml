@@ -18,7 +18,6 @@
     <string name="smoothsetup_button_other_provider">Другой провайдер</string>
     <string name="smoothsetup_button_login_next">Дальше</string>
     <string name="smoothsetup_button_sign_in">Войти</string>
-    <string name="smoothsetup_button_finish_setup">Закончить настройки</string>
     <string name="smoothsetup_button_retry_now">Попробовать еще раз</string>
 
     <string name="smoothsetup_message_setup_completed">%1$s установлено и скоро будет произведена синхронизация</string>

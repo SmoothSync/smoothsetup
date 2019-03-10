@@ -33,14 +33,13 @@
     <string name="smoothsetup_button_other_provider">Anderer Provider</string>
     <string name="smoothsetup_button_login_next">Weiter</string>
     <string name="smoothsetup_button_sign_in">Anmelden</string>
-    <string name="smoothsetup_button_finish_setup">Setup beenden</string>
     <string name="smoothsetup_button_retry_now">Erneut versuchen</string>
 
     <string name="smoothsetup_message_setup_completed">%1$s ist jetzt eingerichtet und die Synchronisation beginnt in Kürze</string>
     <string name="smoothsetup_message_please_wait">Dies kann bis zu 2 Minuten dauern.</string>
 
     <string name="smoothsetup_error_load_provider">Konnte Providerdaten nicht laden.\n\nBitte prüfe die Internetverbindung oder versuche es später noch einmal.</string>
-    <string name="smoothsetup_error_authentication">Anmeldung fehlgeschlagen.\n\nBitte prüfe dein Passwort und versuche es erneut.</string>
+    <string name="smoothsetup_error_authentication">Anmeldung fehlgeschlagen.\n\nBitte prüfe Dein Passwort und versuche es erneut.</string>
     <string name="smoothsetup_error_network">Verbindung fehlgeschlagen.\n\nBitte prüfe die Internetverbindung oder versuche es später noch einmal.</string>
 
     <string name="smoothsetup_default_login_hint">E-Mail oder Benutzername</string>
@@ -57,4 +56,6 @@
     <string name="smoothsetup_message_authentication_failure">%1$s konnte sich bei %3$s nicht mit Deinem Konto \"%2$s\" anmelden.\n\nBitte melde Dich an um %1$s zu autorisieren dein Konto zu synchronisieren.</string>
     <string name="smoothsetup_button_grant_permission">Erlauben</string>
     <string name="smoothsetup_wizard_title_provider_login">%s</string>
+    <string name="smoothsetup_button_close">Schließen</string>
+    <string name="smoothsetup_message_auth_completed">%1$s hat Dein Konto erfolgreich verifiziert und die Synchronisation wird in Kürze fortgesetzt</string>
 </resources>

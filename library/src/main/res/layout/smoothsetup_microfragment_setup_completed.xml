@@ -17,5 +17,5 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="@string/smoothsetup_button_finish_setup"/>
+            android:text="@string/smoothsetup_button_close"/>
 </LinearLayout>

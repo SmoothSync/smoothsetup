@@ -146,11 +146,6 @@
     <string name="smoothsetup_button_sign_in">Sign in</string>
 
     <!--
-    Text on a button to close the activity after a successful account setup.
-    -->
-    <string name="smoothsetup_button_finish_setup">Finish setup</string>
-
-    <!--
     Text on the button under an error page that takes the user back to the previous step.
     -->
     <string name="smoothsetup_button_retry_now">Retry now</string>
@@ -160,6 +155,11 @@
     -->
     <string name="smoothsetup_button_grant_permission">Grant</string>
 
+    <!--
+    Text on a button to close the activity after a successful account setup.
+    -->
+    <string name="smoothsetup_button_close">Close</string>
+
     <!-- Messages -->
 
     <!--
@@ -167,6 +167,12 @@
     %1$s will be replaced with the app name.
     -->
     <string name="smoothsetup_message_setup_completed">%1$s is now set up and synchronization will start shortly</string>
+
+    <!--
+    Message that's shown to the user his/her credentials haven been validated successfully.
+    %1$s will be replaced with the app name.
+    -->
+    <string name="smoothsetup_message_auth_completed">%1$s has successfully validated your account and synchronization will continue shortly</string>
 
     <!--
     Message that's faded in if a blocking operation (usually a network operation) takes longer than a few seconds.
@@ -261,5 +267,6 @@
     Title of a Snackbar message to inform the user that the previously found app-specific password has been inserted into the password field.
     -->
     <string name="smoothsetup_app_specific_password_inserted">App-specific password inserted</string>
+
 
 </resources>

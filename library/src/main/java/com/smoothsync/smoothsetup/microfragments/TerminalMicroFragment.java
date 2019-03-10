@@ -30,34 +30,42 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.smoothsync.smoothsetup.R;
-import com.smoothsync.smoothsetup.model.Account;
-import com.smoothsync.smoothsetup.utils.AppLabel;
 
+import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
-import org.dmfs.android.microwizard.box.FactoryBox;
 
 
 /**
- * A {@link MicroFragment} that shows a "setup complete" message.
+ * A {@link MicroFragment} that shows a "complete" message.
  *
  * @author Marten Gajda
  */
-public final class SetupCompleteMicroFragment implements MicroFragment<Void>
+public final class TerminalMicroFragment implements MicroFragment<String>
 {
 
-    public final static Creator<SetupCompleteMicroFragment> CREATOR = new FactoryBox.FactoryBoxCreator<>(SetupCompleteMicroFragment::new,
-            SetupCompleteMicroFragment[]::new);
-
-
-    private SetupCompleteMicroFragment()
+    public final static Creator<TerminalMicroFragment> CREATOR = new Creator<TerminalMicroFragment>()
     {
-    }
+        @Override
+        public TerminalMicroFragment createFromParcel(Parcel parcel)
+        {
+            return new TerminalMicroFragment(parcel.readString());
+        }
 
 
-    public SetupCompleteMicroFragment(Account account)
+        @Override
+        public TerminalMicroFragment[] newArray(int i)
+        {
+            return new TerminalMicroFragment[i];
+        }
+    };
+
+    private final String mMessage;
+
+
+    public TerminalMicroFragment(String message)
     {
-        // nothing to do here
+        mMessage = message;
     }
 
 
@@ -86,9 +94,9 @@ public final class SetupCompleteMicroFragment implements MicroFragment<Void>
 
     @NonNull
     @Override
-    public Void parameter()
+    public String parameter()
     {
-        return null;
+        return mMessage;
     }
 
 
@@ -102,6 +110,7 @@ public final class SetupCompleteMicroFragment implements MicroFragment<Void>
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
+        dest.writeString(mMessage);
     }
 
 
@@ -116,10 +125,9 @@ public final class SetupCompleteMicroFragment implements MicroFragment<Void>
         {
             View result = inflater.inflate(R.layout.smoothsetup_microfragment_setup_completed, container, false);
 
-            ((TextView) result.findViewById(android.R.id.message))
-                    .setText(getString(R.string.smoothsetup_message_setup_completed, new AppLabel(getActivity()).value()));
+            ((TextView) result.findViewById(android.R.id.message)).setText(new FragmentEnvironment<String>(this).microFragment().parameter());
 
-            Button button = ((Button) result.findViewById(android.R.id.button1));
+            Button button = result.findViewById(android.R.id.button1);
             button.setOnClickListener(v ->
             {
                 Activity activity = getActivity();

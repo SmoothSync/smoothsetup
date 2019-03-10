@@ -26,6 +26,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 
+import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.utils.LoginInfo;
 import com.smoothsync.smoothsetup.utils.SimpleLoginRequest;
@@ -180,7 +181,7 @@ public final class SetupDispatchMicroFragment implements MicroFragment<SetupDisp
                         new Seq<>(Manifest.permission.READ_CALENDAR,
                                 Manifest.permission.WRITE_CALENDAR,
                                 Manifest.permission.READ_CONTACTS,
-                                Manifest.permission.WRITE_CONTACTS), new CreateAccount(new Congratulations()))));
+                                Manifest.permission.WRITE_CONTACTS), new CreateAccount(new Congratulations(R.string.smoothsetup_message_setup_completed)))));
                 MicroWizard<LoginInfo> loginWizard = new UsernameLogin(passwordWizard);
 
                 // check if meta data contains a specific provider url, if the url is hard coded, we don't allow to override it

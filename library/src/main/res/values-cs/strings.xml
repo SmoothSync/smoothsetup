@@ -111,7 +111,6 @@
     <!--
     Text on a button to close the activity after a successful account setup.
     -->
-    <string name="smoothsetup_button_finish_setup">Ukončit nastavení</string>
 
     <!--
     Text on the button under an error page that takes the user back to the previous step.

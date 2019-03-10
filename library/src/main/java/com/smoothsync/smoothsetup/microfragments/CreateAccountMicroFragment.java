@@ -58,7 +58,7 @@ import org.dmfs.android.microwizard.box.Unboxed;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-public final class CreateAccountMicroFragment implements MicroFragment<AccountDetails>
+public final class CreateAccountMicroFragment implements MicroFragment<CreateAccountMicroFragment.Params>
 {
     public final static Creator<CreateAccountMicroFragment> CREATOR = new Creator<CreateAccountMicroFragment>()
     {
@@ -75,6 +75,16 @@ public final class CreateAccountMicroFragment implements MicroFragment<AccountDe
             return new CreateAccountMicroFragment[size];
         }
     };
+
+
+    public interface Params
+    {
+        AccountDetails accountDetails();
+
+        MicroWizard<Account> next();
+    }
+
+
     private final AccountDetails mAccountDetails;
     private final MicroWizard<Account> mNext;
 
@@ -111,9 +121,23 @@ public final class CreateAccountMicroFragment implements MicroFragment<AccountDe
 
     @NonNull
     @Override
-    public AccountDetails parameter()
+    public Params parameter()
     {
-        return mAccountDetails;
+        return new Params()
+        {
+            @Override
+            public AccountDetails accountDetails()
+            {
+                return mAccountDetails;
+            }
+
+
+            @Override
+            public MicroWizard<Account> next()
+            {
+                return mNext;
+            }
+        };
     }
 
 
@@ -139,7 +163,7 @@ public final class CreateAccountMicroFragment implements MicroFragment<AccountDe
         private final Runnable mShowWaitMessage = () -> getView().findViewById(android.R.id.message).animate().alpha(1f).start();
         private Handler mHandler = new Handler();
         private FutureServiceConnection<AccountService> mAccountService;
-        private MicroFragmentEnvironment<AccountDetails> mMicroFragmentEnvironment;
+        private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
         private AccountDetails mAccountDetails;
         private FragmentTransition mFragmentTransition;
 
@@ -153,7 +177,7 @@ public final class CreateAccountMicroFragment implements MicroFragment<AccountDe
                     new Intent("com.smoothsync.action.ACCOUNT_SERVICE").setPackage(getContext().getPackageName()),
                     AccountService.Stub::asInterface);
             mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
-            mAccountDetails = mMicroFragmentEnvironment.microFragment().parameter();
+            mAccountDetails = mMicroFragmentEnvironment.microFragment().parameter().accountDetails();
         }
 
 
@@ -224,7 +248,10 @@ public final class CreateAccountMicroFragment implements MicroFragment<AccountDe
                 context.getSharedPreferences("com.smoothsync.smoothsetup.prefs", 0).edit().putString("referrer", null).apply();
 
                 // Go to the next step, but reset the back stack, so there is no way back.
-                transition = new Swiped(new ForwardResetTransition<>(new SetupCompleteMicroFragment(mAccountDetails.account()), mTimestamp));
+                transition = new Swiped(
+                        new ForwardResetTransition<>(
+                                mMicroFragmentEnvironment.microFragment().parameter().next().microFragment(context, mAccountDetails.account()),
+                                mTimestamp));
             }
             catch (Exception e)
             {

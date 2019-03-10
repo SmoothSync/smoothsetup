@@ -19,6 +19,7 @@ package com.smoothsync.smoothsetup.services.defaults;
 import android.Manifest;
 import android.net.Uri;
 
+import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.services.WizardService;
 import com.smoothsync.smoothsetup.services.delegating.DelegatingWizardService;
@@ -60,7 +61,7 @@ public final class DefaultAccountSetupWizardService extends DelegatingWizardServ
                                                     Manifest.permission.READ_CONTACTS,
                                                     Manifest.permission.WRITE_CONTACTS),
                                             new CreateAccount(
-                                                    new Congratulations()))));
+                                                    new Congratulations(R.string.smoothsetup_message_setup_completed)))));
             MicroWizard<LoginInfo> loginWizard = new UsernameLogin(passwordWizard);
             return new Dispatching(
                     new WaitForReferrer(

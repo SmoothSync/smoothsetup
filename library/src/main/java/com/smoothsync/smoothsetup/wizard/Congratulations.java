@@ -17,14 +17,15 @@
 package com.smoothsync.smoothsetup.wizard;
 
 import android.content.Context;
+import android.os.Parcel;
 
-import com.smoothsync.smoothsetup.microfragments.SetupCompleteMicroFragment;
+import com.smoothsync.smoothsetup.microfragments.TerminalMicroFragment;
 import com.smoothsync.smoothsetup.model.Account;
+import com.smoothsync.smoothsetup.utils.AppLabel;
 
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Box;
-import org.dmfs.android.microwizard.box.FactoryBox;
 
 
 /**
@@ -34,28 +35,75 @@ import org.dmfs.android.microwizard.box.FactoryBox;
  */
 public final class Congratulations implements MicroWizard<Account>
 {
+    private final int mMessageResource;
+
+
+    public Congratulations(int messageResource)
+    {
+        mMessageResource = messageResource;
+    }
+
+
     @Override
     public MicroFragment<?> microFragment(Context context, Account account)
     {
-        return new SetupCompleteMicroFragment(account);
+        return new TerminalMicroFragment(context.getString(mMessageResource, new AppLabel(context).value()));
     }
 
 
     @Override
     public Box<MicroWizard<Account>> boxed()
     {
-        return new WizardBox();
+        return new WizardBox(mMessageResource);
     }
 
 
-    private final static class WizardBox extends FactoryBox<MicroWizard<Account>>
+    private final static class WizardBox implements Box<MicroWizard<Account>>
     {
-        public WizardBox()
+        private final int mMessageResource;
+
+
+        public WizardBox(int messageResource)
         {
-            super(Congratulations::new);
+            mMessageResource = messageResource;
         }
 
 
-        public final static Creator<WizardBox> CREATOR = new FactoryBox.FactoryBoxCreator<>(WizardBox::new, WizardBox[]::new);
+        @Override
+        public int describeContents()
+        {
+            return 0;
+        }
+
+
+        @Override
+        public void writeToParcel(Parcel parcel, int i)
+        {
+            parcel.writeInt(mMessageResource);
+        }
+
+
+        @Override
+        public MicroWizard<Account> value()
+        {
+            return new Congratulations(mMessageResource);
+        }
+
+
+        public final static Creator<WizardBox> CREATOR = new Creator<WizardBox>()
+        {
+            @Override
+            public WizardBox createFromParcel(Parcel parcel)
+            {
+                return new WizardBox(parcel.readInt());
+            }
+
+
+            @Override
+            public WizardBox[] newArray(int i)
+            {
+                return new WizardBox[i];
+            }
+        };
     }
 }
