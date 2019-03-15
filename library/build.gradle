@@ -26,27 +26,28 @@ android {
 
 dependencies {
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:' + SUPPORT_LIBRARY_VERSION
-    compile 'com.android.support:design:' + SUPPORT_LIBRARY_VERSION
-    compile 'com.android.support:percent:' + SUPPORT_LIBRARY_VERSION
-    compile 'com.android.support:support-v4:' + SUPPORT_LIBRARY_VERSION
-    compile 'com.android.support:recyclerview-v7:' + SUPPORT_LIBRARY_VERSION
-    compile 'org.dmfs:http-client-essentials:' + HTTP_CLIENT_ESSENTIALS_VERSION
-    compile 'org.dmfs:http-client-types:' + HTTP_CLIENT_ESSENTIALS_VERSION
-    compile 'org.dmfs:http-client-basics:' + HTTP_CLIENT_ESSENTIALS_VERSION
-    compile 'org.dmfs:http-client-headers:' + HTTP_CLIENT_ESSENTIALS_VERSION
-    compile 'org.dmfs:http-executor-decorators:' + HTTP_CLIENT_ESSENTIALS_VERSION
-    compile 'org.dmfs:httpurlconnection-executor:' + HTTP_CLIENT_ESSENTIALS_VERSION
+    implementation 'com.android.support:appcompat-v7:' + SUPPORT_LIBRARY_VERSION
+    implementation 'com.android.support:design:' + SUPPORT_LIBRARY_VERSION
+    implementation 'com.android.support:percent:' + SUPPORT_LIBRARY_VERSION
+    implementation 'com.android.support:support-v4:' + SUPPORT_LIBRARY_VERSION
+    implementation 'com.android.support:recyclerview-v7:' + SUPPORT_LIBRARY_VERSION
+    implementation 'org.dmfs:http-client-essentials:' + HTTP_CLIENT_ESSENTIALS_VERSION
+    implementation 'org.dmfs:http-client-types:' + HTTP_CLIENT_ESSENTIALS_VERSION
+    implementation 'org.dmfs:http-client-basics:' + HTTP_CLIENT_ESSENTIALS_VERSION
+    implementation 'org.dmfs:http-client-headers:' + HTTP_CLIENT_ESSENTIALS_VERSION
+    // api for UserClientCredentials
+    api 'org.dmfs:http-executor-decorators:' + HTTP_CLIENT_ESSENTIALS_VERSION
+    implementation 'org.dmfs:httpurlconnection-executor:' + HTTP_CLIENT_ESSENTIALS_VERSION
+    // remove once oauth2 essentials use the new URI version
+    implementation 'org.dmfs:rfc3986-uri:0.8.1'
     compile('org.dmfs:oauth2-essentials:' + OAUTH2_ESSENTIALS_VERSION) {
         exclude group: 'org.dmfs'
     }
-    compile 'org.dmfs:rfc5545-datetime:0.2.4'
-    compile 'org.dmfs:jems:' + JEMS_VERSION
-    compile 'net.iharder:base64:2.3.9'
-    compile('com.github.SmoothSync:smoothsync-api-client:0.9.1') {
-        exclude group: 'org.dmfs'
-    }
-    compile 'com.github.dmfs.MicroFragments:microwizard:5a8b03bd1841302defb94bb69d50d3933ce7cc88'
-    compile 'com.github.dmfs.Bolts:service-bolts:d4e38c020581a6bad38f0906095f968ab0501263'
-    compile 'com.github.dmfs.Bolts:package-bolts:d4e38c020581a6bad38f0906095f968ab0501263'
+    api 'org.dmfs:rfc5545-datetime:0.2.4'
+    implementation 'org.dmfs:jems:' + JEMS_VERSION
+    implementation 'net.iharder:base64:2.3.9'
+    api 'com.github.SmoothSync:smoothsync-api-client:0.10'
+    api 'com.github.dmfs.MicroFragments:microwizard:5a8b03bd1841302defb94bb69d50d3933ce7cc88'
+    implementation 'com.github.dmfs.Bolts:service-bolts:d4e38c020581a6bad38f0906095f968ab0501263'
+    implementation 'com.github.dmfs.Bolts:package-bolts:d4e38c020581a6bad38f0906095f968ab0501263'
 }
