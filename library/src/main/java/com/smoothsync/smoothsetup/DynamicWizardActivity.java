@@ -24,8 +24,9 @@ import com.smoothsync.smoothsetup.microfragments.InitWizardMicroFragment;
 import com.smoothsync.smoothsetup.utils.ActivityInfo;
 
 import org.dmfs.android.microfragments.MicroFragment;
-import org.dmfs.optional.NullSafe;
-import org.dmfs.optional.Optional;
+import org.dmfs.jems.optional.Optional;
+import org.dmfs.jems.optional.elementary.NullSafe;
+import org.dmfs.jems.single.combined.Backed;
 
 
 /**
@@ -45,7 +46,7 @@ public final class DynamicWizardActivity extends Activity
 
         // check if meta data contains a specific provider url, if the url is hard coded, we don't allow to override it
         Optional<Bundle> metaData = new NullSafe<>(new ActivityInfo(this, PackageManager.GET_META_DATA).value().metaData);
-        if (!metaData.value(Bundle.EMPTY).containsKey(META_WIZARD_SERVICE_META))
+        if (!new Backed<>(metaData, Bundle.EMPTY).value().containsKey(META_WIZARD_SERVICE_META))
         {
             throw new RuntimeException(String.format("Missing %s meta field", META_WIZARD_SERVICE_META));
         }

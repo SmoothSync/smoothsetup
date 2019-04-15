@@ -180,7 +180,7 @@ public final class AuthErrorMicroFragment implements MicroFragment<AuthErrorMicr
                                 new Swiped(new ForwardTransition<>(new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_load_provider)))));
             }
 
-            Button button = ((Button) result.findViewById(android.R.id.button1));
+            Button button = result.findViewById(android.R.id.button1);
             button.setOnClickListener(this);
 
             return result;

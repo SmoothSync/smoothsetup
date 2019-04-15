@@ -27,7 +27,6 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -75,8 +74,8 @@ public final class MicroFragmentHostActivity extends AppCompatActivity implement
         super.onCreate(savedInstanceState);
         setContentView(R.layout.smoothsetup_activity_microfragment_host);
 
-        mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        setSupportActionBar((Toolbar) mCollapsingToolbar.findViewById(R.id.toolbar));
+        mCollapsingToolbar = findViewById(R.id.collapsing_toolbar);
+        setSupportActionBar(mCollapsingToolbar.findViewById(R.id.toolbar));
         mActionBar = getSupportActionBar();
         mMicroFragmentStateDovecote = new ParcelableDovecote<>(this, "hostactivity", this);
         mBackDovecote = new BooleanDovecote(this, "backresult", aBoolean ->
@@ -99,15 +98,15 @@ public final class MicroFragmentHostActivity extends AppCompatActivity implement
         {
             mMicroFragmentHost = savedInstanceState.getParcelable("microfragmenthost");
         }
-        mAppBarLayout = (AppBarLayout) findViewById(R.id.appbar);
-        mFragmentHostView = (NestedScrollView) findViewById(R.id.microfragment_host);
+        mAppBarLayout = findViewById(R.id.appbar);
+        mFragmentHostView = findViewById(R.id.microfragment_host);
         mFragmentHostView.getViewTreeObserver().addOnGlobalLayoutListener(() ->
         {
             // collapse appbar if the microfragment content doesn't fit on the screen
             Rect windowRect = new Rect();
             mAppBarLayout.getWindowVisibleDisplayFrame(windowRect);
 
-            FrameLayout bottomView = (FrameLayout) mFragmentHostView.findViewById(org.dmfs.android.microfragments.R.id.microfragments_host);
+            FrameLayout bottomView = mFragmentHostView.findViewById(org.dmfs.android.microfragments.R.id.microfragments_host);
             if (bottomView.getChildCount() > 0)
             {
                 View childView = bottomView.getChildAt(0);

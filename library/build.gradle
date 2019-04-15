@@ -47,7 +47,7 @@ dependencies {
     implementation 'org.dmfs:jems:' + JEMS_VERSION
     implementation 'net.iharder:base64:2.3.9'
     api 'com.github.SmoothSync:smoothsync-api-client:0.10'
-    api 'com.github.dmfs.MicroFragments:microwizard:5a8b03bd1841302defb94bb69d50d3933ce7cc88'
+    api 'com.github.dmfs.MicroFragments:microwizard:0.2.2'
     implementation 'com.github.dmfs.Bolts:service-bolts:d4e38c020581a6bad38f0906095f968ab0501263'
     implementation 'com.github.dmfs.Bolts:package-bolts:d4e38c020581a6bad38f0906095f968ab0501263'
 }
