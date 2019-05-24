@@ -25,7 +25,7 @@ android {
 }
 
 dependencies {
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
     implementation 'com.android.support:appcompat-v7:' + SUPPORT_LIBRARY_VERSION
     implementation 'com.android.support:design:' + SUPPORT_LIBRARY_VERSION
     implementation 'com.android.support:percent:' + SUPPORT_LIBRARY_VERSION
@@ -40,14 +40,15 @@ dependencies {
     implementation 'org.dmfs:httpurlconnection-executor:' + HTTP_CLIENT_ESSENTIALS_VERSION
     // remove once oauth2 essentials use the new URI version
     implementation 'org.dmfs:rfc3986-uri:0.8.1'
-    compile('org.dmfs:oauth2-essentials:' + OAUTH2_ESSENTIALS_VERSION) {
+    implementation('org.dmfs:oauth2-essentials:' + OAUTH2_ESSENTIALS_VERSION) {
         exclude group: 'org.dmfs'
     }
     api 'org.dmfs:rfc5545-datetime:0.2.4'
     implementation 'org.dmfs:jems:' + JEMS_VERSION
     implementation 'net.iharder:base64:2.3.9'
     api 'com.github.SmoothSync:smoothsync-api-client:0.10'
-    api 'com.github.dmfs.MicroFragments:microwizard:0.2.2'
-    implementation 'com.github.dmfs.Bolts:service-bolts:d4e38c020581a6bad38f0906095f968ab0501263'
-    implementation 'com.github.dmfs.Bolts:package-bolts:d4e38c020581a6bad38f0906095f968ab0501263'
+    api 'com.github.dmfs.MicroFragments:microwizard:0.3'
+    implementation 'com.github.dmfs.PigeonPost:localbroadcast-pigeon:0.3'
+    implementation 'com.github.dmfs.Bolts:service-bolts:0.1'
+    implementation 'com.github.dmfs.Bolts:package-bolts:0.1'
 }
