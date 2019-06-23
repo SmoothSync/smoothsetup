@@ -21,7 +21,8 @@ import com.smoothsync.smoothsetup.services.delegating.DelegatingSmoothSyncApiSer
 
 import org.dmfs.httpessentials.client.HttpRequestExecutor;
 import org.dmfs.httpessentials.executors.following.Following;
-import org.dmfs.httpessentials.executors.following.policies.FollowRedirectPolicy;
+import org.dmfs.httpessentials.executors.following.policies.FollowPolicy;
+import org.dmfs.httpessentials.executors.following.policies.Limited;
 import org.dmfs.httpessentials.executors.following.policies.Secure;
 import org.dmfs.httpessentials.executors.retrying.Retrying;
 import org.dmfs.httpessentials.executors.retrying.policies.DefaultRetryPolicy;
@@ -45,7 +46,7 @@ public class SmoothSyncApiService extends DelegatingSmoothSyncApiService
         {
             HttpRequestExecutor executor = new Following(
                     new Retrying(new HttpUrlConnectionExecutor(new Finite(new DefaultHttpUrlConnectionFactory(), 10000, 30000)), new DefaultRetryPolicy(3)),
-                    new Secure(new FollowRedirectPolicy(5)));
+                    new Limited(5, new Secure(new FollowPolicy())));
 
             OAuth2ClientCredentials clientCreds = new BasicOAuth2ClientCredentials("e71c750d1e544665ad0ebfd598260b51",
                     "f7cb392dd43945de8fd332f80a7885db96851e6e67c64d5a82f8fc646bd25e8e");

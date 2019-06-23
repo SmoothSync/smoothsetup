@@ -34,7 +34,10 @@ import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.httpessentials.exceptions.UnauthorizedException;
 import org.dmfs.httpessentials.executors.authorizing.Authorizing;
 import org.dmfs.httpessentials.executors.following.Following;
-import org.dmfs.httpessentials.executors.following.policies.FollowRedirectPolicy;
+import org.dmfs.httpessentials.executors.following.policies.Composite;
+import org.dmfs.httpessentials.executors.following.policies.FollowPolicy;
+import org.dmfs.httpessentials.executors.following.policies.Limited;
+import org.dmfs.httpessentials.executors.following.policies.Relative;
 import org.dmfs.httpessentials.executors.following.policies.Secure;
 import org.dmfs.httpessentials.executors.retrying.Retrying;
 import org.dmfs.httpessentials.executors.retrying.policies.DefaultRetryPolicy;
@@ -69,7 +72,10 @@ public final class VerificationService extends DelegatingVerificationService
                                             new Trusted(new Finite(new DefaultHttpUrlConnectionFactory(), 10000, 10000), service.keyStore())),
                                     new DefaultRetryPolicy(3)),
                             authStrategy),
-                    new Secure(new FollowRedirectPolicy(5)));
+                    new Limited(5,
+                            new Composite(
+                                    new Relative(new FollowPolicy()),
+                                    new Secure(new FollowPolicy()))));
 
             try
             {
