@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 dmfs GmbH
+ * Copyright (c) 2019 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,29 @@
  * limitations under the License.
  */
 
-package com.smoothsync.smoothsetup.setupbuttons;
+package com.smoothsync.smoothsetup.utils;
 
-import com.smoothsync.api.model.Provider;
-
-import org.dmfs.httpessentials.exceptions.ProtocolException;
-
-import androidx.annotation.NonNull;
+import org.dmfs.jems.single.Single;
 
 
 /**
- * Created by marten on 12.06.16.
+ * @author Marten Gajda
  */
-public interface SetupButtonAdapter
+public final class Domain implements Single<String>
 {
-    void update(@NonNull String login) throws ProtocolException;
+    private final String mAddress;
 
-    interface OnProviderSelectListener
+
+    public Domain(String address)
     {
-        void onProviderSelected(@NonNull Provider provider);
+        mAddress = address;
+    }
 
-        void onOtherSelected();
+
+    @Override
+    public String value()
+    {
+        int atPos = mAddress.indexOf('@');
+        return atPos >= 0 ? mAddress.substring(atPos + 1) : "";
     }
 }

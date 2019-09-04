@@ -18,10 +18,11 @@ package com.smoothsync.smoothsetup.utils;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.support.v4.content.ContextCompat;
 
 import org.dmfs.iterables.decorators.DelegatingIterable;
 import org.dmfs.iterables.decorators.Sieved;
+
+import androidx.core.content.ContextCompat;
 
 
 /**

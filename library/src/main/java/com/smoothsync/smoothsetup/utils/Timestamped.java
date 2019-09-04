@@ -18,14 +18,15 @@ package com.smoothsync.smoothsetup.utils;
 
 import android.content.Context;
 import android.os.Parcel;
-import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
 import org.dmfs.android.microfragments.Timestamp;
 import org.dmfs.android.microfragments.transitions.FragmentTransition;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 
 /**

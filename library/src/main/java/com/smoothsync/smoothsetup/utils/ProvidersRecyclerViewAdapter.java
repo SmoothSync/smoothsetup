@@ -16,7 +16,6 @@
 
 package com.smoothsync.smoothsetup.utils;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +29,11 @@ import org.dmfs.httpessentials.exceptions.ProtocolException;
 
 import java.util.List;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 
 /**
+ *
  */
 public final class ProvidersRecyclerViewAdapter extends RecyclerView.Adapter<ProvidersRecyclerViewAdapter.ViewHolder>
 {

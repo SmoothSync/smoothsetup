@@ -18,11 +18,6 @@ package com.smoothsync.smoothsetup.microfragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -55,6 +50,12 @@ import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.optional.Optional;
 
 import java.util.NoSuchElementException;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 
 /**
@@ -102,7 +103,7 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
 
         list.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        llm.setOrientation(RecyclerView.VERTICAL);
         list.setLayoutManager(llm);
 
         final AbstractSmoothSetupAdapter adapter = loginFormAdapterFactory.setupButtonAdapter(getContext(), this, new SmoothSyncApiProxy(mApiService));
@@ -127,18 +128,13 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
             @Override
             public void afterTextChanged(Editable s)
             {
-                String login = s.toString();
-                final int atPos = login.indexOf('@');
-                if (atPos > 0 && atPos < login.length() - 1)
+                try
                 {
-                    try
-                    {
-                        adapter.update(login.substring(atPos + 1));
-                    }
-                    catch (ProtocolException e)
-                    {
-                        e.printStackTrace();
-                    }
+                    adapter.update(s.toString());
+                }
+                catch (ProtocolException e)
+                {
+                    e.printStackTrace();
                 }
             }
         });

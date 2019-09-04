@@ -23,10 +23,11 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.support.annotation.Nullable;
 
 import com.smoothsync.smoothsetup.model.BasicAccount;
 import com.smoothsync.smoothsetup.services.AccountService;
+
+import androidx.annotation.Nullable;
 
 
 /**
