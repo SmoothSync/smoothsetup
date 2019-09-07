@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.READ_CALENDAR"/>
     <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
+
     <application
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
@@ -51,6 +52,8 @@
         <meta-data
                 android:name="com.smoothsync.PROVIDERx"
                 android:value="https://smoothsync-services-test.appspot.com/setup/e71c750d1e544665ad0ebfd598260b51?provider=2276a344b3324d558581e61b076fcdaa&amp;account=test"/>
+        <meta-data
+                android:name="android.content.APP_RESTRICTIONS"
+                android:resource="@xml/smoothsetup_full_provisioning_restrictions"/>
     </application>
-
 </manifest>

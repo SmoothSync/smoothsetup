@@ -22,6 +22,7 @@ import android.widget.Adapter;
 import android.widget.Filterable;
 
 import com.smoothsync.api.SmoothSyncApi;
+import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.ApiAutoCompleteAdapter;
 import com.smoothsync.smoothsetup.model.Account;
@@ -176,6 +177,13 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
         public String promptText(@NonNull Context context)
         {
             return context.getString(R.string.smoothsetup_prompt_login);
+        }
+
+
+        @Override
+        public Optional<Provider> provider()
+        {
+            return absent();
         }
     }
 }

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<restrictions xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+    Account restrictions
+    ====================
+
+    This is an array of account entries, each having an account ID, a provider ID and optional credentials.
+
+    Currently only username and password are supported.
+
+    Future versions may also support encrypted passwords.
+
+    If the accounts bundle is present no other accounts than the ones specified here can be created.
+    -->
+    <restriction
+            android:key="accounts"
+            android:restrictionType="bundle_array">
+        <restriction
+                android:key="account"
+                android:restrictionType="bundle">
+            <restriction
+                    android:key="accountId"
+                    android:title="The account name"
+                    android:restrictionType="string"/>
+            <restriction
+                    android:key="providerId"
+                    android:title="This id of the provider for this account"
+                    android:restrictionType="string"/>
+            <restriction
+                    android:key="credentials"
+                    android:restrictionType="bundle">
+                <restriction
+                        android:key="username"
+                        android:restrictionType="string"/>
+                <restriction
+                        android:key="password"
+                        android:restrictionType="string"/>
+            </restriction>
+        </restriction>
+    </restriction>
+
+    <restriction
+            android:key="providers"
+            android:restrictionType="bundle_array">
+        <restriction
+                android:key="provider"
+                android:restrictionType="bundle">
+            <restriction
+                    android:key="id"
+                    android:title="A unique identifier of the provider."
+                    android:restrictionType="string"/>
+            <restriction
+                    android:key="name"
+                    android:title="The display name of the provider"
+                    android:restrictionType="string"/>
+            <restriction
+                    android:key="services"
+                    android:restrictionType="bundle_array">
+                <restriction
+                        android:key="service"
+                        android:restrictionType="bundle">
+                    <restriction
+                            android:key="service-type"
+                            android:title="The type of the service"
+                            android:restrictionType="string"/>
+                    <restriction
+                            android:key="uri"
+                            android:title="The URL of the service"
+                            android:restrictionType="string"/>
+                </restriction>
+            </restriction>
+        </restriction>
+    </restriction>
+</restrictions>

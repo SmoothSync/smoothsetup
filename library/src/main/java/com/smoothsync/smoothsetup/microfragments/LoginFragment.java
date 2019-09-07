@@ -20,6 +20,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,12 +29,15 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Filterable;
 import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.AbstractAutoCompleteAdapter;
 import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.model.BasicAccount;
+import com.smoothsync.smoothsetup.restrictions.AccountRestriction;
+import com.smoothsync.smoothsetup.restrictions.ProviderAccountRestrictions;
 import com.smoothsync.smoothsetup.services.FutureApiServiceConnection;
 import com.smoothsync.smoothsetup.services.SmoothSyncApiProxy;
 import com.smoothsync.smoothsetup.setupbuttons.AbstractSmoothSetupAdapter;
@@ -47,6 +51,9 @@ import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
+import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
+import org.dmfs.jems.optional.decorators.MapCollapsed;
+import org.dmfs.optional.First;
 import org.dmfs.optional.Optional;
 
 import java.util.NoSuchElementException;
@@ -143,6 +150,40 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
 
         ((TextView) result.findViewById(android.R.id.message)).setText(loginFormAdapterFactory.promptText(getContext()));
 
+        Optional<Provider> provider = mMicroFragmentEnvironment.microFragment().parameter().loginFormAdapterFactory().provider();
+        if (provider.isPresent())
+        {
+            try
+            {
+                String providerId = provider.value().id();
+                Optional<UserCredentials> credentialsRestrictions = new MapCollapsed<>(
+                        AccountRestriction::credentials,
+                        new First<>(
+                                new ProviderAccountRestrictions(getActivity(), providerId)));
+
+                if (credentialsRestrictions.isPresent())
+                {
+                    // can't override any restriction for this account
+                    mLogin.setText(credentialsRestrictions.value().userName());
+                    mLogin.setCompletionHint("Auto filled by managed profile");
+                    adapter.update(credentialsRestrictions.value().userName().toString());
+                    TextInputLayout til = result.findViewById(R.id.text_input_layout);
+                    til.setHelperText("Provided by Managed Profile ");
+                    til.setEnabled(false);
+                    // fast forward view
+                    //         result.post(() -> onProviderSelected(provider.value()));
+                }
+                else
+                {
+                    Log.i("LoginFragment", "no restrictions found");
+                }
+            }
+            catch (Exception e)
+            {
+                Log.e("LoginFragment", "error reading profile", e);
+            }
+        }
+
         return result;
     }
 
@@ -223,5 +264,7 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
 
         @NonNull
         String promptText(@NonNull Context context);
+
+        Optional<Provider> provider();
     }
 }

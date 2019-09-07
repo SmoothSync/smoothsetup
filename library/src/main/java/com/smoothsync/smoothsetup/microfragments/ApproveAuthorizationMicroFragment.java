@@ -24,6 +24,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,10 @@ import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
+import org.dmfs.android.microfragments.Timestamp;
+import org.dmfs.android.microfragments.timestamps.UiTimestamp;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;
+import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.android.microfragments.transitions.XFaded;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Unboxed;
@@ -55,6 +59,7 @@ import org.dmfs.iterators.decorators.Serialized;
 import org.dmfs.jems.iterator.decorators.Mapped;
 
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -161,6 +166,7 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
         private Handler mHandler = new Handler();
         private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
         private Params mParams;
+        private final Timestamp mTimestamp = new UiTimestamp();
 
 
         @Override
@@ -246,30 +252,30 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                 {
                     if (result.value())
                     {
-                        mMicroFragmentEnvironment.host()
-                                .execute(activity,
-                                        new XFaded(
-                                                new ForwardTransition<>(mParams.next().microFragment(activity, mParams.accountDetails()))));
+                        forward(activity, mParams.next().microFragment(activity, mParams.accountDetails()));
                     }
                     else
                     {
-                        mMicroFragmentEnvironment.host()
-                                .execute(activity,
-                                        new XFaded(
-                                                new ForwardTransition<>(
-                                                        new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_authentication), null,
-                                                                getString(R.string.smoothsetup_wizard_title_authentication_error)))));
+                        forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_authentication), null,
+                                getString(R.string.smoothsetup_wizard_title_authentication_error)));
                     }
                 }
                 catch (Exception e)
                 {
-                    mMicroFragmentEnvironment.host()
-                            .execute(activity,
-                                    new XFaded(
-                                            new ForwardTransition<>(
-                                                    new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_network)))));
+                    Log.v("SmoothSetup", "Network error", e);
+                    forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_network)));
                 }
             }
+        }
+
+
+        private void forward(Activity activity, MicroFragment<?> mf)
+        {
+            mMicroFragmentEnvironment.host()
+                    .execute(activity,
+                            mTimestamp.nanoSeconds() + TimeUnit.MILLISECONDS.toNanos(400) < System.nanoTime() ?
+                                    new XFaded(new ForwardTransition<>(mf)) :
+                                    new Swiped(new ForwardTransition<>(mf)));
         }
     }
 

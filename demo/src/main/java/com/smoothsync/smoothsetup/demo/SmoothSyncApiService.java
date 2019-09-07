@@ -55,5 +55,6 @@ public class SmoothSyncApiService extends DelegatingSmoothSyncApiService
 
             return new DemoApi(executor, client);
         });
+        //super(new StaticApiFactory(new ProfileProviderData()));
     }
 }

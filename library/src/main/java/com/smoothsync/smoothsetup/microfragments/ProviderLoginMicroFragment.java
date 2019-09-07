@@ -37,6 +37,7 @@ import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.optional.Optional;
+import org.dmfs.optional.Present;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -201,6 +202,13 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
             {
                 throw new RuntimeException("Can't retrieve provider name", e);
             }
+        }
+
+
+        @Override
+        public Optional<Provider> provider()
+        {
+            return new Present<>(mProvider);
         }
     }
 }
