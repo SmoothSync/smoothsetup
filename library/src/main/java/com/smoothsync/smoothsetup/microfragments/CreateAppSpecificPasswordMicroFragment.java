@@ -18,8 +18,6 @@ package com.smoothsync.smoothsetup.microfragments;
 
 import android.content.Context;
 import android.os.Parcel;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 
 import com.smoothsync.smoothsetup.microfragments.appspecificpassword.AppSpecificWebviewFragment;
 
@@ -28,6 +26,9 @@ import org.dmfs.android.microfragments.MicroFragmentHost;
 import org.dmfs.pigeonpost.Cage;
 
 import java.net.URI;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 
 /**

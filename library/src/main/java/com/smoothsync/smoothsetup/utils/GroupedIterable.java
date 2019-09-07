@@ -16,11 +16,11 @@
 
 package com.smoothsync.smoothsetup.utils;
 
-import android.support.annotation.NonNull;
-
 import org.dmfs.jems.function.Function;
 
 import java.util.Iterator;
+
+import androidx.annotation.NonNull;
 
 
 /**

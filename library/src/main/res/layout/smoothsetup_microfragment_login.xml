@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -13,36 +14,39 @@
             android:layout_marginLeft="36dp"
             android:layout_marginRight="36dp"
             android:layout_marginStart="36dp"
+            android:layout_marginBottom="8dp"
             android:padding="12dp"
-            android:text="@string/smoothsetup_prompt_login"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:text="@string/smoothsetup_prompt_login"/>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="36dp"
+            android:layout_marginEnd="48dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_marginLeft="48dp"
+            android:layout_marginRight="48dp"
+            android:layout_marginStart="48dp"
+            app:helperTextEnabled="true"
+            android:hint="@string/smoothsetup_default_login_hint">
 
-            android:layout_marginLeft="36dp"
-            android:layout_marginRight="36dp"
-            android:layout_marginStart="36dp"
-            android:hint="@string/smoothsetup_default_login_hint"
-            android:padding="12dp">
-
-        <android.support.v7.widget.AppCompatAutoCompleteTextView
+        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                 android:id="@android:id/input"
+                android:background="@null"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionDone"
+                android:padding="12dp"
                 android:inputType="textEmailAddress">
 
             <requestFocus/>
-        </android.support.v7.widget.AppCompatAutoCompleteTextView>
-    </android.support.design.widget.TextInputLayout>
+        </androidx.appcompat.widget.AppCompatAutoCompleteTextView>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
             android:id="@android:id/list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="16dp"
             android:paddingEnd="40dp"
             android:paddingLeft="40dp"
             android:paddingRight="40dp"

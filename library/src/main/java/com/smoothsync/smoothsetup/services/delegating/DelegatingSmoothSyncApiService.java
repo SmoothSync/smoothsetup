@@ -21,7 +21,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.SmoothSyncApiRequest;
@@ -30,6 +29,8 @@ import org.dmfs.httpessentials.exceptions.ProtocolError;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 
 import java.io.IOException;
+
+import androidx.annotation.Nullable;
 
 
 /**

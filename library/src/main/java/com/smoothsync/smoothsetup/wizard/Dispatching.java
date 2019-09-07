@@ -19,7 +19,6 @@ package com.smoothsync.smoothsetup.wizard;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 
 import com.smoothsync.smoothsetup.microfragments.SetupDispatchMicroFragment;
 
@@ -27,6 +26,8 @@ import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.AbstractSingleBox;
 import org.dmfs.android.microwizard.box.Box;
+
+import androidx.annotation.NonNull;
 
 
 /**

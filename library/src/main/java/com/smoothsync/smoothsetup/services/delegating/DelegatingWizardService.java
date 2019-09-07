@@ -21,12 +21,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 
 import com.smoothsync.smoothsetup.services.VerificationService;
 import com.smoothsync.smoothsetup.services.WizardService;
 
 import org.dmfs.android.microfragments.MicroFragment;
+
+import androidx.annotation.Nullable;
 
 
 /**

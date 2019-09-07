@@ -16,7 +16,6 @@
 
 package com.smoothsync.smoothsetup.setupbuttons;
 
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,12 +24,15 @@ import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
+import com.smoothsync.smoothsetup.utils.Domain;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 
 import java.util.Collections;
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 
 /**
@@ -105,6 +107,11 @@ public final class ApiSmoothSetupAdapter extends AbstractSmoothSetupAdapter
     @Override
     public void update(@NonNull String value)
     {
+        String domain = new Domain(value).value();
+        if (domain.isEmpty()){
+            return;
+        }
+
         new ProviderSearchTask(mApi, new ThrowingAsyncTask.OnResultCallback<List<Provider>>()
         {
             @Override
@@ -120,6 +127,6 @@ public final class ApiSmoothSetupAdapter extends AbstractSmoothSetupAdapter
                     // ignore
                 }
             }
-        }).execute(value);
+        }).execute(domain);
     }
 }

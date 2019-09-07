@@ -16,7 +16,6 @@
 
 package com.smoothsync.smoothsetup.setupbuttons;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +23,8 @@ import android.view.ViewGroup;
 import com.smoothsync.smoothsetup.R;
 
 import org.dmfs.httpessentials.exceptions.ProtocolException;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 
 /**

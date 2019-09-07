@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.DomainExpansionConverter;
+import com.smoothsync.smoothsetup.utils.Domain;
 
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.iterators.decorators.Sieved;
@@ -30,6 +31,8 @@ import org.dmfs.iterators.elementary.Seq;
 import org.dmfs.jems.iterator.decorators.Mapped;
 
 import java.util.Iterator;
+
+import androidx.annotation.NonNull;
 
 
 /**
@@ -75,14 +78,7 @@ public final class ProviderSmoothSetupAdapter extends AbstractSmoothSetupAdapter
     {
         holder.updateText(R.string.smoothsetup_button_login_next);
         holder.updateEnabled(mEnable);
-        holder.updateOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                notifyProviderSeleteced(mProvider);
-            }
-        });
+        holder.updateOnClickListener(v -> notifyProviderSeleteced(mProvider));
     }
 
 
@@ -93,8 +89,17 @@ public final class ProviderSmoothSetupAdapter extends AbstractSmoothSetupAdapter
     }
 
 
-    public void update(String domain)
+    public void update(@NonNull String value)
     {
+        if (value.isEmpty())
+        {
+            mEnable = false;
+            notifyItemChanged(0);
+            return;
+        }
+
+        String domain = new Domain(value).value();
+
         Iterator<String> domainIterator = null;
         try
         {
@@ -108,6 +113,7 @@ public final class ProviderSmoothSetupAdapter extends AbstractSmoothSetupAdapter
                 mEnable = false;
                 notifyItemChanged(0);
             }
+            return;
         }
         while (domainIterator.hasNext())
         {

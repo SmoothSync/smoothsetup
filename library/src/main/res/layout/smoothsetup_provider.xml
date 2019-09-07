@@ -14,5 +14,5 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:paddingStart="16dp"
-            android:textAppearance="?android:textAppearanceLarge"/>
+            style="@style/TextAppearance.AppCompat.Large"/>
 </LinearLayout>

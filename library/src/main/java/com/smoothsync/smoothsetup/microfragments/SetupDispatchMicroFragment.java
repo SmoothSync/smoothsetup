@@ -22,8 +22,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Parcel;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 
 import com.smoothsync.smoothsetup.R;
@@ -52,6 +50,9 @@ import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.iterables.elementary.Seq;
 import org.dmfs.optional.NullSafe;
 import org.dmfs.optional.Optional;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 
 /**

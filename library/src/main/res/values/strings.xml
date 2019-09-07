@@ -148,7 +148,7 @@
     <!--
     Text on the button under an error page that takes the user back to the previous step.
     -->
-    <string name="smoothsetup_button_retry_now">Retry now</string>
+    <string name="smoothsetup_button_retry_now">Retry</string>
 
     <!--
     Text on button to grant permissions

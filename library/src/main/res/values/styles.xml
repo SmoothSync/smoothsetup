@@ -1,12 +1,18 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="SmoothSetupTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="SmoothSetupTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorAccent">@color/accent</item>
         <item name="windowActionModeOverlay">true</item>
+        <item name="android:textViewStyle">@style/SupportingText</item>
+
+    </style>
+
+    <style name="SupportingText" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:alpha">.8</item>
     </style>
 
 </resources>
