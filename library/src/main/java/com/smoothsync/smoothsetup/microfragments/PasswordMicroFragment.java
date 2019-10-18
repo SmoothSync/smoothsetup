@@ -38,9 +38,9 @@ import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.restrictions.AccountRestriction;
 import com.smoothsync.smoothsetup.restrictions.ProviderAccountRestrictions;
 import com.smoothsync.smoothsetup.utils.AccountDetails;
+import com.smoothsync.smoothsetup.utils.AccountDetailsBox;
 import com.smoothsync.smoothsetup.utils.Default;
 import com.smoothsync.smoothsetup.utils.Related;
-import com.smoothsync.smoothsetup.utils.usercredentials.Parcelable;
 
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
@@ -423,80 +423,6 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
             Snackbar.make(getView(), R.string.smoothsetup_app_specific_password_inserted, Snackbar.LENGTH_LONG).show();
         }
 
-
-        private static class AccountDetailsBox implements Box<AccountDetails>
-        {
-            private final AccountDetails mAccountDetails;
-
-
-            private AccountDetailsBox(AccountDetails accountDetails)
-            {
-                mAccountDetails = accountDetails;
-            }
-
-
-            @Override
-            public int describeContents()
-            {
-                return 0;
-            }
-
-
-            @Override
-            public void writeToParcel(Parcel dest, int flags)
-            {
-                dest.writeParcelable(mAccountDetails.account(), flags);
-                dest.writeParcelable(new Parcelable(mAccountDetails.credentials()), flags);
-            }
-
-
-            @Override
-            public AccountDetails value()
-            {
-                return mAccountDetails;
-            }
-
-
-            public final static Creator<AccountDetailsBox> CREATOR = new Creator<AccountDetailsBox>()
-            {
-                @Override
-                public AccountDetailsBox createFromParcel(Parcel source)
-                {
-                    ClassLoader classLoader = getClass().getClassLoader();
-                    Account account = source.readParcelable(classLoader);
-                    UserCredentials userCredentials = source.readParcelable(classLoader);
-                    return new AccountDetailsBox(new AccountDetails()
-                    {
-                        @Override
-                        public Account account()
-                        {
-                            return account;
-                        }
-
-
-                        @Override
-                        public UserCredentials credentials()
-                        {
-                            return userCredentials;
-                        }
-
-
-                        @Override
-                        public Box<AccountDetails> boxed()
-                        {
-                            return new AccountDetailsBox(this);
-                        }
-                    });
-                }
-
-
-                @Override
-                public AccountDetailsBox[] newArray(int size)
-                {
-                    return new AccountDetailsBox[size];
-                }
-            };
-        }
     }
 
 
@@ -506,4 +432,5 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
 
         MicroWizard<AccountDetails> next();
     }
+
 }

@@ -29,11 +29,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.smoothsync.api.model.Service;
 import com.smoothsync.smoothsetup.R;
+import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.services.VerificationService;
 import com.smoothsync.smoothsetup.utils.AccountDetails;
-import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
+import com.smoothsync.smoothsetup.utils.AccountDetailsBox;
 import com.smoothsync.smoothsetup.utils.IndirectServiceIntentIterable;
 import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
@@ -49,9 +49,9 @@ import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.android.microfragments.transitions.XFaded;
 import org.dmfs.android.microwizard.MicroWizard;
+import org.dmfs.android.microwizard.box.Box;
 import org.dmfs.android.microwizard.box.Unboxed;
-import org.dmfs.httpessentials.executors.authorizing.AuthScope;
-import org.dmfs.httpessentials.executors.authorizing.ServiceScope;
+import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
 import org.dmfs.httpessentials.executors.authorizing.authstrategies.UserCredentialsAuthStrategy;
 import org.dmfs.httpessentials.executors.authorizing.credentialsstores.SimpleCredentialsStore;
 import org.dmfs.iterators.decorators.Filtered;
@@ -159,7 +159,7 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
     }
 
 
-    public static class LoadFragment extends Fragment implements ThrowingAsyncTask.OnResultCallback<Boolean>
+    public static class LoadFragment extends Fragment
     {
         private final static int DELAY_WAIT_MESSAGE = 2500;
         private final Runnable mShowWaitMessage = () -> getView().findViewById(android.R.id.message).animate().alpha(1f).start();
@@ -193,23 +193,94 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
         public void onResume()
         {
             super.onResume();
-            final Context context = getContext();
-            new ThrowingAsyncTask<Void, Void, Boolean>(this)
+            testCredentials(getContext(), mParams.accountDetails());
+        }
+
+
+        public void testCredentials(Context context, AccountDetails accountDetails)
+        {
+            new ThrowingAsyncTask<Void, Void, Boolean>(result -> {
+                Activity activity = getActivity();
+                if (isResumed() && activity != null)
+                {
+                    try
+                    {
+                        if (result.value())
+                        {
+                            forward(activity, mParams.next().microFragment(activity, accountDetails));
+                        }
+                        else
+                        {
+                            if (accountDetails.credentials().userName().toString().contains("@"))
+                            {
+                                testCredentials(context, new AccountDetails()
+                                {
+                                    @Override
+                                    public Account account()
+                                    {
+                                        return accountDetails.account();
+                                    }
+
+
+                                    @Override
+                                    public UserCredentials credentials()
+                                    {
+                                        return new UserCredentials()
+                                        {
+                                            @Override
+                                            public CharSequence userName()
+                                            {
+                                                return accountDetails.credentials()
+                                                        .userName()
+                                                        .subSequence(0, accountDetails.credentials().userName().toString().indexOf('@'));
+                                            }
+
+
+                                            @Override
+                                            public CharSequence password()
+                                            {
+                                                return accountDetails.credentials().password();
+                                            }
+                                        };
+                                    }
+
+
+                                    @Override
+                                    public Box<AccountDetails> boxed()
+                                    {
+                                        return new AccountDetailsBox(this);
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_authentication), null,
+                                        getString(R.string.smoothsetup_wizard_title_authentication_error)));
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.v("SmoothSetup", "Network error", e);
+                        forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_network)));
+                    }
+                }
+            })
             {
                 @Override
                 protected Boolean doInBackgroundWithException(Void[] params) throws Exception
                 {
                     Iterator<FutureServiceConnection<VerificationService>> serviceConnections =
-                            new Mapped<>(
+                            new Mapped<Intent, FutureServiceConnection<VerificationService>>(
                                     element -> new FutureLocalServiceConnection<>(context, element),
                                     new Serialized<>(
-                                            new Mapped<Service, Iterator<Intent>>(
+                                            new Mapped<>(
                                                     element -> new IndirectServiceIntentIterable(context,
                                                             new Intent(VerificationService.ACTION)
                                                                     .setData(Uri.fromParts(element.serviceType(), element.uri().toASCIIString(), null))
                                                                     .setPackage(context.getPackageName())).iterator(),
                                                     new Filtered<>(
-                                                            mParams.accountDetails().account().provider().services(),
+                                                            accountDetails.account().provider().services(),
                                                             element -> "com.smoothsync.authenticate".equals(element.serviceType()))
                                             ))
                             );
@@ -219,16 +290,12 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                     }
                     return serviceConnections.next()
                             .service(1000)
-                            .verify(mParams.accountDetails().account().provider(),
-                                    new UserCredentialsAuthStrategy(new SimpleCredentialsStore<>(new ServiceScope()
-                                    {
-                                        @Override
-                                        public boolean contains(AuthScope authScope)
-                                        {
+                            .verify(accountDetails.account().provider(),
+                                    new UserCredentialsAuthStrategy(
                                             // Consider creating a ServiceScope which covers all service-URLs of the given provider
-                                            return true;
-                                        }
-                                    }, mParams.accountDetails().credentials())));
+                                            new SimpleCredentialsStore<>(
+                                                    authScope -> true,
+                                                    accountDetails.credentials())));
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
@@ -239,33 +306,6 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
         {
             mHandler.removeCallbacks(mShowWaitMessage);
             super.onDestroyView();
-        }
-
-
-        @Override
-        public void onResult(final AsyncTaskResult<Boolean> result)
-        {
-            Activity activity = getActivity();
-            if (isResumed() && activity != null)
-            {
-                try
-                {
-                    if (result.value())
-                    {
-                        forward(activity, mParams.next().microFragment(activity, mParams.accountDetails()));
-                    }
-                    else
-                    {
-                        forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_authentication), null,
-                                getString(R.string.smoothsetup_wizard_title_authentication_error)));
-                    }
-                }
-                catch (Exception e)
-                {
-                    Log.v("SmoothSetup", "Network error", e);
-                    forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_network)));
-                }
-            }
         }
 
 
