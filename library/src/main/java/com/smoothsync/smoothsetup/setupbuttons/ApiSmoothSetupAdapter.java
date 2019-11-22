@@ -29,7 +29,7 @@ import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -41,14 +41,15 @@ import androidx.annotation.NonNull;
 public final class ApiSmoothSetupAdapter extends AbstractSmoothSetupAdapter
 {
 
-    private SmoothSyncApi mApi;
-    private List<Provider> mProviders = Collections.emptyList();
+    private final SmoothSyncApi mApi;
+    private final List<Provider> mProviders = new ArrayList<>();
+    private final OnProviderSelectListener mListener;
 
 
-    public ApiSmoothSetupAdapter(SmoothSyncApi api, OnProviderSelectListener listener)
+    public ApiSmoothSetupAdapter(@NonNull SmoothSyncApi api, @NonNull OnProviderSelectListener listener)
     {
-        super(listener);
         mApi = api;
+        mListener = listener;
     }
 
 
@@ -81,14 +82,7 @@ public final class ApiSmoothSetupAdapter extends AbstractSmoothSetupAdapter
         try
         {
             holder.updateText(provider.name());
-            holder.updateOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    notifyProviderSeleteced(provider);
-                }
-            });
+            holder.updateOnClickListener(v -> mListener.onProviderSelected(provider));
         }
         catch (ProtocolException e)
         {
@@ -108,7 +102,8 @@ public final class ApiSmoothSetupAdapter extends AbstractSmoothSetupAdapter
     public void update(@NonNull String value)
     {
         String domain = new Domain(value).value();
-        if (domain.isEmpty()){
+        if (domain.isEmpty())
+        {
             return;
         }
 
@@ -119,7 +114,8 @@ public final class ApiSmoothSetupAdapter extends AbstractSmoothSetupAdapter
             {
                 try
                 {
-                    mProviders = result.value();
+                    mProviders.clear();
+                    mProviders.addAll(result.value());
                     notifyDataSetChanged();
                 }
                 catch (Exception e)

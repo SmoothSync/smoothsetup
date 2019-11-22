@@ -23,17 +23,19 @@ import android.view.ViewGroup;
 import com.smoothsync.smoothsetup.R;
 
 import org.dmfs.httpessentials.exceptions.ProtocolException;
+import org.dmfs.jems.generator.Generator;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
 /**
  * Created by marten on 12.06.16.
  */
-public final class FixedButtonSetupAdapter extends AbstractSmoothSetupAdapter
+public final class FixedButtonSetupAdapter<T extends RecyclerView.Adapter<BasicButtonViewHolder> & SetupButtonAdapter> extends AbstractSmoothSetupAdapter
 {
 
-    private final AbstractSmoothSetupAdapter mDecorated;
+    private final T mDecorated;
     private final RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver()
     {
         @Override
@@ -82,15 +84,16 @@ public final class FixedButtonSetupAdapter extends AbstractSmoothSetupAdapter
             notifyDataSetChanged();
         }
     };
-    private final OnProviderSelectListener mListener;
+    private final OnOtherSelectListener mListener;
+    private final Generator<Integer> mTitleGenerator;
 
 
-    public FixedButtonSetupAdapter(AbstractSmoothSetupAdapter decorated, OnProviderSelectListener listener)
+    public FixedButtonSetupAdapter(T decorated, OnOtherSelectListener listener, Generator<Integer> titleGenerator)
     {
-        super(listener);
         mDecorated = decorated;
         mDecorated.registerAdapterDataObserver(mDataObserver);
         mListener = listener;
+        mTitleGenerator = titleGenerator;
     }
 
 
@@ -106,7 +109,7 @@ public final class FixedButtonSetupAdapter extends AbstractSmoothSetupAdapter
 
 
     @Override
-    public BasicButtonViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    public BasicButtonViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         if (viewType == -1)
         {
@@ -130,19 +133,12 @@ public final class FixedButtonSetupAdapter extends AbstractSmoothSetupAdapter
 
 
     @Override
-    public void onBindViewHolder(BasicButtonViewHolder holder, int position)
+    public void onBindViewHolder(@NonNull BasicButtonViewHolder holder, int position)
     {
         if (position == getItemCount() - 1)
         {
-            holder.updateText(getItemCount() > 1 ? R.string.smoothsetup_button_other_provider : R.string.smoothsetup_button_choose_provider);
-            holder.updateOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    mListener.onOtherSelected();
-                }
-            });
+            holder.updateText(mTitleGenerator.next());
+            holder.updateOnClickListener(v -> mListener.onOtherSelected());
         }
         else
         {
@@ -158,7 +154,7 @@ public final class FixedButtonSetupAdapter extends AbstractSmoothSetupAdapter
     }
 
 
-    public void update(String domain) throws ProtocolException
+    public void update(@NonNull String domain) throws ProtocolException
     {
         mDecorated.update(domain);
     }

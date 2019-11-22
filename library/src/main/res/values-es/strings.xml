@@ -95,4 +95,5 @@
 
     
     <string name="smoothsetup_terms_and_conditions">Condiciones de %1$s</string>
+    <string name="smoothsetup_wizard_title_provider_login">%s</string>
 </resources>

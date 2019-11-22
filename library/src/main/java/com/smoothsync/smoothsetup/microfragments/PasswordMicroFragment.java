@@ -236,7 +236,7 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
                     til.setHelperText("Provided by Managed Profile ");
                     til.setEnabled(false);
                     // fast forward view
-          //          result.post(() -> authenticate(credentialsRestrictions.value().password().toString()));
+                    //          result.post(() -> authenticate(credentialsRestrictions.value().password().toString()));
                 }
                 else
                 {
@@ -422,7 +422,6 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
             mPassword.setSelection(password.length());
             Snackbar.make(getView(), R.string.smoothsetup_app_specific_password_inserted, Snackbar.LENGTH_LONG).show();
         }
-
     }
 
 
@@ -432,5 +431,4 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
 
         MicroWizard<AccountDetails> next();
     }
-
 }

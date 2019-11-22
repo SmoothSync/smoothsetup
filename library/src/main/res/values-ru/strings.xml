@@ -35,4 +35,5 @@
     <string name="smoothsetup_create_app_specific_password">Создать специальный пароль приложения</string>
     <string name="smoothsetup_privacy_policy">%1$s Политика конфиденциальности</string>
     <string name="smoothsetup_terms_and_conditions">%1$s Пользовательское соглашение</string>
+    <string name="smoothsetup_wizard_title_provider_login">%s</string>
 </resources>

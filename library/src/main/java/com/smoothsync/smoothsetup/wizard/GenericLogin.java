@@ -17,15 +17,16 @@
 package com.smoothsync.smoothsetup.wizard;
 
 import android.content.Context;
+import android.os.Parcel;
 
 import com.smoothsync.smoothsetup.microfragments.GenericProviderMicroFragment;
 import com.smoothsync.smoothsetup.model.Account;
 
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microwizard.MicroWizard;
-import org.dmfs.android.microwizard.box.AbstractDoubleBox;
 import org.dmfs.android.microwizard.box.Box;
-import org.dmfs.optional.Optional;
+import org.dmfs.android.microwizard.box.Unboxed;
+import org.dmfs.jems.optional.Optional;
 
 
 /**
@@ -35,38 +36,83 @@ public final class GenericLogin implements MicroWizard<Void>
 {
     private final MicroWizard<Account> mNext;
     private final MicroWizard<Optional<String>> mFallback;
+    private final MicroWizard<Optional<String>> mManual;
 
 
-    public GenericLogin(MicroWizard<Account> next, MicroWizard<Optional<String>> fallback)
+    public GenericLogin(MicroWizard<Account> next, MicroWizard<Optional<String>> chooser, MicroWizard<Optional<String>> manual)
     {
         mNext = next;
-        mFallback = fallback;
+        mFallback = chooser;
+        mManual = manual;
     }
 
 
     @Override
     public MicroFragment<?> microFragment(Context context, Void dummy)
     {
-        return new GenericProviderMicroFragment(mNext, mFallback);
+        return new GenericProviderMicroFragment(mNext, mFallback, mManual);
     }
 
 
     @Override
     public Box<MicroWizard<Void>> boxed()
     {
-        return new WizardBox(mNext, mFallback);
+        return new WizardBox(mNext, mFallback, mManual);
     }
 
 
-    private final static class WizardBox extends AbstractDoubleBox<MicroWizard<Account>, MicroWizard<Optional<String>>, MicroWizard<Void>>
+    private final static class WizardBox implements Box<MicroWizard<Void>>
     {
+        private final MicroWizard<Account> mNext;
+        private final MicroWizard<Optional<String>> mChooser;
+        private final MicroWizard<Optional<String>> mManual;
 
-        private WizardBox(MicroWizard<Account> next, MicroWizard<Optional<String>> fallback)
+
+        protected WizardBox(MicroWizard<Account> next, MicroWizard<Optional<String>> chooser, MicroWizard<Optional<String>> manual)
         {
-            super(next, fallback, GenericLogin::new);
+            mNext = next;
+            mChooser = chooser;
+            mManual = manual;
         }
 
 
-        public final static Creator<Box<MicroWizard<Void>>> CREATOR = new DoubleBoxableBoxCreator<>(WizardBox::new, WizardBox[]::new);
+        public final int describeContents()
+        {
+            return 0;
+        }
+
+
+        public final void writeToParcel(Parcel dest, int flags)
+        {
+            dest.writeParcelable(mNext.boxed(), flags);
+            dest.writeParcelable(mChooser.boxed(), flags);
+            dest.writeParcelable(mManual.boxed(), flags);
+        }
+
+
+        public final MicroWizard<Void> value()
+        {
+            return new GenericLogin(mNext, mChooser, mManual);
+        }
+
+
+        public final static Creator<WizardBox> CREATOR = new Creator<WizardBox>()
+        {
+            @Override
+            public WizardBox createFromParcel(Parcel parcel)
+            {
+                return new WizardBox(
+                        new Unboxed<MicroWizard<Account>>(parcel).value(),
+                        new Unboxed<MicroWizard<Optional<String>>>(parcel).value(),
+                        new Unboxed<MicroWizard<Optional<String>>>(parcel).value());
+            }
+
+
+            @Override
+            public WizardBox[] newArray(int i)
+            {
+                return new WizardBox[0];
+            }
+        };
     }
 }

@@ -41,7 +41,8 @@ import androidx.annotation.NonNull;
 public final class ProviderSmoothSetupAdapter extends AbstractSmoothSetupAdapter
 {
 
-    private Provider mProvider;
+    private final Provider mProvider;
+    private final OnProviderSelectListener mListener;
 
     /**
      * Indicates whether the button is enabled or not. At present we default to "true" which means we always have it enabled
@@ -51,10 +52,10 @@ public final class ProviderSmoothSetupAdapter extends AbstractSmoothSetupAdapter
     private boolean mEnable = true;
 
 
-    public ProviderSmoothSetupAdapter(Provider provider, OnProviderSelectListener listener)
+    public ProviderSmoothSetupAdapter(@NonNull Provider provider, @NonNull OnProviderSelectListener listener)
     {
-        super(listener);
         mProvider = provider;
+        mListener = listener;
     }
 
 
@@ -78,7 +79,7 @@ public final class ProviderSmoothSetupAdapter extends AbstractSmoothSetupAdapter
     {
         holder.updateText(R.string.smoothsetup_button_login_next);
         holder.updateEnabled(mEnable);
-        holder.updateOnClickListener(v -> notifyProviderSeleteced(mProvider));
+        holder.updateOnClickListener(v -> mListener.onProviderSelected(mProvider));
     }
 
 

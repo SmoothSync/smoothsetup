@@ -20,6 +20,10 @@
     -->
     <string name="smoothsetup_wizard_title_provider_login">%s</string>
 
+    <!--
+    Title of the manual setup page.
+    -->
+    <string name="smoothsync_manual_setup">Manual Setup</string>
 
     <!--
     Title of the wizard step that asks the user to select a provider.
@@ -84,6 +88,11 @@
     <string name="smoothsetup_prompt_login">Enter your email address or login and choose your provider</string>
 
     <!--
+    Message that prompts the user to enter provider and account data
+    -->
+    <string name="smoothsetup_enter_your_provider_data">Enter your provider data</string>
+
+    <!--
     Message that prompts the user to enter his/her username or email address for a specific provider.
     %1$s will be replaced with the provider name.
     -->
@@ -128,6 +137,12 @@
     Shown if no other provider matches the login name.
     -->
     <string name="smoothsetup_button_choose_provider">Choose provider</string>
+
+
+    <!--
+    Text on a button that allows the user to launch the custom account setup.
+    -->
+    <string name="smoothsetup_button_manual_setup">Manual setup</string>
 
     <!--
     Text on a button that allows the user to select a provider from a list.
@@ -212,6 +227,16 @@
     Hint text in the field that takes the user's email address or login name.
     -->
     <string name="smoothsetup_default_login_hint">Email address or login</string>
+
+    <!--
+    Hint text in the field which takes the server address or name.
+    -->
+    <string name="smoothsetup_hostname_or_address">Hostname or address</string>
+
+    <!--
+    Hint text in the field that takes the user's login name.
+    -->
+    <string name="smoothsetup_manual_login_hint">Username</string>
 
     <!--
     Hint text on a password input field.

@@ -28,7 +28,7 @@ import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
 /**
  * @author Marten Gajda
  */
-public class AccountDetailsBox implements Box<AccountDetails>
+public final class AccountDetailsBox implements Box<AccountDetails>
 {
     private final AccountDetails mAccountDetails;
 

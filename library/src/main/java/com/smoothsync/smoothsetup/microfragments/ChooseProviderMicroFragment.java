@@ -40,8 +40,9 @@ import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
+import org.dmfs.jems.optional.Optional;
+import org.dmfs.jems.single.combined.Backed;
 import org.dmfs.optional.NullSafe;
-import org.dmfs.optional.Optional;
 
 import java.util.Arrays;
 
@@ -209,7 +210,7 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
     public void writeToParcel(Parcel dest, int flags)
     {
         dest.writeParcelableArray(mProviders, flags);
-        dest.writeString(mAccount.value(null));
+        dest.writeString(new Backed<String>(mAccount, () -> null).value());
         dest.writeParcelable(mNext.boxed(), flags);
     }
 
@@ -247,13 +248,6 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
                                                     getActivity(),
                                                     new ProviderLoadMicroFragment.SimpleProviderInfo(provider,
                                                             mMicroFragmentEnvironment.microFragment().parameter().account())))));
-        }
-
-
-        @Override
-        public void onOtherSelected()
-        {
-            // should not be called
         }
 
 
