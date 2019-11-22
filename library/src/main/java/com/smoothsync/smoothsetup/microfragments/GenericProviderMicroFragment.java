@@ -18,6 +18,7 @@ package com.smoothsync.smoothsetup.microfragments;
 
 import android.content.Context;
 import android.os.Parcel;
+import android.text.TextUtils;
 import android.widget.Adapter;
 import android.widget.Filterable;
 
@@ -26,15 +27,22 @@ import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.ApiAutoCompleteAdapter;
 import com.smoothsync.smoothsetup.model.Account;
+import com.smoothsync.smoothsetup.model.BasicAccount;
 import com.smoothsync.smoothsetup.setupbuttons.ApiSmoothSetupAdapter;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.FixedButtonSetupAdapter;
+import com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter;
 
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
+import org.dmfs.android.microfragments.transitions.ForwardTransition;
+import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Unboxed;
-import org.dmfs.optional.Optional;
+import org.dmfs.jems.generator.Generator;
+import org.dmfs.jems.optional.Optional;
+import org.dmfs.jems.optional.adapters.Conditional;
+import org.dmfs.jems.predicate.composite.Not;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -56,6 +64,7 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
         public GenericProviderMicroFragment createFromParcel(Parcel source)
         {
             return new GenericProviderMicroFragment(new Unboxed<MicroWizard<Account>>(source).value(),
+                    new Unboxed<MicroWizard<Optional<String>>>(source).value(),
                     new Unboxed<MicroWizard<Optional<String>>>(source).value());
         }
 
@@ -68,13 +77,15 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
     };
 
     private final MicroWizard<Account> mNext;
-    private final MicroWizard<Optional<String>> mFallback;
+    private final MicroWizard<Optional<String>> mChooser;
+    private final MicroWizard<Optional<String>> mManual;
 
 
-    public GenericProviderMicroFragment(MicroWizard<Account> next, MicroWizard<Optional<String>> fallback)
+    public GenericProviderMicroFragment(MicroWizard<Account> next, MicroWizard<Optional<String>> chooser, MicroWizard<Optional<String>> manual)
     {
         mNext = next;
-        mFallback = fallback;
+        mChooser = chooser;
+        mManual = manual;
     }
 
 
@@ -110,7 +121,7 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
             @Override
             public LoginFragment.LoginFormAdapterFactory loginFormAdapterFactory()
             {
-                return new ApiLoginFormAdapterFactory();
+                return new ApiLoginFormAdapterFactory(mNext, mChooser, mManual);
             }
 
 
@@ -118,20 +129,6 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
             public Optional<String> username()
             {
                 return absent();
-            }
-
-
-            @Override
-            public MicroWizard<Account> next()
-            {
-                return mNext;
-            }
-
-
-            @Override
-            public MicroWizard<Optional<String>> fallback()
-            {
-                return mFallback;
             }
 
         };
@@ -149,18 +146,61 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
     public void writeToParcel(Parcel dest, int flags)
     {
         dest.writeParcelable(mNext.boxed(), flags);
-        dest.writeParcelable(mFallback.boxed(), flags);
+        dest.writeParcelable(mChooser.boxed(), flags);
+        dest.writeParcelable(mManual.boxed(), flags);
     }
 
 
     private final static class ApiLoginFormAdapterFactory implements LoginFragment.LoginFormAdapterFactory
     {
+        private final MicroWizard<Account> mAccountSetup;
+        private final MicroWizard<Optional<String>> mChooserSetup;
+        private final MicroWizard<Optional<String>> mManualSetup;
+
+
+        private ApiLoginFormAdapterFactory(MicroWizard<Account> accountSetup, MicroWizard<Optional<String>> chooserSetup, MicroWizard<Optional<String>> manualSetup)
+        {
+            mAccountSetup = accountSetup;
+            mChooserSetup = chooserSetup;
+            mManualSetup = manualSetup;
+        }
+
+
         @NonNull
         @Override
-        public <T extends RecyclerView.Adapter<BasicButtonViewHolder>, SetupButtonAdapter> T setupButtonAdapter(@NonNull Context context,
-                                                                                                                @NonNull com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter.OnProviderSelectListener providerSelectListener, SmoothSyncApi api)
+        public <T extends RecyclerView.Adapter<BasicButtonViewHolder> & SetupButtonAdapter> T setupButtonAdapter(@NonNull Context context,
+                                                                                                                 @NonNull MicroFragmentHost host,
+                                                                                                                 @NonNull SmoothSyncApi api,
+                                                                                                                 @NonNull Generator<String> name)
         {
-            return (T) new FixedButtonSetupAdapter(new ApiSmoothSetupAdapter(api, providerSelectListener), providerSelectListener);
+            T adapter = (T) new ApiSmoothSetupAdapter(api,
+                    provider -> host.execute(
+                            context,
+                            new Swiped(
+                                    new ForwardTransition<>(
+                                            mAccountSetup.microFragment(
+                                                    context,
+                                                    new BasicAccount(name.next(), provider))))));
+
+            adapter = (T) new FixedButtonSetupAdapter<>(adapter,
+                    () -> host.execute(
+                            context,
+                            new Swiped(
+                                    new ForwardTransition<>(
+                                            mChooserSetup.microFragment(context, new Conditional<String>(new Not<>(TextUtils::isEmpty), name::next))))),
+                    () -> R.string.smoothsetup_button_choose_provider);
+
+            if (context.getResources().getBoolean(R.bool.smoothsetup_allow_manual_setup))
+            {
+                adapter = (T) new FixedButtonSetupAdapter<>(adapter,
+                        () -> host.execute(
+                                context,
+                                new Swiped(
+                                        new ForwardTransition<>(
+                                                mManualSetup.microFragment(context, new Conditional<String>(new Not<>(TextUtils::isEmpty), name::next))))),
+                        () -> R.string.smoothsetup_button_manual_setup);
+            }
+            return adapter;
         }
 
 

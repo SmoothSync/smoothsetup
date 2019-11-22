@@ -16,8 +16,6 @@
 
 package com.smoothsync.smoothsetup.setupbuttons;
 
-import com.smoothsync.api.model.Provider;
-
 import androidx.recyclerview.widget.RecyclerView;
 
 
@@ -26,20 +24,4 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public abstract class AbstractSmoothSetupAdapter extends RecyclerView.Adapter<BasicButtonViewHolder> implements SetupButtonAdapter
 {
-    private final OnProviderSelectListener mListener;
-
-
-    public AbstractSmoothSetupAdapter(OnProviderSelectListener listener)
-    {
-        this.mListener = listener;
-    }
-
-
-    protected void notifyProviderSeleteced(Provider provider)
-    {
-        if (mListener != null)
-        {
-            mListener.onProviderSelected(provider);
-        }
-    }
 }

@@ -17,7 +17,7 @@
 package com.smoothsync.smoothsetup.utils;
 
 import org.dmfs.android.microwizard.box.Boxable;
-import org.dmfs.optional.Optional;
+import org.dmfs.jems.optional.Optional;
 
 
 /**

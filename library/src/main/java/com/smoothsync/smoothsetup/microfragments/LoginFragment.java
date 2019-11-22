@@ -34,8 +34,6 @@ import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.AbstractAutoCompleteAdapter;
-import com.smoothsync.smoothsetup.model.Account;
-import com.smoothsync.smoothsetup.model.BasicAccount;
 import com.smoothsync.smoothsetup.restrictions.AccountRestriction;
 import com.smoothsync.smoothsetup.restrictions.ProviderAccountRestrictions;
 import com.smoothsync.smoothsetup.services.FutureApiServiceConnection;
@@ -47,16 +45,14 @@ import com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter;
 import org.dmfs.android.bolts.service.FutureServiceConnection;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
-import org.dmfs.android.microfragments.transitions.ForwardTransition;
-import org.dmfs.android.microfragments.transitions.Swiped;
-import org.dmfs.android.microwizard.MicroWizard;
+import org.dmfs.android.microfragments.MicroFragmentHost;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
+import org.dmfs.jems.generator.Generator;
+import org.dmfs.jems.optional.Optional;
+import org.dmfs.jems.optional.adapters.First;
 import org.dmfs.jems.optional.decorators.MapCollapsed;
-import org.dmfs.optional.First;
-import org.dmfs.optional.Optional;
-
-import java.util.NoSuchElementException;
+import org.dmfs.jems.single.combined.Backed;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -70,7 +66,7 @@ import androidx.recyclerview.widget.RecyclerView;
  *
  * @author Marten Gajda
  */
-public final class LoginFragment extends Fragment implements SetupButtonAdapter.OnProviderSelectListener
+public final class LoginFragment extends Fragment
 {
     private AutoCompleteTextView mLogin;
     private FutureServiceConnection<SmoothSyncApi> mApiService;
@@ -113,7 +109,8 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
         llm.setOrientation(RecyclerView.VERTICAL);
         list.setLayoutManager(llm);
 
-        final AbstractSmoothSetupAdapter adapter = loginFormAdapterFactory.setupButtonAdapter(getContext(), this, new SmoothSyncApiProxy(mApiService));
+        final AbstractSmoothSetupAdapter adapter = loginFormAdapterFactory.setupButtonAdapter(getContext(), mMicroFragmentEnvironment.host(),
+                new SmoothSyncApiProxy(mApiService), () -> mLogin.getText().toString());
         list.setAdapter(adapter);
 
         mLogin.addTextChangedListener(new TextWatcher()
@@ -146,7 +143,7 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
             }
         });
 
-        mLogin.setText(mMicroFragmentEnvironment.microFragment().parameter().username().value(null));
+        mLogin.setText(new Backed<String>(mMicroFragmentEnvironment.microFragment().parameter().username(), () -> null).value());
 
         ((TextView) result.findViewById(android.R.id.message)).setText(loginFormAdapterFactory.promptText(getContext()));
 
@@ -196,60 +193,11 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
     }
 
 
-    @Override
-    public void onProviderSelected(@NonNull Provider provider)
-    {
-        mMicroFragmentEnvironment.host().execute(
-                getActivity(),
-                new Swiped(
-                        new ForwardTransition<>(
-                                mMicroFragmentEnvironment.microFragment().parameter().next().microFragment(
-                                        getActivity(),
-                                        new BasicAccount(mLogin.getText().toString(), provider)))));
-    }
-
-
-    @Override
-    public void onOtherSelected()
-    {
-        mMicroFragmentEnvironment.host().execute(
-                getActivity(),
-                new Swiped(
-                        new ForwardTransition<>(
-                                mMicroFragmentEnvironment.microFragment().parameter().fallback().microFragment(getActivity(), new Optional<String>()
-                                {
-                                    @Override
-                                    public boolean isPresent()
-                                    {
-                                        return !mLogin.getText().toString().isEmpty();
-                                    }
-
-
-                                    @Override
-                                    public String value(String defaultValue)
-                                    {
-                                        return isPresent() ? value() : defaultValue;
-                                    }
-
-
-                                    @Override
-                                    public String value() throws NoSuchElementException
-                                    {
-                                        return mLogin.getText().toString();
-                                    }
-                                }))));
-    }
-
-
     public interface Params
     {
         LoginFormAdapterFactory loginFormAdapterFactory();
 
         Optional<String> username();
-
-        MicroWizard<Account> next();
-
-        MicroWizard<Optional<String>> fallback();
     }
 
 
@@ -259,8 +207,10 @@ public final class LoginFragment extends Fragment implements SetupButtonAdapter.
         <T extends Adapter & Filterable> T autoCompleteAdapter(@NonNull Context context, @NonNull SmoothSyncApi api);
 
         @NonNull
-        <T extends RecyclerView.Adapter<BasicButtonViewHolder>, SetupButtonAdapter> T setupButtonAdapter(@NonNull Context context,
-                                                                                                         @NonNull com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter.OnProviderSelectListener providerSelectListener, SmoothSyncApi api);
+        <T extends RecyclerView.Adapter<BasicButtonViewHolder> & SetupButtonAdapter> T setupButtonAdapter(@NonNull Context context,
+                                                                                                          @NonNull MicroFragmentHost host,
+                                                                                                          @NonNull SmoothSyncApi api,
+                                                                                                          @NonNull Generator<String> name);
 
         @NonNull
         String promptText(@NonNull Context context);

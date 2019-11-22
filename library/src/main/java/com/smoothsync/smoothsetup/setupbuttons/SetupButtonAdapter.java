@@ -33,7 +33,11 @@ public interface SetupButtonAdapter
     interface OnProviderSelectListener
     {
         void onProviderSelected(@NonNull Provider provider);
+    }
 
+
+    interface OnOtherSelectListener
+    {
         void onOtherSelected();
     }
 }

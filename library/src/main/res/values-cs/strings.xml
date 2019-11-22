@@ -191,4 +191,5 @@
     %1$s wil be replaced either with the app name or the provider name.
     -->
     <string name="smoothsetup_terms_and_conditions">Obchodní podmínky pro %1$s</string>
+    <string name="smoothsetup_wizard_title_provider_login">%s</string>
 </resources>

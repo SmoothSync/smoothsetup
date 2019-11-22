@@ -26,6 +26,7 @@ import android.text.TextUtils;
 
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.Account;
+import com.smoothsync.smoothsetup.utils.AccountDetails;
 import com.smoothsync.smoothsetup.utils.LoginInfo;
 import com.smoothsync.smoothsetup.utils.SimpleLoginRequest;
 import com.smoothsync.smoothsetup.utils.StringMeta;
@@ -36,8 +37,10 @@ import com.smoothsync.smoothsetup.wizard.EnterPassword;
 import com.smoothsync.smoothsetup.wizard.GenericLogin;
 import com.smoothsync.smoothsetup.wizard.LoadProvider;
 import com.smoothsync.smoothsetup.wizard.LoadProviders;
+import com.smoothsync.smoothsetup.wizard.ManualLogin;
 import com.smoothsync.smoothsetup.wizard.RequestPermissions;
 import com.smoothsync.smoothsetup.wizard.UsernameLogin;
+import com.smoothsync.smoothsetup.wizard.ValidateCustomAccountLogin;
 import com.smoothsync.smoothsetup.wizard.VerifyLogin;
 
 import org.dmfs.android.microfragments.FragmentEnvironment;
@@ -48,8 +51,8 @@ import org.dmfs.android.microfragments.transitions.XFaded;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.iterables.elementary.Seq;
-import org.dmfs.optional.NullSafe;
-import org.dmfs.optional.Optional;
+import org.dmfs.jems.optional.Optional;
+import org.dmfs.jems.optional.elementary.NullSafe;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -178,11 +181,12 @@ public final class SetupDispatchMicroFragment implements MicroFragment<SetupDisp
             new Handler().post(() ->
             {
 
-                MicroWizard<Account> passwordWizard = new EnterPassword(new VerifyLogin(new RequestPermissions<>(
+                MicroWizard<AccountDetails> permissionsWizard = new RequestPermissions<>(
                         new Seq<>(Manifest.permission.READ_CALENDAR,
                                 Manifest.permission.WRITE_CALENDAR,
                                 Manifest.permission.READ_CONTACTS,
-                                Manifest.permission.WRITE_CONTACTS), new CreateAccount(new Congratulations(R.string.smoothsetup_message_setup_completed)))));
+                                Manifest.permission.WRITE_CONTACTS), new CreateAccount(new Congratulations(R.string.smoothsetup_message_setup_completed)));
+                MicroWizard<Account> passwordWizard = new EnterPassword(new VerifyLogin(permissionsWizard));
                 MicroWizard<LoginInfo> loginWizard = new UsernameLogin(passwordWizard);
 
                 // check if meta data contains a specific provider url, if the url is hard coded, we don't allow to override it
@@ -210,7 +214,9 @@ public final class SetupDispatchMicroFragment implements MicroFragment<SetupDisp
                     return;
                 }
 
-                MicroWizard<Void> genericLogin = new GenericLogin(passwordWizard, new LoadProviders(new ChooseProvider(loginWizard)));
+                MicroWizard<Void> genericLogin = new GenericLogin(passwordWizard,
+                        new LoadProviders(new ChooseProvider(loginWizard)),
+                        new ManualLogin(new ValidateCustomAccountLogin(permissionsWizard)));
                 // check if shared preferences contain a provider id
                 SharedPreferences pref = getContext().getSharedPreferences("com.smoothsync.smoothsetup.prefs", 0);
                 if (pref.contains(PREF_REFERRER))

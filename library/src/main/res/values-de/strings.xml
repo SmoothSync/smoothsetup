@@ -58,4 +58,9 @@
     <string name="smoothsetup_wizard_title_provider_login">%s</string>
     <string name="smoothsetup_button_close">Schließen</string>
     <string name="smoothsetup_message_auth_completed">%1$s hat Dein Konto erfolgreich verifiziert und die Synchronisation wird in Kürze fortgesetzt</string>
+    <string name="smoothsetup_button_manual_setup">Manuelle Einrichtung</string>
+    <string name="smoothsetup_manual_login_hint">Benutzername</string>
+    <string name="smoothsetup_hostname_or_address">Servername oder -adresse</string>
+    <string name="smoothsetup_enter_your_provider_data">Gib Deine Kontodaten ein</string>
+    <string name="smoothsync_manual_setup">Manuelle Einrichtung</string>
 </resources>

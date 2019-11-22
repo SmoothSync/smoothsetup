@@ -19,8 +19,9 @@ package com.smoothsync.smoothsetup.utils;
 import android.os.Parcel;
 
 import org.dmfs.android.microwizard.box.Box;
-import org.dmfs.optional.NullSafe;
-import org.dmfs.optional.Optional;
+import org.dmfs.jems.optional.Optional;
+import org.dmfs.jems.optional.elementary.NullSafe;
+import org.dmfs.jems.single.combined.Backed;
 
 
 /**
@@ -82,7 +83,7 @@ public final class SimpleLoginRequest implements LoginRequest
         public void writeToParcel(Parcel dest, int flags)
         {
             dest.writeString(mLoginRequest.mProviderId);
-            dest.writeString(mLoginRequest.mUsername.value(null));
+            dest.writeString(new Backed<String>(mLoginRequest.mUsername, () -> null).value());
         }
 
 

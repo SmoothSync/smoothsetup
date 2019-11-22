@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 dmfs GmbH
+ * Copyright (c) 2019 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package com.smoothsync.smoothsetup.wizard;
 
 import android.content.Context;
 
-import com.smoothsync.smoothsetup.microfragments.ChooseProviderMicroFragment;
-import com.smoothsync.smoothsetup.microfragments.ProvidersLoadMicroFragment;
+import com.smoothsync.smoothsetup.microfragments.ManualSetupSimpleMicroFragment;
+import com.smoothsync.smoothsetup.utils.AccountDetails;
 
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microwizard.MicroWizard;
@@ -31,12 +31,12 @@ import org.dmfs.jems.optional.Optional;
 /**
  * @author Marten Gajda
  */
-public final class LoadProviders implements MicroWizard<Optional<String>>
+public final class ManualLogin implements MicroWizard<Optional<String>>
 {
-    private final MicroWizard<ChooseProviderMicroFragment.ProviderSelection> mNext;
+    private final MicroWizard<AccountDetails> mNext;
 
 
-    public LoadProviders(MicroWizard<ChooseProviderMicroFragment.ProviderSelection> next)
+    public ManualLogin(MicroWizard<AccountDetails> next)
     {
         mNext = next;
     }
@@ -45,7 +45,7 @@ public final class LoadProviders implements MicroWizard<Optional<String>>
     @Override
     public MicroFragment<?> microFragment(Context context, Optional<String> username)
     {
-        return new ProvidersLoadMicroFragment(username, mNext);
+        return new ManualSetupSimpleMicroFragment(username, mNext);
     }
 
 
@@ -56,12 +56,12 @@ public final class LoadProviders implements MicroWizard<Optional<String>>
     }
 
 
-    private final static class WizardBox extends AbstractSingleBox<MicroWizard<ChooseProviderMicroFragment.ProviderSelection>, MicroWizard<Optional<String>>>
+    private final static class WizardBox extends AbstractSingleBox<MicroWizard<AccountDetails>, MicroWizard<Optional<String>>>
     {
 
-        WizardBox(MicroWizard<ChooseProviderMicroFragment.ProviderSelection> next)
+        private WizardBox(MicroWizard<AccountDetails> next)
         {
-            super(next, LoadProviders::new);
+            super(next, ManualLogin::new);
         }
 
 

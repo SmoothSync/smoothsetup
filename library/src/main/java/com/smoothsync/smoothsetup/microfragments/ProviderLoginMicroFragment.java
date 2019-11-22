@@ -26,18 +26,23 @@ import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.ProviderAutoCompleteAdapter;
 import com.smoothsync.smoothsetup.model.Account;
+import com.smoothsync.smoothsetup.model.BasicAccount;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.ProviderSmoothSetupAdapter;
+import com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter;
 import com.smoothsync.smoothsetup.utils.LoginInfo;
 
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
+import org.dmfs.android.microfragments.transitions.ForwardTransition;
+import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
-import org.dmfs.optional.Optional;
-import org.dmfs.optional.Present;
+import org.dmfs.jems.generator.Generator;
+import org.dmfs.jems.optional.Optional;
+import org.dmfs.jems.optional.elementary.Present;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -119,7 +124,7 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
             @Override
             public LoginFragment.LoginFormAdapterFactory loginFormAdapterFactory()
             {
-                return new ProviderLoginFormAdapterFactory(mLoginInfo.provider());
+                return new ProviderLoginFormAdapterFactory(mNext, mLoginInfo.provider());
             }
 
 
@@ -129,19 +134,6 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
                 return mLoginInfo.username();
             }
 
-
-            @Override
-            public MicroWizard<Account> next()
-            {
-                return mNext;
-            }
-
-
-            @Override
-            public MicroWizard<Optional<String>> fallback()
-            {
-                throw new RuntimeException("This should not be called");
-            }
         };
     }
 
@@ -163,22 +155,31 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
 
     private final static class ProviderLoginFormAdapterFactory implements LoginFragment.LoginFormAdapterFactory
     {
+        private final MicroWizard<Account> mNext;
         private final Provider mProvider;
         private MicroFragmentEnvironment<ChooseProviderMicroFragment.ProviderListFragment.Params> mMicroFragmentEnvironment;
 
 
-        private ProviderLoginFormAdapterFactory(Provider provider)
+        private ProviderLoginFormAdapterFactory(MicroWizard<Account> next, Provider provider)
         {
+            mNext = next;
             mProvider = provider;
         }
 
 
         @NonNull
         @Override
-        public <T extends RecyclerView.Adapter<BasicButtonViewHolder>, SetupButtonAdapter> T setupButtonAdapter(@NonNull Context context,
-                                                                                                                @NonNull com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter.OnProviderSelectListener providerSelectListener, SmoothSyncApi api)
+        public <T extends RecyclerView.Adapter<BasicButtonViewHolder> & SetupButtonAdapter> T setupButtonAdapter(@NonNull Context context, @NonNull MicroFragmentHost host, @NonNull SmoothSyncApi api, @NonNull Generator<String> name)
         {
-            return (T) new ProviderSmoothSetupAdapter(mProvider, providerSelectListener);
+            return (T) new ProviderSmoothSetupAdapter(
+                    mProvider,
+                    provider -> host.execute(
+                            context,
+                            new Swiped(
+                                    new ForwardTransition<>(
+                                            mNext.microFragment(
+                                                    context,
+                                                    new BasicAccount(name.next(), provider))))));
         }
 
 

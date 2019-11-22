@@ -47,8 +47,9 @@ import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.android.microfragments.transitions.XFaded;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Unboxed;
+import org.dmfs.jems.optional.Optional;
+import org.dmfs.jems.single.combined.Backed;
 import org.dmfs.optional.NullSafe;
-import org.dmfs.optional.Optional;
 
 import java.util.List;
 
@@ -164,7 +165,7 @@ public final class ProvidersLoadMicroFragment implements MicroFragment<Providers
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        dest.writeString(mAccount.value(null));
+        dest.writeString(new Backed<String>(mAccount, () -> null).value());
         dest.writeParcelable(mNext.boxed(), flags);
     }
 
