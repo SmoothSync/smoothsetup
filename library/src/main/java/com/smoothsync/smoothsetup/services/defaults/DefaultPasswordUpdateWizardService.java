@@ -21,9 +21,9 @@ import com.smoothsync.smoothsetup.services.WizardService;
 import com.smoothsync.smoothsetup.services.delegating.DelegatingWizardService;
 import com.smoothsync.smoothsetup.wizard.AuthError;
 import com.smoothsync.smoothsetup.wizard.Congratulations;
-import com.smoothsync.smoothsetup.wizard.CreateAccount;
 import com.smoothsync.smoothsetup.wizard.EnterPassword;
 import com.smoothsync.smoothsetup.wizard.LoadAccount;
+import com.smoothsync.smoothsetup.wizard.UpdateAccount;
 import com.smoothsync.smoothsetup.wizard.VerifyLogin;
 
 
@@ -44,9 +44,7 @@ public final class DefaultPasswordUpdateWizardService extends DelegatingWizardSe
                         new AuthError(
                                 new EnterPassword(
                                         new VerifyLogin(
-                                                // TODO: replace with UpdateCredentialsWizard
-                                                new CreateAccount(
-                                                        // TODO: replace with simple success message
+                                                new UpdateAccount(
                                                         new Congratulations(R.string.smoothsetup_message_auth_completed))))))
                         .microFragment(
                                 context,

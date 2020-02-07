@@ -8,4 +8,7 @@ interface AccountService {
 
 
    	void createAccount(in Bundle bundle);
+
+
+   	void updateAccount(in Bundle bundle);
 }

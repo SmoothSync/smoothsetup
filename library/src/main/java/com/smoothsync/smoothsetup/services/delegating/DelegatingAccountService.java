@@ -108,5 +108,12 @@ public abstract class DelegatingAccountService extends Service
         {
             mAccountService.createAccount(bundle);
         }
+
+
+        @Override
+        public void updateAccount(Bundle bundle) throws RemoteException
+        {
+            mAccountService.updateAccount(bundle);
+        }
     }
 }
