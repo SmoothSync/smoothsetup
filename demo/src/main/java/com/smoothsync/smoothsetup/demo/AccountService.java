@@ -121,6 +121,21 @@ public class AccountService extends DelegatingAccountService
                     e.printStackTrace();
                 }
             }
+
+
+            @Override
+            public void updateAccount(Bundle bundle) throws RemoteException
+            {
+                try
+                {
+                    // wait a little to emulate the account setup
+                    Thread.sleep(1000);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
         });
     }
 }

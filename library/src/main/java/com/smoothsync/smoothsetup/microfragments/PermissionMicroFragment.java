@@ -16,10 +16,12 @@
 
 package com.smoothsync.smoothsetup.microfragments;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.PermissionGroupInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.view.LayoutInflater;
@@ -48,9 +50,12 @@ import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.iterables.Distinct;
 import org.dmfs.iterables.decorators.Sieved;
 import org.dmfs.jems.iterable.decorators.Mapped;
-import org.dmfs.jems.single.elementary.Reduced;
+import org.dmfs.jems.predicate.elementary.Equals;
+import org.dmfs.jems.single.elementary.Collected;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -66,6 +71,24 @@ import static android.content.pm.PackageManager.PERMISSION_DENIED;
  */
 public final class PermissionMicroFragment<T extends Boxable<T>> implements MicroFragment<PermissionMicroFragment.PermissionListFragment.Params<T>>
 {
+    /**
+     * Map known permissions to permission groups, based on the mapping the App Permission management fragment uses:
+     * <p>
+     * https://android.googlesource.com/platform/packages/apps/PackageInstaller/+/master/src/com/android/packageinstaller/permission/utils/Utils.java
+     */
+    private final static Map<String, String> PERMISSION_GROUPS = new HashMap<>();
+
+    static
+    {
+        if (Build.VERSION.SDK_INT >= 23)
+        {
+            PERMISSION_GROUPS.put(Manifest.permission.READ_CALENDAR, Manifest.permission_group.CALENDAR);
+            PERMISSION_GROUPS.put(Manifest.permission.WRITE_CALENDAR, Manifest.permission_group.CALENDAR);
+            PERMISSION_GROUPS.put(Manifest.permission.READ_CONTACTS, Manifest.permission_group.CONTACTS);
+            PERMISSION_GROUPS.put(Manifest.permission.WRITE_CONTACTS, Manifest.permission_group.CONTACTS);
+        }
+    }
+
     public final static Creator<PermissionMicroFragment<?>> CREATOR = new Creator<PermissionMicroFragment<?>>()
     {
         @SuppressWarnings("unchecked") // we don't know the generic type in static context
@@ -188,7 +211,7 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
         {
             Activity activity = getActivity();
             mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
-            if (!new Sieved<Integer>(i -> i == PERMISSION_DENIED,
+            if (!new Sieved<>(new Equals<>(PERMISSION_DENIED),
                     new Mapped<>(perm -> ContextCompat.checkSelfPermission(activity, perm),
                             mMicroFragmentEnvironment.microFragment().parameter().permissions())).iterator().hasNext())
             {
@@ -211,6 +234,17 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
             {
                 try
                 {
+                    if (Build.VERSION.SDK_INT >= 29)
+                    {
+                        // Android 10+ don't give us the correct permission group so use our own mapping
+                        // see https://developer.android.com/about/versions/10/privacy/changes#permission-groups-removed
+                        String group = PERMISSION_GROUPS.get(perm);
+                        if (group != null)
+                        {
+                            return group;
+                        }
+                        // fall through to asking packageManager, this might still work for 3rd party permission groups
+                    }
                     return packageManager.getPermissionInfo(perm, 0).group;
                 }
                 catch (PackageManager.NameNotFoundException e)
@@ -266,11 +300,9 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
         @Override
         public void onClick(View view)
         {
-            requestPermissions(new Reduced<>(new ArrayList<String>(), (list, value) ->
-                    {
-                        list.add(value);
-                        return list;
-                    }, mMicroFragmentEnvironment.microFragment().parameter().permissions()).value().toArray(new String[0]),
+            requestPermissions(
+                    new Collected<>(ArrayList::new,
+                            mMicroFragmentEnvironment.microFragment().parameter().permissions()).value().toArray(new String[0]),
                     1);
         }
 
