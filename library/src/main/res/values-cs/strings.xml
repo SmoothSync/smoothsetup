@@ -6,7 +6,7 @@
     Title of the wizard step that's shown while the app loads data from the SmoothSync service.
     Should not be longer than ~16 characters, since it has to fit on a single (title) line.
     -->
-    <string name="smoothsetup_wizard_title_loading">Nahrávání …</string>
+    <string name="smoothsetup_wizard_title_loading">Načítá se...</string>
 
     <!--
     Title of the wizard step that asks the user to enter his/her user name.
@@ -15,10 +15,21 @@
     <string name="smoothsetup_wizard_title_login">Přihlášení</string>
 
     <!--
+    Title of the wizard step that asks the user to enter his/her user name when logging in to a specific provider.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_provider_login">%s</string>
+
+    <!--
+    Title of the manual setup page.
+    -->
+    <string name="smoothsync_manual_setup">Manuální nastavení</string>
+
+    <!--
     Title of the wizard step that asks the user to select a provider.
     Should not be longer than ~16 characters, since it has to fit on a single (title) line.
     -->
-    <string name="smoothsetup_wizard_title_choose_provider">Vybrat poskytovatele</string>
+    <string name="smoothsetup_wizard_title_choose_provider">Vyberte poskytovatele</string>
 
     <!--
     Title of the wizard step that asks the user to enter his/her password.
@@ -30,13 +41,13 @@
     Title of the wizard step that's shown while the credentials verification is in progress.
     Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
     -->
-    <string name="smoothsetup_wizard_title_authenticating">Autentizace …</string>
+    <string name="smoothsetup_wizard_title_authenticating">Ověřuje se…</string>
 
     <!--
     Title of the wizard step that's shown while the app prepares the account on the device.
     Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
     -->
-    <string name="smoothsetup_wizard_title_completing_setup">Dokončení …</string>
+    <string name="smoothsetup_wizard_title_completing_setup">Dokončuje se…</string>
 
     <!--
     Title of the wizard step that's shown after the account setup has been completed.
@@ -50,6 +61,22 @@
     -->
     <string name="smoothsetup_wizard_title_error">Chyba</string>
 
+    <!--
+    Title of a wizard step that presents an authentication error to the user.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_authentication_error">Chyba ověření</string>
+
+    <!--
+    Title of a wizard step which asks the use to grant required permissions.
+    -->
+    <plurals name="smoothsetup_wizard_title_grant_permissions">
+        <item quantity="one">Udělit oprávnění</item>
+        <item quantity="two">Udělit oprávnění</item>
+        <item quantity="few">Udělit oprávnění</item>
+        <item quantity="many">Udělit oprávnění</item>
+        <item quantity="other">Udělit oprávnění</item>
+    </plurals>
 
     <!-- Prompts -->
 
@@ -57,31 +84,48 @@
     Message that prompts the user to enter his/her username or email address for the provider to set up
     and to select the provider afterwards.
     -->
-    <string name="smoothsetup_prompt_login">Zadejte svoje přihlašovací jméno (nebo e-mail) a vyberte poskytovatele</string>
+    <string name="smoothsetup_prompt_login">Zadejte e-mailovou adresu nebo se přihlaste a zvolte poskytovatele</string>
+
+    <!--
+    Message that prompts the user to enter provider and account data
+    -->
+    <string name="smoothsetup_enter_your_provider_data">Zadejte údaje svého poskytovatele</string>
 
     <!--
     Message that prompts the user to enter his/her username or email address for a specific provider.
     %1$s will be replaced with the provider name.
     -->
-    <string name="smoothsetup_prompt_login_at_provider">Zadejte uživatelské jméno pro %1$s</string>
+    <string name="smoothsetup_prompt_login_at_provider">Zadejte své přihlášení k %1$s</string>
 
     <!--
     Message that prompts the user to enter his/her password for a specific provider.
     %1$s will be replaced with the provider name.
     -->
-    <string name="smoothsetup_prompt_enter_password">Zadejte heslo pro %1$s</string>
+    <string name="smoothsetup_prompt_enter_password">Zadejte své heslo k %1$s</string>
 
     <!--
     Message that prompts the user to enter his/her password or app-specific password for a specific provider.
     %1$s will be replaced with the provider name.
     -->
-    <string name="smoothsetup_prompt_enter_password_or_app_specific_password">Zadejte heslo pro %1$s nebo aplikačně specifické heslo pro %1$s</string>
+    <string name="smoothsetup_prompt_enter_password_or_app_specific_password">Zadejte své heslo k %1$s nebo své heslo %1$s specifické pro aplikaci</string>
 
     <!--
     Message that prompts the user to enter his/her app-specific password for a specific provider.
     %1$s will be replaced with the provider name.
     -->
-    <string name="smoothsetup_prompt_enter_app_specific_password">Zadejte aplikačně specifické heslo pro %1$s</string>
+    <string name="smoothsetup_prompt_enter_app_specific_password">Zadejte své heslo k %1$s specifické pro aplikaci</string>
+
+    <!--
+    Message which prompts the user to grant one or more permissions.
+    %1$s will be replaced with the app name
+    -->
+    <plurals name="smoothsetup_prompt_grant_permission">
+        <item quantity="one">Udělte následující oprávnění</item>
+        <item quantity="two">Udělte následující oprávnění</item>
+        <item quantity="few">Udělte následující oprávnění</item>
+        <item quantity="many">Udělte následující oprávnění</item>
+        <item quantity="other">Udělte následující oprávnění</item>
+    </plurals>
 
 
     <!-- Buttons -->
@@ -90,13 +134,18 @@
     Text on a button that allows the user to select a provider from a list.
     Shown if no other provider matches the login name.
     -->
-    <string name="smoothsetup_button_choose_provider">Vybrat poskytovatele</string>
+    <string name="smoothsetup_button_choose_provider">Vyberte poskytovatele</string>
+
+    <!--
+    Text on a button that allows the user to launch the custom account setup.
+    -->
+    <string name="smoothsetup_button_manual_setup">Manuální nastavení</string>
 
     <!--
     Text on a button that allows the user to select a provider from a list.
     Shown if the login name matches a specific provider.
     -->
-    <string name="smoothsetup_button_other_provider">Jiný</string>
+    <string name="smoothsetup_button_other_provider">Jiné</string>
 
     <!--
     Text on a button that proceeds to the password prompt after entering the login name.
@@ -109,14 +158,19 @@
     <string name="smoothsetup_button_sign_in">Přihlášení</string>
 
     <!--
-    Text on a button to close the activity after a successful account setup.
-    -->
-
-    <!--
     Text on the button under an error page that takes the user back to the previous step.
     -->
     <string name="smoothsetup_button_retry_now">Zkusit znovu</string>
 
+    <!--
+    Text on button to grant permissions
+    -->
+    <string name="smoothsetup_button_grant_permission">Udělit</string>
+
+    <!--
+    Text on a button to close the activity after a successful account setup.
+    -->
+    <string name="smoothsetup_button_close">Zavřít</string>
 
     <!-- Messages -->
 
@@ -124,72 +178,113 @@
     Message that's shown to the user when everything worked out an the setup has been completed successfully.
     %1$s will be replaced with the app name.
     -->
-    <string name="smoothsetup_message_setup_completed">Nastavení pro %1$s bylo dokončeno a za okamžik bude zahájena synchronizace</string>
+    <string name="smoothsetup_message_setup_completed">%1$s je nyní nastaveno a synchronizace za chvíli začne</string>
+
+    <!--
+    Message that's shown to the user his/her credentials haven been validated successfully.
+    %1$s will be replaced with the app name.
+    -->
+    <string name="smoothsetup_message_auth_completed">%1$s úspěšně ověřil váš účet a synchronizace za chvíli začne</string>
 
     <!--
     Message that's faded in if a blocking operation (usually a network operation) takes longer than a few seconds.
     -->
-    <string name="smoothsetup_message_please_wait">Tato akce může trvat až 2 minuty.</string>
+    <string name="smoothsetup_message_please_wait">Může to trvat až 2 minuty.</string>
 
+    <!--
+    Message presented to the user when an authentication error occurred.
+    %1$s will be replaced with the app name
+    %2$s will be replaced with the user name
+    %3$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_message_authentication_failure">%1$s nemohl ověřit váš účet \"%2$s\" s %3$s.\n\nK synchronizaci účtu se přihlaste a autorizujte %1$s.</string>
 
     <!-- Error Messages -->
 
     <!--
     Error message that's shown when no provider data (for one or multiple providers) could be loaded (due to any kind of error).
     -->
-    <string name="smoothsetup_error_load_provider">Nebylo možno stáhnout data poskytovatele.\n\nProsím zkontrolujte internetové připojení a nebo opakujte akci později.</string>
+    <string name="smoothsetup_error_load_provider">Nelze načíst údaje poskytovatele.\n\nOvěřte připojení k internetu nebo to zkuste později.</string>
 
     <!--
     Error message that's shown when the user's credentials were not accepted by the provider.
     -->
-    <string name="smoothsetup_error_authentication">Autentizace selhala.\n\nProsím zkontrolujte svoje heslo a zkuste to znovu.</string>
+    <string name="smoothsetup_error_authentication">Ověření selhalo.\n\nZkontrolujte heslo a zkuste to znovu.</string>
 
     <!--
     Generic network error message that's shown when there was any sort of connection issue.
     -->
-    <string name="smoothsetup_error_network">Připojení selhalo.\n\nProsím zkontrolujte internetové připojení nebo opakujte akci později.</string>
-
+    <string name="smoothsetup_error_network">Připojení selhalo.\n\nOvěřte připojení k internetu nebo to zkuste později.</string>
 
     <!-- EditText hints -->
 
     <!--
     Hint text in the field that takes the user's email address or login name.
     -->
-    <string name="smoothsetup_default_login_hint">Uživatelské jméno (příp. e-mail)</string>
+    <string name="smoothsetup_default_login_hint">E-mailová adresa nebo přihlašovací jméno</string>
+
+    <!--
+    Hint text in the field which takes the server address or name.
+    -->
+    <string name="smoothsetup_hostname_or_address">Název nebo adresa hostitele</string>
+
+    <!--
+    Hint text in the field that takes the user's login name.
+    -->
+    <string name="smoothsetup_manual_login_hint">Uživatelské jméno</string>
 
     <!--
     Hint text on a password input field.
     -->
     <string name="smoothsetup_hint_password">Heslo</string>
 
-
     <!-- Links -->
 
     <!--
     Text of a link that will be shown on the login screen if a service provides a sign up link.
     -->
-    <string name="smoothsetup_sign_up_now">Nemáte účet? <b>Zaregistrovat nyní.</b></string>
+    <string name="smoothsetup_sign_up_now">Ještě nemáte účet? <b>Zaregistrujte se teď.</b></string>
 
     <!--
     Text of a link that will be shown underneath the password dialog if a service provides a password recovery link.
     -->
-    <string name="smoothsetup_forgot_password">Zapomněli jste svoje heslo?</string>
+    <string name="smoothsetup_forgot_password">Zapomenuté heslo?</string>
 
     <!--
     Text of a link that will be shown underneath the password dialog if a service provides a link to create app specific passwords.
     -->
-    <string name="smoothsetup_create_app_specific_password">Vytvořit aplikačně-specifické heslo</string>
+    <string name="smoothsetup_create_app_specific_password">Vytvořte si heslo specifické pro aplikaci</string>
 
     <!--
     Text of a link that opens a privacy policy when clicked.
     %1$s wil be replaced either with the app name or the provider name.
     -->
-    <string name="smoothsetup_privacy_policy">Politika soukromí pro %1$s</string>
+    <string name="smoothsetup_privacy_policy">Zásady ochrany soukromí %1$s</string>
 
     <!--
     Text of a link that opens terms & conditions when clicked.
     %1$s wil be replaced either with the app name or the provider name.
     -->
-    <string name="smoothsetup_terms_and_conditions">Obchodní podmínky pro %1$s</string>
-    <string name="smoothsetup_wizard_title_provider_login">%s</string>
+    <string name="smoothsetup_terms_and_conditions">Podmínky %1$s</string>
+
+    <!-- App specific password helper -->
+
+    <!--
+    Title of a button on the Snackbar to copy an app specific password to the clipboard.
+    Must be a single word, as short as possible. Will be converted to all-caps by Android.
+    -->
+    <string name="smoothsetup_button_copy_app_specific_password">Kopírovat</string>
+
+    <!--
+    Title of a Snackbar message to inform the user that an app-specific password has been found.
+    %1$s will be replaced by the password that was found.
+    -->
+    <string name="smoothsetup_snackbar_found_app_specific_password">Nalezeno heslo specifické pro aplikaci: %1$s</string>
+
+    <!--
+    Title of a Snackbar message to inform the user that the previously found app-specific password has been inserted into the password field.
+    -->
+    <string name="smoothsetup_app_specific_password_inserted">Vloženo heslo specifické pro aplikaci</string>
+
+
 </resources>

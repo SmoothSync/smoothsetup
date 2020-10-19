@@ -1,16 +1,29 @@
-<?xml version='1.0' encoding='UTF-8'?><resources>
+<resources>
 
-    <!-- Wizard titles - all these strings have to fit on a single title line in an large font, so they should not exceed ~16 characters --> <!--
+    <!-- Wizard titles - all these strings have to fit on a single title line in an large font, so they should not exceed ~16 characters -->
+
+    <!--
     Title of the wizard step that's shown while the app loads data from the SmoothSync service.
     Should not be longer than ~16 characters, since it has to fit on a single (title) line.
     -->
-    <string name="smoothsetup_wizard_title_loading">正在載入...</string>
+    <string name="smoothsetup_wizard_title_loading">正在載入 …</string>
 
     <!--
     Title of the wizard step that asks the user to enter his/her user name.
     Should not be longer than ~16 characters, since it has to fit on a single (title) line.
     -->
     <string name="smoothsetup_wizard_title_login">登入</string>
+
+    <!--
+    Title of the wizard step that asks the user to enter his/her user name when logging in to a specific provider.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_provider_login">%s</string>
+
+    <!--
+    Title of the manual setup page.
+    -->
+    <string name="smoothsync_manual_setup">手動設定</string>
 
     <!--
     Title of the wizard step that asks the user to select a provider.
@@ -28,19 +41,19 @@
     Title of the wizard step that's shown while the credentials verification is in progress.
     Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
     -->
-    <string name="smoothsetup_wizard_title_authenticating">正在驗證 ...</string>
+    <string name="smoothsetup_wizard_title_authenticating">正在驗證 …</string>
 
     <!--
     Title of the wizard step that's shown while the app prepares the account on the device.
     Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
     -->
-    <string name="smoothsetup_wizard_title_completing_setup">正在完成...</string>
+    <string name="smoothsetup_wizard_title_completing_setup">正在完成 …</string>
 
     <!--
     Title of the wizard step that's shown after the account setup has been completed.
     Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
     -->
-    <string name="smoothsetup_wizard_title_setup_completed">恭喜！</string>
+    <string name="smoothsetup_wizard_title_setup_completed">恭喜</string>
 
     <!--
     Title of a wizard step that presents an error to the user.
@@ -48,18 +61,41 @@
     -->
     <string name="smoothsetup_wizard_title_error">錯誤</string>
 
+    <!--
+    Title of a wizard step that presents an authentication error to the user.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_authentication_error">驗證錯誤</string>
 
-    <!-- Prompts --> <!--
+    <!--
+    Title of a wizard step which asks the use to grant required permissions.
+    -->
+    <plurals name="smoothsetup_wizard_title_grant_permissions">
+        <item quantity="one">授與權限</item>
+        <item quantity="two">授與權限</item>
+        <item quantity="few">授與權限</item>
+        <item quantity="many">授與權限</item>
+        <item quantity="other">授與權限</item>
+    </plurals>
+
+    <!-- Prompts -->
+
+    <!--
     Message that prompts the user to enter his/her username or email address for the provider to set up
     and to select the provider afterwards.
     -->
-    <string name="smoothsetup_prompt_login">輸入電子郵件地址或登入帳號以選擇供應商</string>
+    <string name="smoothsetup_prompt_login">輸入您的電子郵件地址或登入名稱並選擇供應商</string>
+
+    <!--
+    Message that prompts the user to enter provider and account data
+    -->
+    <string name="smoothsetup_enter_your_provider_data">輸入您的供應商資料</string>
 
     <!--
     Message that prompts the user to enter his/her username or email address for a specific provider.
     %1$s will be replaced with the provider name.
     -->
-    <string name="smoothsetup_prompt_login_at_provider">輸入您的%1$s登入帳號</string>
+    <string name="smoothsetup_prompt_login_at_provider">輸入您的%1$s登入名稱</string>
 
     <!--
     Message that prompts the user to enter his/her password for a specific provider.
@@ -71,20 +107,39 @@
     Message that prompts the user to enter his/her password or app-specific password for a specific provider.
     %1$s will be replaced with the provider name.
     -->
-    <string name="smoothsetup_prompt_enter_password_or_app_specific_password">輸入您的%1$s密碼或%1$s應用程式專屬密碼</string>
+    <string name="smoothsetup_prompt_enter_password_or_app_specific_password">輸入您的%1$s密碼或應用程式專用%1$s密碼</string>
 
     <!--
     Message that prompts the user to enter his/her app-specific password for a specific provider.
     %1$s will be replaced with the provider name.
     -->
-    <string name="smoothsetup_prompt_enter_app_specific_password">輸入您的%1$s應用程式專屬密碼</string>
+    <string name="smoothsetup_prompt_enter_app_specific_password">輸入您的應用程式專用%1$s密碼</string>
+
+    <!--
+    Message which prompts the user to grant one or more permissions.
+    %1$s will be replaced with the app name
+    -->
+    <plurals name="smoothsetup_prompt_grant_permission">
+        <item quantity="one">請授與以下權限</item>
+        <item quantity="two">請授與以下權限</item>
+        <item quantity="few">請授與以下權限</item>
+        <item quantity="many">請授與以下權限</item>
+        <item quantity="other">請授與以下權限</item>
+    </plurals>
 
 
-    <!-- Buttons --> <!--
+    <!-- Buttons -->
+
+    <!--
     Text on a button that allows the user to select a provider from a list.
     Shown if no other provider matches the login name.
     -->
     <string name="smoothsetup_button_choose_provider">選擇供應商</string>
+
+    <!--
+    Text on a button that allows the user to launch the custom account setup.
+    -->
+    <string name="smoothsetup_button_manual_setup">手動設定</string>
 
     <!--
     Text on a button that allows the user to select a provider from a list.
@@ -103,58 +158,92 @@
     <string name="smoothsetup_button_sign_in">登入</string>
 
     <!--
-    Text on a button to close the activity after a successful account setup.
-    -->
-
-    <!--
     Text on the button under an error page that takes the user back to the previous step.
     -->
-    <string name="smoothsetup_button_retry_now">立即重試</string>
+    <string name="smoothsetup_button_retry_now">重試</string>
 
+    <!--
+    Text on button to grant permissions
+    -->
+    <string name="smoothsetup_button_grant_permission">授與</string>
 
-    <!-- Messages --> <!--
+    <!--
+    Text on a button to close the activity after a successful account setup.
+    -->
+    <string name="smoothsetup_button_close">關閉</string>
+
+    <!-- Messages -->
+
+    <!--
     Message that's shown to the user when everything worked out an the setup has been completed successfully.
     %1$s will be replaced with the app name.
     -->
-    <string name="smoothsetup_message_setup_completed">已完成%1$s設定並即將進行同步化</string>
+    <string name="smoothsetup_message_setup_completed">%1$s已設定完成並即將開始同步</string>
+
+    <!--
+    Message that's shown to the user his/her credentials haven been validated successfully.
+    %1$s will be replaced with the app name.
+    -->
+    <string name="smoothsetup_message_auth_completed">%1$s已成功驗證您的帳戶並即將繼續同步</string>
 
     <!--
     Message that's faded in if a blocking operation (usually a network operation) takes longer than a few seconds.
     -->
-    <string name="smoothsetup_message_please_wait">這將耗時不到2分鐘。</string>
+    <string name="smoothsetup_message_please_wait">這可能需要2分鐘時間。</string>
 
+    <!--
+    Message presented to the user when an authentication error occurred.
+    %1$s will be replaced with the app name
+    %2$s will be replaced with the user name
+    %3$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_message_authentication_failure">%1$s無法以%3$s驗證您的帳號\"%2$s\" 。\n\n敬請登入以允許%1$s同步您的帳戶。</string>
 
-    <!-- Error Messages --> <!--
+    <!-- Error Messages -->
+
+    <!--
     Error message that's shown when no provider data (for one or multiple providers) could be loaded (due to any kind of error).
     -->
-    <string name="smoothsetup_error_load_provider">無法載入供應商資料。\n\n敬請檢查網路連線或者稍後再試。</string>
+    <string name="smoothsetup_error_load_provider">無法載入供應商資料。\n\n請檢查網路連線狀態或稍後重試。</string>
 
     <!--
     Error message that's shown when the user's credentials were not accepted by the provider.
     -->
-    <string name="smoothsetup_error_authentication">驗證失敗。\n\n敬請檢查密碼並重試。</string>
+    <string name="smoothsetup_error_authentication">驗證失敗。\n\n請檢查您的密碼並重試。</string>
 
     <!--
     Generic network error message that's shown when there was any sort of connection issue.
     -->
-    <string name="smoothsetup_error_network">連線失敗。\n\n敬請檢查網路連線或者稍後再試。</string>
+    <string name="smoothsetup_error_network">連線失敗。\n\n請檢查網路連線狀態或稍後重試。</string>
 
+    <!-- EditText hints -->
 
-    <!-- EditText hints --> <!--
+    <!--
     Hint text in the field that takes the user's email address or login name.
     -->
-    <string name="smoothsetup_default_login_hint">電子郵件地址或登入帳號</string>
+    <string name="smoothsetup_default_login_hint">電子郵件地址或登入名稱</string>
+
+    <!--
+    Hint text in the field which takes the server address or name.
+    -->
+    <string name="smoothsetup_hostname_or_address">主機名稱或地址</string>
+
+    <!--
+    Hint text in the field that takes the user's login name.
+    -->
+    <string name="smoothsetup_manual_login_hint">用戶名稱</string>
 
     <!--
     Hint text on a password input field.
     -->
     <string name="smoothsetup_hint_password">密碼</string>
 
+    <!-- Links -->
 
-    <!-- Links --> <!--
+    <!--
     Text of a link that will be shown on the login screen if a service provides a sign up link.
     -->
-    <string name="smoothsetup_sign_up_now">尚未註冊帳號？ <b>立即註冊。</b></string>
+    <string name="smoothsetup_sign_up_now">還沒有帳號嗎？<b>現在註冊。</b></string>
 
     <!--
     Text of a link that will be shown underneath the password dialog if a service provides a password recovery link.
@@ -164,7 +253,7 @@
     <!--
     Text of a link that will be shown underneath the password dialog if a service provides a link to create app specific passwords.
     -->
-    <string name="smoothsetup_create_app_specific_password">建立應用程式專屬密碼</string>
+    <string name="smoothsetup_create_app_specific_password">建立應用程式專用密碼</string>
 
     <!--
     Text of a link that opens a privacy policy when clicked.
@@ -177,5 +266,25 @@
     %1$s wil be replaced either with the app name or the provider name.
     -->
     <string name="smoothsetup_terms_and_conditions">%1$s條款與條件</string>
-    <string name="smoothsetup_wizard_title_provider_login">%s</string>
+
+    <!-- App specific password helper -->
+
+    <!--
+    Title of a button on the Snackbar to copy an app specific password to the clipboard.
+    Must be a single word, as short as possible. Will be converted to all-caps by Android.
+    -->
+    <string name="smoothsetup_button_copy_app_specific_password">拷貝</string>
+
+    <!--
+    Title of a Snackbar message to inform the user that an app-specific password has been found.
+    %1$s will be replaced by the password that was found.
+    -->
+    <string name="smoothsetup_snackbar_found_app_specific_password">已找到應用程式專用密碼：%1$s</string>
+
+    <!--
+    Title of a Snackbar message to inform the user that the previously found app-specific password has been inserted into the password field.
+    -->
+    <string name="smoothsetup_app_specific_password_inserted">已插入應用程式專用密碼</string>
+
+
 </resources>

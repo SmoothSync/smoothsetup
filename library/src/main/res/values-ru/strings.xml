@@ -1,39 +1,298 @@
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
-    <string name="smoothsetup_wizard_title_login">Войти</string>
-    <string name="smoothsetup_wizard_title_loading">Загрузка …</string>
-    <string name="smoothsetup_wizard_title_choose_provider">Выбрать провайдер</string>
-    <string name="smoothsetup_wizard_title_enter_password">Ввести пароль</string>
-    <string name="smoothsetup_wizard_title_authenticating">Войти …</string>
-    <string name="smoothsetup_wizard_title_completing_setup">Завершить …</string>
-    <string name="smoothsetup_wizard_title_setup_completed">Получилось!</string>
+
+    <!-- Wizard titles - all these strings have to fit on a single title line in an large font, so they should not exceed ~16 characters -->
+
+    <!--
+    Title of the wizard step that's shown while the app loads data from the SmoothSync service.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_loading">Загрузка...</string>
+
+    <!--
+    Title of the wizard step that asks the user to enter his/her user name.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_login">Вход</string>
+
+    <!--
+    Title of the wizard step that asks the user to enter his/her user name when logging in to a specific provider.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_provider_login">%s</string>
+
+    <!--
+    Title of the manual setup page.
+    -->
+    <string name="smoothsync_manual_setup">Ручная настройка</string>
+
+    <!--
+    Title of the wizard step that asks the user to select a provider.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_choose_provider">Выбор провайдера</string>
+
+    <!--
+    Title of the wizard step that asks the user to enter his/her password.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_enter_password">Ввод пароля</string>
+
+    <!--
+    Title of the wizard step that's shown while the credentials verification is in progress.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_authenticating">Авторизация...</string>
+
+    <!--
+    Title of the wizard step that's shown while the app prepares the account on the device.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_completing_setup">Завершение...</string>
+
+    <!--
+    Title of the wizard step that's shown after the account setup has been completed.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_setup_completed">Получилось</string>
+
+    <!--
+    Title of a wizard step that presents an error to the user.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
     <string name="smoothsetup_wizard_title_error">Ошибка</string>
 
-    <string name="smoothsetup_prompt_login">Введите Ваш адрес электронной почты или имя пользователя и выберите Ваш провайдер</string>
-    <string name="smoothsetup_prompt_login_at_provider">Введите Ваше %1$s имя пользователя</string>
-    <string name="smoothsetup_prompt_enter_password">Введите Ваш %1$s пароль</string>
-    <string name="smoothsetup_prompt_enter_password_or_app_specific_password">Введите Ваш %1$s пароль или Ваш специальный %1$s пароль приложения</string>
-    <string name="smoothsetup_prompt_enter_app_specific_password">Введите Ваш специальный %1$s пароль приложения</string>
+    <!--
+    Title of a wizard step that presents an authentication error to the user.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_authentication_error">Ошибка авторизации</string>
 
-    <string name="smoothsetup_button_choose_provider">Выбрать провайдер</string>
-    <string name="smoothsetup_button_other_provider">Другой провайдер</string>
+
+    <!--
+    Title of a wizard step which asks the use to grant required permissions.
+    -->
+    <plurals name="smoothsetup_wizard_title_grant_permissions">
+        <item quantity="one">Предоставить разрешение</item>
+        <item quantity="two">Предоставить разрешения</item>
+        <item quantity="few">Предоставить разрешения</item>
+        <item quantity="many">Предоставить разрешения</item>
+        <item quantity="other">Предоставить разрешения</item>
+    </plurals>
+
+    <!-- Prompts -->
+
+    <!--
+    Message that prompts the user to enter his/her username or email address for the provider to set up
+    and to select the provider afterwards.
+    -->
+    <string name="smoothsetup_prompt_login">Введите ваш электронный адрес или логин и выберите провайдера</string>
+
+    <!--
+    Message that prompts the user to enter provider and account data
+    -->
+    <string name="smoothsetup_enter_your_provider_data">Введите данные вашего провайдера</string>
+
+    <!--
+    Message that prompts the user to enter his/her username or email address for a specific provider.
+    %1$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_prompt_login_at_provider">Введите ваш логин %1$s</string>
+
+    <!--
+    Message that prompts the user to enter his/her password for a specific provider.
+    %1$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_prompt_enter_password">Введите ваш пароль %1$s</string>
+
+    <!--
+    Message that prompts the user to enter his/her password or app-specific password for a specific provider.
+    %1$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_prompt_enter_password_or_app_specific_password">Введите ваш пароль %1$s или специальный пароль для приложения %1$s</string>
+
+    <!--
+    Message that prompts the user to enter his/her app-specific password for a specific provider.
+    %1$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_prompt_enter_app_specific_password">Введите ваш специальный пароль для приложения %1$s</string>
+
+
+    <!--
+    Message which prompts the user to grant one or more permissions.
+    %1$s will be replaced with the app name
+    -->
+    <plurals name="smoothsetup_prompt_grant_permission">
+        <item quantity="one">Предоставьте приложению следующее разрешение</item>
+        <item quantity="two">Предоставьте приложению следующие разрешения</item>
+        <item quantity="few">Предоставьте приложению следующие разрешения</item>
+        <item quantity="many">Предоставьте приложению следующие разрешения</item>
+        <item quantity="other">Предоставьте приложению следующие разрешения</item>
+    </plurals>
+
+
+    <!-- Buttons -->
+
+    <!--
+    Text on a button that allows the user to select a provider from a list.
+    Shown if no other provider matches the login name.
+    -->
+    <string name="smoothsetup_button_choose_provider">Выбрать провайдера</string>
+
+
+    <!--
+    Text on a button that allows the user to launch the custom account setup.
+    -->
+    <string name="smoothsetup_button_manual_setup">Ручная настройка</string>
+
+    <!--
+    Text on a button that allows the user to select a provider from a list.
+    Shown if the login name matches a specific provider.
+    -->
+    <string name="smoothsetup_button_other_provider">Другое</string>
+
+    <!--
+    Text on a button that proceeds to the password prompt after entering the login name.
+    -->
     <string name="smoothsetup_button_login_next">Дальше</string>
-    <string name="smoothsetup_button_sign_in">Войти</string>
-    <string name="smoothsetup_button_retry_now">Попробовать еще раз</string>
 
-    <string name="smoothsetup_message_setup_completed">%1$s установлено и скоро будет произведена синхронизация</string>
-    <string name="smoothsetup_message_please_wait">Это может длиться до 2-х минут.</string>
+    <!--
+    Text on a button that starts the credentials verification after entering a password.
+    -->
+    <string name="smoothsetup_button_sign_in">Вход</string>
 
-    <string name="smoothsetup_error_load_provider">Провайдер не найден.\n\nПожалуйста, проверьте связь с интернетом или попробуйте еще раз позже.</string>
-    <string name="smoothsetup_error_authentication">Вход не удался.\n\nПожалуйста, проверьте Ваш пароль и попробуйте еще раз.</string>
-    <string name="smoothsetup_error_network">Соединение не удалось.\n\nПожалуйста, проверьте связь с интернетом или попробуйте еще раз позже.</string>
+    <!--
+    Text on the button under an error page that takes the user back to the previous step.
+    -->
+    <string name="smoothsetup_button_retry_now">Еще раз</string>
 
-    <string name="smoothsetup_default_login_hint">Электронная почта или имя пользователя</string>
+    <!--
+    Text on button to grant permissions
+    -->
+    <string name="smoothsetup_button_grant_permission">Предоставить</string>
+
+    <!--
+    Text on a button to close the activity after a successful account setup.
+    -->
+    <string name="smoothsetup_button_close">Закрыть</string>
+
+    <!-- Messages -->
+
+    <!--
+    Message that's shown to the user when everything worked out an the setup has been completed successfully.
+    %1$s will be replaced with the app name.
+    -->
+    <string name="smoothsetup_message_setup_completed">Настройка %1$s завершена; синхронизация начнется в ближайшее время</string>
+
+    <!--
+    Message that's shown to the user his/her credentials haven been validated successfully.
+    %1$s will be replaced with the app name.
+    -->
+    <string name="smoothsetup_message_auth_completed">Данные вашей учетной записи успешно проверены %1$s; синхронизация продолжится в ближайшее время</string>
+
+    <!--
+    Message that's faded in if a blocking operation (usually a network operation) takes longer than a few seconds.
+    -->
+    <string name="smoothsetup_message_please_wait">Этот процесс может занять до 2 минут.</string>
+
+    <!--
+    Message presented to the user when an authentication error occurred.
+    %1$s will be replaced with the app name
+    %2$s will be replaced with the user name
+    %3$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_message_authentication_failure">%1$s не удалось проверить подлинность вашей учетной записи «%2$s» у провайдера %3$s\n\nВойдите в учетную запись, чтобы разрешить %1$s выполнить синхронизацию.</string>
+
+
+    <!-- Error Messages -->
+
+    <!--
+    Error message that's shown when no provider data (for one or multiple providers) could be loaded (due to any kind of error).
+    -->
+    <string name="smoothsetup_error_load_provider">Не удалось загрузить данные провайдера.\n\nПроверьте подключение к интернету или повторите попытку позже.</string>
+
+    <!--
+    Error message that's shown when the user's credentials were not accepted by the provider.
+    -->
+    <string name="smoothsetup_error_authentication">Проверка подлинности не пройдена.\n\nПроверьте введенный пароль и повторите попытку.</string>
+
+    <!--
+    Generic network error message that's shown when there was any sort of connection issue.
+    -->
+    <string name="smoothsetup_error_network">Не удалось установить соединение.\n\nПроверьте подключение к интернету или повторите попытку позже.</string>
+
+
+    <!-- EditText hints -->
+
+    <!--
+    Hint text in the field that takes the user's email address or login name.
+    -->
+    <string name="smoothsetup_default_login_hint">Адрес электронной почты или имя пользователя</string>
+
+    <!--
+    Hint text in the field which takes the server address or name.
+    -->
+    <string name="smoothsetup_hostname_or_address">Имя узла или адрес</string>
+
+    <!--
+    Hint text in the field that takes the user's login name.
+    -->
+    <string name="smoothsetup_manual_login_hint">Имя пользователя</string>
+
+    <!--
+    Hint text on a password input field.
+    -->
     <string name="smoothsetup_hint_password">Пароль</string>
 
-    <string name="smoothsetup_sign_up_now">Еще нет аккаунта? <b>Зарегистрироваться сейчас</b></string>
+
+    <!-- Links -->
+
+    <!--
+    Text of a link that will be shown on the login screen if a service provides a sign up link.
+    -->
+    <string name="smoothsetup_sign_up_now">Еще нет учетной записи? <b>Создать.</b></string>
+
+    <!--
+    Text of a link that will be shown underneath the password dialog if a service provides a password recovery link.
+    -->
     <string name="smoothsetup_forgot_password">Забыли пароль?</string>
-    <string name="smoothsetup_create_app_specific_password">Создать специальный пароль приложения</string>
-    <string name="smoothsetup_privacy_policy">%1$s Политика конфиденциальности</string>
-    <string name="smoothsetup_terms_and_conditions">%1$s Пользовательское соглашение</string>
-    <string name="smoothsetup_wizard_title_provider_login">%s</string>
+
+    <!--
+    Text of a link that will be shown underneath the password dialog if a service provides a link to create app specific passwords.
+    -->
+    <string name="smoothsetup_create_app_specific_password">Создать специальный пароль для приложения</string>
+
+    <!--
+    Text of a link that opens a privacy policy when clicked.
+    %1$s wil be replaced either with the app name or the provider name.
+    -->
+    <string name="smoothsetup_privacy_policy">Политика конфиденциальности %1$s</string>
+
+    <!--
+    Text of a link that opens terms & conditions when clicked.
+    %1$s wil be replaced either with the app name or the provider name.
+    -->
+    <string name="smoothsetup_terms_and_conditions">Условия и положения %1$s</string>
+
+
+    <!-- App specific password helper -->
+
+    <!--
+    Title of a button on the Snackbar to copy an app specific password to the clipboard.
+    Must be a single word, as short as possible. Will be converted to all-caps by Android.
+    -->
+    <string name="smoothsetup_button_copy_app_specific_password">Копировать</string>
+
+    <!--
+    Title of a Snackbar message to inform the user that an app-specific password has been found.
+    %1$s will be replaced by the password that was found.
+    -->
+    <string name="smoothsetup_snackbar_found_app_specific_password">Обнаружен специальный пароль для приложения: %1$s</string>
+
+    <!--
+    Title of a Snackbar message to inform the user that the previously found app-specific password has been inserted into the password field.
+    -->
+    <string name="smoothsetup_app_specific_password_inserted">Специальный пароль для приложения вставлен</string>
+
+
 </resources>

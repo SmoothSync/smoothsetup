@@ -1,6 +1,8 @@
-<?xml version='1.0' encoding='UTF-8'?><resources>
+<resources>
 
-    <!-- Wizard titles - all these strings have to fit on a single title line in an large font, so they should not exceed ~16 characters --> <!--
+    <!-- Wizard titles - all these strings have to fit on a single title line in an large font, so they should not exceed ~16 characters -->
+
+    <!--
     Title of the wizard step that's shown while the app loads data from the SmoothSync service.
     Should not be longer than ~16 characters, since it has to fit on a single (title) line.
     -->
@@ -11,6 +13,17 @@
     Should not be longer than ~16 characters, since it has to fit on a single (title) line.
     -->
     <string name="smoothsetup_wizard_title_login">Iniciar sessão</string>
+
+    <!--
+    Title of the wizard step that asks the user to enter his/her user name when logging in to a specific provider.
+    Should not be longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_provider_login">%s</string>
+
+    <!--
+    Title of the manual setup page.
+    -->
+    <string name="smoothsync_manual_setup">Configuração manual</string>
 
     <!--
     Title of the wizard step that asks the user to select a provider.
@@ -48,12 +61,35 @@
     -->
     <string name="smoothsetup_wizard_title_error">Erro</string>
 
+    <!--
+    Title of a wizard step that presents an authentication error to the user.
+    Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
+    -->
+    <string name="smoothsetup_wizard_title_authentication_error">Erro de autenticação</string>
 
-    <!-- Prompts --> <!--
+    <!--
+    Title of a wizard step which asks the use to grant required permissions.
+    -->
+    <plurals name="smoothsetup_wizard_title_grant_permissions">
+        <item quantity="one">Conceder permissão</item>
+        <item quantity="two">Conceder permissões</item>
+        <item quantity="few">Conceder permissões</item>
+        <item quantity="many">Conceder permissões</item>
+        <item quantity="other">Conceder permissões</item>
+    </plurals>
+
+    <!-- Prompts -->
+
+    <!--
     Message that prompts the user to enter his/her username or email address for the provider to set up
     and to select the provider afterwards.
     -->
     <string name="smoothsetup_prompt_login">Introduza o seu endereço de e-mail ou inicie sessão e escolha o seu fornecedor</string>
+
+    <!--
+    Message that prompts the user to enter provider and account data
+    -->
+    <string name="smoothsetup_enter_your_provider_data">Introduza os dados do seu fornecedor</string>
 
     <!--
     Message that prompts the user to enter his/her username or email address for a specific provider.
@@ -79,12 +115,31 @@
     -->
     <string name="smoothsetup_prompt_enter_app_specific_password">Introduza a sua palavra-passe de %1$s específica da aplicação</string>
 
+    <!--
+    Message which prompts the user to grant one or more permissions.
+    %1$s will be replaced with the app name
+    -->
+    <plurals name="smoothsetup_prompt_grant_permission">
+        <item quantity="one">Conceda a seguinte permissão</item>
+        <item quantity="two">Conceda as seguintes permissões</item>
+        <item quantity="few">Conceda as seguintes permissões</item>
+        <item quantity="many">Conceda as seguintes permissões</item>
+        <item quantity="other">Conceda as seguintes permissões</item>
+    </plurals>
 
-    <!-- Buttons --> <!--
+
+    <!-- Buttons -->
+
+    <!--
     Text on a button that allows the user to select a provider from a list.
     Shown if no other provider matches the login name.
     -->
     <string name="smoothsetup_button_choose_provider">Escolher fornecedor</string>
+
+    <!--
+    Text on a button that allows the user to launch the custom account setup.
+    -->
+    <string name="smoothsetup_button_manual_setup">Configuração manual</string>
 
     <!--
     Text on a button that allows the user to select a provider from a list.
@@ -103,28 +158,50 @@
     <string name="smoothsetup_button_sign_in">Iniciar sessão</string>
 
     <!--
-    Text on a button to close the activity after a successful account setup.
-    -->
-
-    <!--
     Text on the button under an error page that takes the user back to the previous step.
     -->
-    <string name="smoothsetup_button_retry_now">Tentar novamente</string>
+    <string name="smoothsetup_button_retry_now">Repetir</string>
 
+    <!--
+    Text on button to grant permissions
+    -->
+    <string name="smoothsetup_button_grant_permission">Conceder</string>
 
-    <!-- Messages --> <!--
+    <!--
+    Text on a button to close the activity after a successful account setup.
+    -->
+    <string name="smoothsetup_button_close">Fechar</string>
+
+    <!-- Messages -->
+
+    <!--
     Message that's shown to the user when everything worked out an the setup has been completed successfully.
     %1$s will be replaced with the app name.
     -->
     <string name="smoothsetup_message_setup_completed">%1$s está agora configurado e a sincronização começará em breve</string>
 
     <!--
+    Message that's shown to the user his/her credentials haven been validated successfully.
+    %1$s will be replaced with the app name.
+    -->
+    <string name="smoothsetup_message_auth_completed">%1$s validou com êxito a sua conta e a sincronização continuará brevemente</string>
+
+    <!--
     Message that's faded in if a blocking operation (usually a network operation) takes longer than a few seconds.
     -->
     <string name="smoothsetup_message_please_wait">Isto pode demorar até 2 minutos.</string>
 
+    <!--
+    Message presented to the user when an authentication error occurred.
+    %1$s will be replaced with the app name
+    %2$s will be replaced with the user name
+    %3$s will be replaced with the provider name.
+    -->
+    <string name="smoothsetup_message_authentication_failure">%1$s não conseguiu autenticar a sua conta \"%2$s\" com %3$s.\n\nInicie sessão para autorizar %1$s a sincronizar a sua conta.</string>
 
-    <!-- Error Messages --> <!--
+    <!-- Error Messages -->
+
+    <!--
     Error message that's shown when no provider data (for one or multiple providers) could be loaded (due to any kind of error).
     -->
     <string name="smoothsetup_error_load_provider">Não foi possível carregar os dados do fornecedor.\n\nVerifique a ligação à Internet ou tente novamente mais tarde.</string>
@@ -139,19 +216,31 @@
     -->
     <string name="smoothsetup_error_network">A ligação falhou.\n\nVerifique a ligação à Internet ou tente novamente mais tarde.</string>
 
+    <!-- EditText hints -->
 
-    <!-- EditText hints --> <!--
+    <!--
     Hint text in the field that takes the user's email address or login name.
     -->
     <string name="smoothsetup_default_login_hint">Endereço de e-mail ou nome de utilizador</string>
+
+    <!--
+    Hint text in the field which takes the server address or name.
+    -->
+    <string name="smoothsetup_hostname_or_address">Nome do anfitrião ou endereço</string>
+
+    <!--
+    Hint text in the field that takes the user's login name.
+    -->
+    <string name="smoothsetup_manual_login_hint">Nome de utilizador</string>
 
     <!--
     Hint text on a password input field.
     -->
     <string name="smoothsetup_hint_password">Palavra-passe</string>
 
+    <!-- Links -->
 
-    <!-- Links --> <!--
+    <!--
     Text of a link that will be shown on the login screen if a service provides a sign up link.
     -->
     <string name="smoothsetup_sign_up_now">Ainda não tem uma conta? <b>Registe-se agora.</b></string>
@@ -177,5 +266,25 @@
     %1$s wil be replaced either with the app name or the provider name.
     -->
     <string name="smoothsetup_terms_and_conditions">Termos e Condições de %1$s</string>
-    <string name="smoothsetup_wizard_title_provider_login">%s</string>
+
+    <!-- App specific password helper -->
+
+    <!--
+    Title of a button on the Snackbar to copy an app specific password to the clipboard.
+    Must be a single word, as short as possible. Will be converted to all-caps by Android.
+    -->
+    <string name="smoothsetup_button_copy_app_specific_password">Copiar</string>
+
+    <!--
+    Title of a Snackbar message to inform the user that an app-specific password has been found.
+    %1$s will be replaced by the password that was found.
+    -->
+    <string name="smoothsetup_snackbar_found_app_specific_password">Palavra-passe específica de aplicação encontrada: %1$s</string>
+
+    <!--
+    Title of a Snackbar message to inform the user that the previously found app-specific password has been inserted into the password field.
+    -->
+    <string name="smoothsetup_app_specific_password_inserted">Palavra-passe específica de aplicação inserida</string>
+
+
 </resources>

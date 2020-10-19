@@ -6,13 +6,13 @@
     Title of the wizard step that's shown while the app loads data from the SmoothSync service.
     Should not be longer than ~16 characters, since it has to fit on a single (title) line.
     -->
-    <string name="smoothsetup_wizard_title_loading">正在加载…</string>
+    <string name="smoothsetup_wizard_title_loading">Laden…</string>
 
     <!--
     Title of the wizard step that asks the user to enter his/her user name.
     Should not be longer than ~16 characters, since it has to fit on a single (title) line.
     -->
-    <string name="smoothsetup_wizard_title_login">登录</string>
+    <string name="smoothsetup_wizard_title_login">Log in</string>
 
     <!--
     Title of the wizard step that asks the user to enter his/her user name when logging in to a specific provider.
@@ -23,59 +23,60 @@
     <!--
     Title of the manual setup page.
     -->
-    <string name="smoothsync_manual_setup">手动设置</string>
+    <string name="smoothsync_manual_setup">Handmatige configuratie</string>
 
     <!--
     Title of the wizard step that asks the user to select a provider.
     Should not be longer than ~16 characters, since it has to fit on a single (title) line.
     -->
-    <string name="smoothsetup_wizard_title_choose_provider">选择提供商</string>
+    <string name="smoothsetup_wizard_title_choose_provider">Kies provider</string>
 
     <!--
     Title of the wizard step that asks the user to enter his/her password.
     Should not be longer than ~16 characters, since it has to fit on a single (title) line.
     -->
-    <string name="smoothsetup_wizard_title_enter_password">输入密码</string>
+    <string name="smoothsetup_wizard_title_enter_password">Geef wachtwoord</string>
 
     <!--
     Title of the wizard step that's shown while the credentials verification is in progress.
     Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
     -->
-    <string name="smoothsetup_wizard_title_authenticating">正在验证身份…</string>
+    <string name="smoothsetup_wizard_title_authenticating">Verifiëren…</string>
 
     <!--
     Title of the wizard step that's shown while the app prepares the account on the device.
     Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
     -->
-    <string name="smoothsetup_wizard_title_completing_setup">即将完成…</string>
+    <string name="smoothsetup_wizard_title_completing_setup">Voltooien…</string>
 
     <!--
     Title of the wizard step that's shown after the account setup has been completed.
     Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
     -->
-    <string name="smoothsetup_wizard_title_setup_completed">恭喜</string>
+    <string name="smoothsetup_wizard_title_setup_completed">Gefeliciteerd</string>
 
     <!--
     Title of a wizard step that presents an error to the user.
     Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
     -->
-    <string name="smoothsetup_wizard_title_error">错误</string>
+    <string name="smoothsetup_wizard_title_error">Fout</string>
 
     <!--
     Title of a wizard step that presents an authentication error to the user.
     Should not be much longer than ~16 characters, since it has to fit on a single (title) line.
     -->
-    <string name="smoothsetup_wizard_title_authentication_error">身份证验证错误</string>
+    <string name="smoothsetup_wizard_title_authentication_error">Verificatiefout</string>
+
 
     <!--
     Title of a wizard step which asks the use to grant required permissions.
     -->
     <plurals name="smoothsetup_wizard_title_grant_permissions">
-        <item quantity="one">授予权限</item>
-        <item quantity="two">授予权限</item>
-        <item quantity="few">授予权限</item>
-        <item quantity="many">授予权限</item>
-        <item quantity="other">授予权限</item>
+        <item quantity="one">Verleen toestemming</item>
+        <item quantity="two">Verleen toestemmingen</item>
+        <item quantity="few">Verleen toestemmingen</item>
+        <item quantity="many">Verleen toestemmingen</item>
+        <item quantity="other">Verleen toestemmingen</item>
     </plurals>
 
     <!-- Prompts -->
@@ -84,47 +85,48 @@
     Message that prompts the user to enter his/her username or email address for the provider to set up
     and to select the provider afterwards.
     -->
-    <string name="smoothsetup_prompt_login">输入您的电子邮件地址或登录并选择您的提供商</string>
+    <string name="smoothsetup_prompt_login">Voer je e-mailadres of gebruikersnaam in en kies je provider</string>
 
     <!--
     Message that prompts the user to enter provider and account data
     -->
-    <string name="smoothsetup_enter_your_provider_data">输入您的提供商数据</string>
+    <string name="smoothsetup_enter_your_provider_data">Voer de providergegevens in</string>
 
     <!--
     Message that prompts the user to enter his/her username or email address for a specific provider.
     %1$s will be replaced with the provider name.
     -->
-    <string name="smoothsetup_prompt_login_at_provider">输入您的 %1$s 登录</string>
+    <string name="smoothsetup_prompt_login_at_provider">Voer je gebruikersnaam voor %1$s in</string>
 
     <!--
     Message that prompts the user to enter his/her password for a specific provider.
     %1$s will be replaced with the provider name.
     -->
-    <string name="smoothsetup_prompt_enter_password">输入您的 %1$s 密码</string>
+    <string name="smoothsetup_prompt_enter_password">Voer je wachtwoord voor %1$s in</string>
 
     <!--
     Message that prompts the user to enter his/her password or app-specific password for a specific provider.
     %1$s will be replaced with the provider name.
     -->
-    <string name="smoothsetup_prompt_enter_password_or_app_specific_password">输入您的 %1$s 密码或您的应用特定 %1$s 密码</string>
+    <string name="smoothsetup_prompt_enter_password_or_app_specific_password">Voer je wachtwoord voor %1$s of je app-wachtwoord voor %1$s in</string>
 
     <!--
     Message that prompts the user to enter his/her app-specific password for a specific provider.
     %1$s will be replaced with the provider name.
     -->
-    <string name="smoothsetup_prompt_enter_app_specific_password">输入您的应用特定 %1$s 密码</string>
+    <string name="smoothsetup_prompt_enter_app_specific_password">Voer je app-wachtwoord voor %1$s in</string>
+
 
     <!--
     Message which prompts the user to grant one or more permissions.
     %1$s will be replaced with the app name
     -->
     <plurals name="smoothsetup_prompt_grant_permission">
-        <item quantity="one">请授予以下权限</item>
-        <item quantity="two">请授予以下权限</item>
-        <item quantity="few">请授予以下权限</item>
-        <item quantity="many">请授予以下权限</item>
-        <item quantity="other">请授予以下权限</item>
+        <item quantity="one">Verleen de volgende toestemming</item>
+        <item quantity="two">Verleen de volgende toestemmingen</item>
+        <item quantity="few">Verleen de volgende toestemmingen</item>
+        <item quantity="many">Verleen de volgende toestemmingen</item>
+        <item quantity="other">Verleen de volgende toestemmingen</item>
     </plurals>
 
 
@@ -134,43 +136,44 @@
     Text on a button that allows the user to select a provider from a list.
     Shown if no other provider matches the login name.
     -->
-    <string name="smoothsetup_button_choose_provider">选择提供商</string>
+    <string name="smoothsetup_button_choose_provider">Provider kiezen</string>
+
 
     <!--
     Text on a button that allows the user to launch the custom account setup.
     -->
-    <string name="smoothsetup_button_manual_setup">手动设置</string>
+    <string name="smoothsetup_button_manual_setup">Handmatige configuratie</string>
 
     <!--
     Text on a button that allows the user to select a provider from a list.
     Shown if the login name matches a specific provider.
     -->
-    <string name="smoothsetup_button_other_provider">其他</string>
+    <string name="smoothsetup_button_other_provider">Overige</string>
 
     <!--
     Text on a button that proceeds to the password prompt after entering the login name.
     -->
-    <string name="smoothsetup_button_login_next">下一步</string>
+    <string name="smoothsetup_button_login_next">Volgende</string>
 
     <!--
     Text on a button that starts the credentials verification after entering a password.
     -->
-    <string name="smoothsetup_button_sign_in">登录</string>
+    <string name="smoothsetup_button_sign_in">Inloggen</string>
 
     <!--
     Text on the button under an error page that takes the user back to the previous step.
     -->
-    <string name="smoothsetup_button_retry_now">重试</string>
+    <string name="smoothsetup_button_retry_now">Opnieuw</string>
 
     <!--
     Text on button to grant permissions
     -->
-    <string name="smoothsetup_button_grant_permission">授予</string>
+    <string name="smoothsetup_button_grant_permission">Verlenen</string>
 
     <!--
     Text on a button to close the activity after a successful account setup.
     -->
-    <string name="smoothsetup_button_close">关闭</string>
+    <string name="smoothsetup_button_close">Sluiten</string>
 
     <!-- Messages -->
 
@@ -178,18 +181,18 @@
     Message that's shown to the user when everything worked out an the setup has been completed successfully.
     %1$s will be replaced with the app name.
     -->
-    <string name="smoothsetup_message_setup_completed">%1$s 正在设置，同步即将开始</string>
+    <string name="smoothsetup_message_setup_completed">%1$s is nu geconfigureerd en de synchronisatie begint zo meteen</string>
 
     <!--
     Message that's shown to the user his/her credentials haven been validated successfully.
     %1$s will be replaced with the app name.
     -->
-    <string name="smoothsetup_message_auth_completed">%1$s 已成功验证您的帐户，同步将继续进行</string>
+    <string name="smoothsetup_message_auth_completed">%1$s heeft je account geverifieerd en de synchronisatie gaat zo meteen door</string>
 
     <!--
     Message that's faded in if a blocking operation (usually a network operation) takes longer than a few seconds.
     -->
-    <string name="smoothsetup_message_please_wait">这可能最多需要 2 分钟。</string>
+    <string name="smoothsetup_message_please_wait">Dit kan tot 2 minuten duren.</string>
 
     <!--
     Message presented to the user when an authentication error occurred.
@@ -197,75 +200,79 @@
     %2$s will be replaced with the user name
     %3$s will be replaced with the provider name.
     -->
-    <string name="smoothsetup_message_authentication_failure">%1$s 无法通过 %3$s 验证您的帐户 \"%2$s\"。\n\n请登录验证%1$s 以同步帐户。</string>
+    <string name="smoothsetup_message_authentication_failure">%1$s kon je %3$s-account \"%2$s\" niet verifiëren.\n\nLog in en verleen %1$s toestemming om je account te synchroniseren.</string>
+
 
     <!-- Error Messages -->
 
     <!--
     Error message that's shown when no provider data (for one or multiple providers) could be loaded (due to any kind of error).
     -->
-    <string name="smoothsetup_error_load_provider">无法加载提供商数据。\n\n请检查网络连接，然后重试。</string>
+    <string name="smoothsetup_error_load_provider">De providergegevens konden niet worden geladen.\n\nControleer de internetverbinding of probeer het later opnieuw.</string>
 
     <!--
     Error message that's shown when the user's credentials were not accepted by the provider.
     -->
-    <string name="smoothsetup_error_authentication">身份验证失败。\n\n请核对密码，然后重试。</string>
+    <string name="smoothsetup_error_authentication">De verificatie is mislukt.\n\nVerifieer je wachtwoord en probeer het opnieuw.</string>
 
     <!--
     Generic network error message that's shown when there was any sort of connection issue.
     -->
-    <string name="smoothsetup_error_network">连接失败。\n\n请检查网络连接，或者稍后重试。</string>
+    <string name="smoothsetup_error_network">Verbinding mislukt.\n\nControleer de internetverbinding of probeer het later opnieuw.</string>
+
 
     <!-- EditText hints -->
 
     <!--
     Hint text in the field that takes the user's email address or login name.
     -->
-    <string name="smoothsetup_default_login_hint">电子邮件地址或登录</string>
+    <string name="smoothsetup_default_login_hint">E-mailadres of gebruikersnaam</string>
 
     <!--
     Hint text in the field which takes the server address or name.
     -->
-    <string name="smoothsetup_hostname_or_address">主机名或地址</string>
+    <string name="smoothsetup_hostname_or_address">Hostnaam of adres</string>
 
     <!--
     Hint text in the field that takes the user's login name.
     -->
-    <string name="smoothsetup_manual_login_hint">用户名</string>
+    <string name="smoothsetup_manual_login_hint">Gebruikersnaam</string>
 
     <!--
     Hint text on a password input field.
     -->
-    <string name="smoothsetup_hint_password">密码</string>
+    <string name="smoothsetup_hint_password">Wachtwoord</string>
+
 
     <!-- Links -->
 
     <!--
     Text of a link that will be shown on the login screen if a service provides a sign up link.
     -->
-    <string name="smoothsetup_sign_up_now">还没有帐户？<b>立即注册。</b></string>
+    <string name="smoothsetup_sign_up_now">Nog geen account? <b>Meld je nu aan.</b></string>
 
     <!--
     Text of a link that will be shown underneath the password dialog if a service provides a password recovery link.
     -->
-    <string name="smoothsetup_forgot_password">忘记密码？</string>
+    <string name="smoothsetup_forgot_password">Wachtwoord vergeten?</string>
 
     <!--
     Text of a link that will be shown underneath the password dialog if a service provides a link to create app specific passwords.
     -->
-    <string name="smoothsetup_create_app_specific_password">创建应用特定密码</string>
+    <string name="smoothsetup_create_app_specific_password">App-wachtwoord maken</string>
 
     <!--
     Text of a link that opens a privacy policy when clicked.
     %1$s wil be replaced either with the app name or the provider name.
     -->
-    <string name="smoothsetup_privacy_policy">%1$s 隐私政策</string>
+    <string name="smoothsetup_privacy_policy">Privacybeleid van %1$s</string>
 
     <!--
     Text of a link that opens terms & conditions when clicked.
     %1$s wil be replaced either with the app name or the provider name.
     -->
-    <string name="smoothsetup_terms_and_conditions">%1$s 条件和条款</string>
+    <string name="smoothsetup_terms_and_conditions">Algemene voorwaarden van %1$s</string>
+
 
     <!-- App specific password helper -->
 
@@ -273,18 +280,18 @@
     Title of a button on the Snackbar to copy an app specific password to the clipboard.
     Must be a single word, as short as possible. Will be converted to all-caps by Android.
     -->
-    <string name="smoothsetup_button_copy_app_specific_password">复制</string>
+    <string name="smoothsetup_button_copy_app_specific_password">Kopiëren</string>
 
     <!--
     Title of a Snackbar message to inform the user that an app-specific password has been found.
     %1$s will be replaced by the password that was found.
     -->
-    <string name="smoothsetup_snackbar_found_app_specific_password">找到应用特定密码：%1$s</string>
+    <string name="smoothsetup_snackbar_found_app_specific_password">App-wachtwoord gevonden: %1$s</string>
 
     <!--
     Title of a Snackbar message to inform the user that the previously found app-specific password has been inserted into the password field.
     -->
-    <string name="smoothsetup_app_specific_password_inserted">已插入应用特定密码</string>
+    <string name="smoothsetup_app_specific_password_inserted">App-wachtwoord ingevoegd</string>
 
 
 </resources>
