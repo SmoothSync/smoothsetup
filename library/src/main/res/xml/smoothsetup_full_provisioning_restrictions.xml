@@ -16,30 +16,55 @@
     <restriction
             android:key="accounts"
             android:restrictionType="bundle_array">
+        <!--
+        A list of managed accounts. Users can not alter these in the UI.
+        -->
         <restriction
                 android:key="account"
                 android:restrictionType="bundle">
             <restriction
-                    android:key="accountId"
-                    android:title="The account name"
-                    android:restrictionType="string"/>
+                    android:key="account-id"
+                    android:restrictionType="string"
+                    android:title="The account name" />
             <restriction
-                    android:key="providerId"
-                    android:title="This id of the provider for this account"
-                    android:restrictionType="string"/>
+                    android:key="provider-id"
+                    android:restrictionType="string"
+                    android:title="This id of the provider for this account" />
             <restriction
                     android:key="credentials"
                     android:restrictionType="bundle">
                 <restriction
                         android:key="username"
-                        android:restrictionType="string"/>
+                        android:restrictionType="string" />
                 <restriction
                         android:key="password"
-                        android:restrictionType="string"/>
+                        android:restrictionType="string" />
+            </restriction>
+            <!-- An array of optional bundles, one per service, containing additional settings -->
+            <restriction
+                    android:key="settings"
+                    android:restrictionType="bundle_array">
+                <!-- per service bundle containing additional settings to apply -->
+                <restriction
+                        android:key="service-setting"
+                        android:restrictionType="bundle">
+                    <!-- The type of the service these settings apply to -->
+                    <restriction
+                            android:key="service-type"
+                            android:restrictionType="string" />
+                    <!-- enforce this service being synced server to client only -->
+                    <restriction
+                            android:key="readonly"
+                            android:restrictionType="bool" />
+                </restriction>
             </restriction>
         </restriction>
     </restriction>
 
+    <!--
+    Providers section. Providers in this list can be used to provision accounts (see above) or as input for the interactive setup.
+    If a provider exists without a connected account, the user can set up any account in the interactive setup.
+    -->
     <restriction
             android:key="providers"
             android:restrictionType="bundle_array">
@@ -48,26 +73,38 @@
                 android:restrictionType="bundle">
             <restriction
                     android:key="id"
-                    android:title="A unique identifier of the provider."
-                    android:restrictionType="string"/>
+                    android:restrictionType="string"
+                    android:title="A unique identifier of the provider." />
             <restriction
                     android:key="name"
-                    android:title="The display name of the provider"
-                    android:restrictionType="string"/>
+                    android:restrictionType="string"
+                    android:title="The display name of the provider" />
             <restriction
                     android:key="services"
                     android:restrictionType="bundle_array">
                 <restriction
                         android:key="service"
                         android:restrictionType="bundle">
+                    <!--
+                    The type of the service, currently the following values are supported
+                    caldav: the URL value points to a CalDAV service
+
+                    carddav: the URL value points to a CardDAV service
+
+                    com.smoothsync.authenticate: the URL points to an address which allows to test user credentials.
+                               In an interactive setup the app sends an authenticated GET request to
+                               this address and expects a success response in return, otherwise it assumes an authentication error.
+
+                               This is not required for fully provisioned accounts.
+                    -->
                     <restriction
                             android:key="service-type"
-                            android:title="The type of the service"
-                            android:restrictionType="string"/>
+                            android:restrictionType="string"
+                            android:title="The type of the service" />
                     <restriction
                             android:key="uri"
-                            android:title="The URL of the service"
-                            android:restrictionType="string"/>
+                            android:restrictionType="string"
+                            android:title="The URL of the service" />
                 </restriction>
             </restriction>
         </restriction>

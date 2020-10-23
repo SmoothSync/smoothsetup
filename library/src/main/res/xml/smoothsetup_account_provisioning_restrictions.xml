@@ -35,22 +35,34 @@
                 android:key="account"
                 android:restrictionType="bundle">
             <restriction
-                    android:key="accountId"
-                    android:title="The account name"
-                    android:restrictionType="string"/>
+                    android:key="account-id"
+                    android:restrictionType="string"
+                    android:title="The account name" />
             <restriction
-                    android:key="providerId"
-                    android:title="This id of the provider for this account"
-                    android:restrictionType="string"/>
+                    android:key="provider-id"
+                    android:restrictionType="string" />
             <restriction
                     android:key="credentials"
                     android:restrictionType="bundle">
                 <restriction
                         android:key="username"
-                        android:restrictionType="string"/>
+                        android:restrictionType="string" />
                 <restriction
                         android:key="password"
-                        android:restrictionType="string"/>
+                        android:restrictionType="string" />
+            </restriction>
+            <!-- An array of optional bundles, one per service, containing additional settings -->
+            <restriction
+                    android:key="settings"
+                    android:restrictionType="bundle_array">
+                <!-- The type of the service these settings apply to -->
+                <restriction
+                        android:key="service-type"
+                        android:restrictionType="string" />
+                <!-- enforce this service being synced server to client only -->
+                <restriction
+                        android:key="readonly"
+                        android:restrictionType="bool" />
             </restriction>
         </restriction>
     </restriction>

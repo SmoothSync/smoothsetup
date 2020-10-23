@@ -11,8 +11,8 @@ import com.smoothsync.smoothsetup.services.delegating.DelegatingAccountService;
 
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.httpessentials.types.Link;
-import org.dmfs.iterators.ArrayIterator;
 import org.dmfs.iterators.EmptyIterator;
+import org.dmfs.iterators.elementary.Seq;
 import org.dmfs.rfc5545.DateTime;
 
 import java.net.URI;
@@ -67,7 +67,7 @@ public class AccountService extends DelegatingAccountService
                     @Override
                     public Iterator<Service> services() throws ProtocolException
                     {
-                        return new ArrayIterator<Service>(new Service()
+                        return new Seq<>(new Service()
                         {
                             @Override
                             public String name()

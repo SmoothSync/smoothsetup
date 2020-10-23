@@ -16,6 +16,8 @@
 
 package com.smoothsync.smoothsetup.demo;
 
+import android.os.Bundle;
+
 import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.model.BasicAccount;
 import com.smoothsync.smoothsetup.services.delegating.DelegatingValidationService;
@@ -57,6 +59,13 @@ public final class ValidationService extends DelegatingValidationService
                 public UserCredentials credentials()
                 {
                     return credentials;
+                }
+
+
+                @Override
+                public Bundle settings()
+                {
+                    return Bundle.EMPTY;
                 }
 
 

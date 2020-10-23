@@ -16,8 +16,10 @@
 
 package com.smoothsync.smoothsetup.restrictions;
 
+import android.os.Bundle;
+
 import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
-import org.dmfs.optional.Optional;
+import org.dmfs.jems.optional.Optional;
 
 
 /**
@@ -39,4 +41,9 @@ public interface AccountRestriction
      * Optional {@link UserCredentials} of the account.
      */
     Optional<UserCredentials> credentials();
+
+    /**
+     * A Bundle containing additional settings.
+     */
+    Bundle settings();
 }

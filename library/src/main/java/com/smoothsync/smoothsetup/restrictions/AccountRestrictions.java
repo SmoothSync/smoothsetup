@@ -23,14 +23,15 @@ import android.os.Bundle;
 import android.os.Parcelable;
 
 import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
+import org.dmfs.iterables.elementary.PresentValues;
 import org.dmfs.iterables.elementary.Seq;
 import org.dmfs.iterators.EmptyIterator;
 import org.dmfs.jems.iterable.composite.Joined;
 import org.dmfs.jems.iterable.decorators.Mapped;
-import org.dmfs.jems.optional.adapters.Collapsed;
-import org.dmfs.optional.NullSafe;
-import org.dmfs.optional.Optional;
-import org.dmfs.optional.iterable.PresentValues;
+import org.dmfs.jems.optional.Optional;
+import org.dmfs.jems.optional.decorators.MapCollapsed;
+import org.dmfs.jems.optional.elementary.NullSafe;
+import org.dmfs.jems.single.combined.Backed;
 
 import java.util.Iterator;
 
@@ -67,14 +68,14 @@ public final class AccountRestrictions implements Iterable<AccountRestriction>
                     @Override
                     public String accountId()
                     {
-                        return ((Bundle) parcelable).getString("accountId");
+                        return ((Bundle) parcelable).getString("account-id");
                     }
 
 
                     @Override
                     public String providerId()
                     {
-                        return ((Bundle) parcelable).getString("providerId");
+                        return ((Bundle) parcelable).getString("provider-id");
                     }
 
 
@@ -100,14 +101,21 @@ public final class AccountRestrictions implements Iterable<AccountRestriction>
                                 },
                                 new NullSafe<>(((Bundle) parcelable).getBundle("credentials")));
                     }
-                }, new Joined<Parcelable>(
-                new Mapped<>(
-                        Seq::new,
-                        new PresentValues<>(
-                                new Collapsed<>(
-                                        new org.dmfs.jems.optional.decorators.Mapped<>(
-                                                bundle -> new org.dmfs.jems.optional.elementary.NullSafe<>(bundle.getParcelableArray("accounts")),
-                                                new NullSafe<>(restrictionsManager.getApplicationRestrictions()))))))).iterator();
+
+
+                    @Override
+                    public Bundle settings()
+                    {
+                        return new Backed<>(new NullSafe<>(((Bundle) parcelable).getBundle("settings")), new Bundle()).value();
+                    }
+                },
+                new Joined<>(
+                        new Mapped<>(
+                                Seq::new,
+                                new PresentValues<>(
+                                        new MapCollapsed<>(
+                                                bundle -> new NullSafe<>(bundle.getParcelableArray("accounts")),
+                                                new NullSafe<>(restrictionsManager.getApplicationRestrictions())))))).iterator();
 
     }
 }

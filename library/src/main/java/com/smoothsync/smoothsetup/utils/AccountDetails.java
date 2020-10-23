@@ -16,6 +16,8 @@
 
 package com.smoothsync.smoothsetup.utils;
 
+import android.os.Bundle;
+
 import com.smoothsync.smoothsetup.model.Account;
 
 import org.dmfs.android.microwizard.box.Boxable;
@@ -32,4 +34,6 @@ public interface AccountDetails extends Boxable<AccountDetails>
     Account account();
 
     UserCredentials credentials();
+
+    Bundle settings();
 }

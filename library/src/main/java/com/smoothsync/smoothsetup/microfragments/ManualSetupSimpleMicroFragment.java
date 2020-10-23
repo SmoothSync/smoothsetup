@@ -378,35 +378,35 @@ public final class ManualSetupSimpleMicroFragment implements MicroFragment<Manua
                                                             new Provider()
                                                             {
                                                                 @Override
-                                                                public String id() throws ProtocolException
+                                                                public String id()
                                                                 {
                                                                     return "custom:" + uri.toString();
                                                                 }
 
 
                                                                 @Override
-                                                                public String name() throws ProtocolException
+                                                                public String name()
                                                                 {
                                                                     return uri.getAuthority();
                                                                 }
 
 
                                                                 @Override
-                                                                public String[] domains() throws ProtocolException
+                                                                public String[] domains()
                                                                 {
                                                                     return new String[0];
                                                                 }
 
 
                                                                 @Override
-                                                                public Iterator<Link> links() throws ProtocolException
+                                                                public Iterator<Link> links()
                                                                 {
                                                                     return EmptyIterator.instance();
                                                                 }
 
 
                                                                 @Override
-                                                                public Iterator<Service> services() throws ProtocolException
+                                                                public Iterator<Service> services()
                                                                 {
                                                                     return new Seq<>(
                                                                             new Service()
@@ -501,7 +501,7 @@ public final class ManualSetupSimpleMicroFragment implements MicroFragment<Manua
 
 
                                                                 @Override
-                                                                public DateTime lastModified() throws ProtocolException
+                                                                public DateTime lastModified()
                                                                 {
                                                                     return DateTime.now();
                                                                 }
@@ -527,6 +527,13 @@ public final class ManualSetupSimpleMicroFragment implements MicroFragment<Manua
                                                             return password;
                                                         }
                                                     };
+                                                }
+
+
+                                                @Override
+                                                public Bundle settings()
+                                                {
+                                                    return Bundle.EMPTY;
                                                 }
 
 

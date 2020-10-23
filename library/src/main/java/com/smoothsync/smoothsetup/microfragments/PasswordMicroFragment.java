@@ -380,6 +380,13 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
 
 
                                                 @Override
+                                                public Bundle settings()
+                                                {
+                                                    return Bundle.EMPTY;
+                                                }
+
+
+                                                @Override
                                                 public Box<AccountDetails> boxed()
                                                 {
                                                     return new AccountDetailsBox(this);

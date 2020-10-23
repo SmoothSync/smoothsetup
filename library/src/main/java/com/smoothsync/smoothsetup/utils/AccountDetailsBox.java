@@ -16,6 +16,7 @@
 
 package com.smoothsync.smoothsetup.utils;
 
+import android.os.Bundle;
 import android.os.Parcel;
 
 import com.smoothsync.smoothsetup.model.Account;
@@ -51,6 +52,7 @@ public final class AccountDetailsBox implements Box<AccountDetails>
     {
         dest.writeParcelable(mAccountDetails.account(), flags);
         dest.writeParcelable(new Parcelable(mAccountDetails.credentials()), flags);
+        dest.writeBundle(mAccountDetails.settings());
     }
 
 
@@ -69,6 +71,7 @@ public final class AccountDetailsBox implements Box<AccountDetails>
             ClassLoader classLoader = getClass().getClassLoader();
             Account account = source.readParcelable(classLoader);
             UserCredentials userCredentials = source.readParcelable(classLoader);
+            Bundle settings = source.readBundle(classLoader);
             return new AccountDetailsBox(new AccountDetails()
             {
                 @Override
@@ -82,6 +85,13 @@ public final class AccountDetailsBox implements Box<AccountDetails>
                 public UserCredentials credentials()
                 {
                     return userCredentials;
+                }
+
+
+                @Override
+                public Bundle settings()
+                {
+                    return settings;
                 }
 
 
