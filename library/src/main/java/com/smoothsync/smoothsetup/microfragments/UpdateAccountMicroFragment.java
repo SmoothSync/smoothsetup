@@ -214,6 +214,7 @@ public final class UpdateAccountMicroFragment implements MicroFragment<UpdateAcc
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("account", mAccountDetails.account());
                         bundle.putParcelable("credentials", new Parcelable(mAccountDetails.credentials()));
+                        bundle.putBundle("settings", mAccountDetails.settings());
                         service.updateAccount(bundle);
                         return true;
                     }
