@@ -23,7 +23,7 @@
                 android:key="account"
                 android:restrictionType="bundle">
             <restriction
-                    android:key="account-id"
+                    android:key="id"
                     android:restrictionType="string"
                     android:title="The account name" />
             <restriction

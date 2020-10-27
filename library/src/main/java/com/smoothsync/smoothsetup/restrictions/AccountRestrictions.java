@@ -23,15 +23,15 @@ import android.os.Bundle;
 import android.os.Parcelable;
 
 import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
-import org.dmfs.iterables.elementary.PresentValues;
-import org.dmfs.iterables.elementary.Seq;
 import org.dmfs.iterators.EmptyIterator;
+import org.dmfs.jems.iterable.adapters.PresentValues;
 import org.dmfs.jems.iterable.composite.Joined;
 import org.dmfs.jems.iterable.decorators.Mapped;
+import org.dmfs.jems.iterable.elementary.Seq;
 import org.dmfs.jems.optional.Optional;
 import org.dmfs.jems.optional.decorators.MapCollapsed;
 import org.dmfs.jems.optional.elementary.NullSafe;
-import org.dmfs.jems.single.combined.Backed;
+import org.dmfs.jems.single.elementary.Reduced;
 
 import java.util.Iterator;
 
@@ -68,7 +68,7 @@ public final class AccountRestrictions implements Iterable<AccountRestriction>
                     @Override
                     public String accountId()
                     {
-                        return ((Bundle) parcelable).getString("account-id");
+                        return ((Bundle) parcelable).getString("id");
                     }
 
 
@@ -106,7 +106,24 @@ public final class AccountRestrictions implements Iterable<AccountRestriction>
                     @Override
                     public Bundle settings()
                     {
-                        return new Backed<>(new NullSafe<>(((Bundle) parcelable).getBundle("settings")), new Bundle()).value();
+                        return new Reduced<Bundle, Bundle>(
+                                Bundle::new,
+                                (result, value) -> {
+                                    String serviceType = value.getString("service-type");
+                                    Bundle typeSettings = result.getBundle(serviceType);
+                                    if (typeSettings == null)
+                                    {
+                                        typeSettings = new Bundle();
+                                        result.putBundle(serviceType, typeSettings);
+                                    }
+                                    typeSettings.putAll(value);
+                                    return result;
+                                },
+                                new Joined<>(
+                                        new Mapped<>(
+                                                array -> new Seq<>((Bundle[]) array),
+                                                new PresentValues<>(
+                                                        new NullSafe<>(((Bundle) parcelable).getParcelableArray("settings")))))).value();
                     }
                 },
                 new Joined<>(
