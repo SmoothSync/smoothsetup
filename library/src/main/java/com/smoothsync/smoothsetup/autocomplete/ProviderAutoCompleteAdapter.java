@@ -16,23 +16,24 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
+import android.util.LruCache;
 import android.widget.Filter;
 
-import com.smoothsync.api.model.Provider;
+import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
 import com.smoothsync.smoothsetup.utils.AutoCompleteIterable;
 
-import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.iterables.EmptyIterable;
+import org.dmfs.jems.single.elementary.Collected;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.rxjava3.core.Single;
+
 
 /**
- * An auto-complete adapter that supports a single provider only.
- * <p>
- * TODO: consolidate with {@link ApiAutoCompleteAdapter}
+ * An auto-complete adapter that's backed by the SmoothSync API.
  *
  * @author Marten Gajda
  */
@@ -41,19 +42,20 @@ public final class ProviderAutoCompleteAdapter extends AbstractAutoCompleteAdapt
     private final static int MAX_RESULTS = 5;
 
     private final Filter mFilter = new ResultFilter();
-    private final Provider mProvider;
     private final List<AutoCompleteItem> mValues;
+    private final LruCache<String, List<String>> mResultCache;
 
 
     /**
-     * Creates an auto-complete adapter that completes to the domains of the given provider.
+     * Creates an auto-complete adapter using the given {@link ProviderService} instance.
      *
-     * @param provider
+     * @param providerService
+     *         A {@link Single} {@link ProviderService}.
      */
-    public ProviderAutoCompleteAdapter(Provider provider)
+    public ProviderAutoCompleteAdapter(Single<ProviderService> providerService)
     {
-        mProvider = provider;
-        mValues = Collections.synchronizedList(new ArrayList<AutoCompleteItem>(16));
+        mResultCache = new AutoCompleteLruCache(providerService, 64);
+        mValues = Collections.synchronizedList(new ArrayList<AutoCompleteItem>(MAX_RESULTS));
     }
 
 
@@ -81,7 +83,7 @@ public final class ProviderAutoCompleteAdapter extends AbstractAutoCompleteAdapt
     private final class ResultFilter extends Filter
     {
         @Override
-        protected FilterResults performFiltering(CharSequence prefix)
+        protected FilterResults performFiltering(final CharSequence prefix)
         {
             FilterResults results = new FilterResults();
 
@@ -97,73 +99,67 @@ public final class ProviderAutoCompleteAdapter extends AbstractAutoCompleteAdapt
 
             String prefixStr = prefix.toString();
             final int atPos = prefixStr.indexOf('@');
-            if (atPos < 0)
+            if (atPos < 0 || atPos == prefixStr.length() - 1)
             {
-                // no prefix, no results
+                // no domain, no results either
                 return results;
             }
             String localPart = prefixStr.substring(0, atPos);
             String domainPart = prefixStr.substring(atPos + 1);
 
-            try
+            // fetch the auto-complete result
+            List<String> autoCompleteResult = mResultCache.get(domainPart);
+
+            if (autoCompleteResult == null)
             {
-                List<String> values = new ArrayList<>(mProvider.domains().length);
-                for (String autoComplete : new AutoCompleteArrayIterable(mProvider.domains(), localPart, domainPart))
-                {
-                    values.add(autoComplete);
-                }
-
-                if (values.contains(prefixStr))
-                {
-                    // don't show autocomplete if we have an exact result
-                    return results;
-                }
-
-                if (values.size() <= MAX_RESULTS)
-                {
-                    List<AutoCompleteItem> result = new ArrayList<>(values.size());
-                    for (String value : values)
-                    {
-                        result.add(new AutoCompleteItem()
-                        {
-                            @Override
-                            public String autoComplete()
-                            {
-                                return value;
-                            }
-
-
-                            @Override
-                            public Iterable<String> extensions()
-                            {
-                                return EmptyIterable.instance();
-                            }
-                        });
-                    }
-                    results.values = result;
-                    results.count = result.size();
-                }
-                else
-                {
-                    // try to find common prefixes, first sort the list
-                    Collections.sort(values);
-                    List<AutoCompleteItem> result = new ArrayList<>(values.size());
-                    for (AutoCompleteItem item : new AutoCompleteIterable(values, prefixStr))
-                    {
-                        result.add(item);
-                    }
-                    results.values = result;
-                    results.count = result.size();
-
-                }
-
-            }
-            catch (ProtocolException e)
-            {
-                // no response, no results either
-                results.values = Collections.emptyList();
-                results.count = 0;
+                // no result, no results either
                 return results;
+            }
+
+            List<String> values = new Collected<>(ArrayList::new, new AutoCompleteArrayIterable(autoCompleteResult, localPart, domainPart)).value();
+
+            if (values.contains(prefixStr))
+            {
+                // don't show autocomplete if we have an exact result
+                return results;
+            }
+
+            if (values.size() <= MAX_RESULTS)
+            {
+                List<AutoCompleteItem> result = new ArrayList<>(values.size());
+                for (String value : values)
+                {
+                    result.add(new AutoCompleteItem()
+                    {
+                        @Override
+                        public String autoComplete()
+                        {
+                            return value;
+                        }
+
+
+                        @Override
+                        public Iterable<String> extensions()
+                        {
+                            return EmptyIterable.instance();
+                        }
+                    });
+                }
+                results.values = result;
+                results.count = result.size();
+            }
+            else
+            {
+                // try to find common prefixes, first sort the list
+                Collections.sort(values);
+                List<AutoCompleteItem> result = new ArrayList<>(values.size());
+                for (AutoCompleteItem item : new AutoCompleteIterable(values, prefixStr))
+                {
+                    result.add(item);
+                }
+                results.values = result;
+                results.count = result.size();
+
             }
 
             return results;
@@ -190,4 +186,5 @@ public final class ProviderAutoCompleteAdapter extends AbstractAutoCompleteAdapt
             notifyDataSetChanged();
         }
     }
+
 }

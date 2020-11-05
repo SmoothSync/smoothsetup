@@ -299,6 +299,7 @@ public final class ManualSetupSimpleMicroFragment implements MicroFragment<Manua
                     mUri.postDelayed(mCheckUrlRunnable, 1000);
                 }
             });
+
             mUsername = result.findViewById(R.id.username_input);
             mPassword = result.findViewById(R.id.password_input);
             mUri.addTextChangedListener(mButtonEnableWatcher);

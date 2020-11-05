@@ -3,41 +3,48 @@
         xmlns:tools="http://schemas.android.com/tools"
         package="com.smoothsync.smoothsetup">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application android:supportsRtl="true">
         <activity
                 android:name=".MicroFragmentHostActivity"
                 android:excludeFromRecents="false"
                 android:exported="false"
-                android:theme="@style/SmoothSetupTheme"/>
+                android:theme="@style/SmoothSetupTheme" />
 
         <activity
                 android:name=".DynamicWizardActivity"
-                android:exported="false"
                 android:excludeFromRecents="false"
-                android:theme="@android:style/Theme.NoDisplay"/>
+                android:exported="false"
+                android:theme="@android:style/Theme.NoDisplay" />
+
+        <service
+                android:name=".services.providerservice.ApiProviderService"
+                android:exported="false" />
+        <service
+                android:name=".services.providerservice.ApiAndRestrictionsProviderService"
+                android:exported="false" />
 
         <activity-alias
                 android:name=".SmoothSetupDispatchActivity"
-                android:targetActivity=".DynamicWizardActivity"
-                android:exported="true">
+                android:exported="true"
+                android:targetActivity=".DynamicWizardActivity">
             <intent-filter
                     android:autoVerify="true"
                     tools:targetApi="m">
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
                         android:host="api.smoothsync.com"
                         android:pathPattern="/setup/.*"
-                        android:scheme="https"/>
+                        android:scheme="https" />
             </intent-filter>
             <meta-data
                     android:name="com.smoothsync.meta.WIZARD_SERVICE_META"
-                    android:value="com.smoothsync.meta.ACCOUNT_SETUP_WIZARD_SERVICE"/>
+                    android:value="com.smoothsync.meta.ACCOUNT_SETUP_WIZARD_SERVICE" />
         </activity-alias>
 
         <activity-alias
@@ -45,42 +52,42 @@
                 android:targetActivity=".DynamicWizardActivity">
             <meta-data
                     android:name="com.smoothsync.meta.WIZARD_SERVICE_META"
-                    android:value="com.smoothsync.meta.PASSWORD_UPDATE_WIZARD_SERVICE"/>
+                    android:value="com.smoothsync.meta.PASSWORD_UPDATE_WIZARD_SERVICE" />
         </activity-alias>
 
         <receiver
                 android:name=".InstallReferrerBroadcastReceiver"
-                android:permission="android.permission.INSTALL_PACKAGES"
-                android:exported="true">
+                android:exported="true"
+                android:permission="android.permission.INSTALL_PACKAGES">
             <intent-filter>
-                <action android:name="com.android.vending.INSTALL_REFERRER"/>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
         </receiver>
 
         <service
                 android:name=".services.defaults.DefaultAccountSetupWizardService"
-                android:exported="false"
-                android:enabled="true">
+                android:enabled="true"
+                android:exported="false">
             <intent-filter>
-                <action android:name="com.smoothsync.action.DEFAULT_ACCOUNT_SETUP_SERVICE"/>
+                <action android:name="com.smoothsync.action.DEFAULT_ACCOUNT_SETUP_SERVICE" />
             </intent-filter>
         </service>
 
         <service
                 android:name=".services.defaults.DefaultPasswordUpdateWizardService"
-                android:exported="false"
-                android:enabled="true">
+                android:enabled="true"
+                android:exported="false">
             <intent-filter>
-                <action android:name="com.smoothsync.action.DEFAULT_PASSWORD_UPDATE_SERVICE"/>
+                <action android:name="com.smoothsync.action.DEFAULT_PASSWORD_UPDATE_SERVICE" />
             </intent-filter>
         </service>
 
         <meta-data
                 android:name="com.smoothsync.meta.ACCOUNT_SETUP_WIZARD_SERVICE"
-                android:value="com.smoothsync.action.DEFAULT_ACCOUNT_SETUP_SERVICE"/>
+                android:value="com.smoothsync.action.DEFAULT_ACCOUNT_SETUP_SERVICE" />
         <meta-data
                 android:name="com.smoothsync.meta.PASSWORD_UPDATE_WIZARD_SERVICE"
-                android:value="com.smoothsync.action.DEFAULT_PASSWORD_UPDATE_SERVICE"/>
+                android:value="com.smoothsync.action.DEFAULT_PASSWORD_UPDATE_SERVICE" />
     </application>
 
 </manifest>

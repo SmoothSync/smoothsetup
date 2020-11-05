@@ -19,7 +19,6 @@ package com.smoothsync.smoothsetup.utils;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,8 +61,6 @@ public abstract class LoadingFragment<Params, Result> extends Fragment implement
 
     private final static int DELAY_WAIT_MESSAGE = 2500;
     private final Timestamp mTimestamp = new UiTimestamp();
-    private final Runnable mShowWaitMessage = () -> getView().findViewById(android.R.id.message).animate().alpha(1f).start();
-    private Handler mHandler = new Handler();
     private FragmentTransition mFragmentTransition;
 
     private final Loader<Params, Result> mLoader;
@@ -82,7 +79,7 @@ public abstract class LoadingFragment<Params, Result> extends Fragment implement
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         View result = inflater.inflate(R.layout.smoothsetup_microfragment_loading, container, false);
-        mHandler.postDelayed(mShowWaitMessage, DELAY_WAIT_MESSAGE);
+        result.findViewById(android.R.id.message).animate().setStartDelay(DELAY_WAIT_MESSAGE).alpha(1f).start();
         return result;
     }
 
@@ -102,14 +99,6 @@ public abstract class LoadingFragment<Params, Result> extends Fragment implement
         {
             new LoaderTask<>(getContext(), mMicroFragmentEnvironment, mLoader, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
-    }
-
-
-    @Override
-    public void onDestroyView()
-    {
-        mHandler.removeCallbacks(mShowWaitMessage);
-        super.onDestroyView();
     }
 
 

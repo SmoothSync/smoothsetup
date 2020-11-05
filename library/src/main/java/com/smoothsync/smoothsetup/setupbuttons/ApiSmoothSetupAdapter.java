@@ -20,12 +20,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
-import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
+import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
 import com.smoothsync.smoothsetup.utils.Domain;
-import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 
@@ -33,6 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.functions.Supplier;
 
 
 /**
@@ -41,14 +42,14 @@ import androidx.annotation.NonNull;
 public final class ApiSmoothSetupAdapter extends AbstractSmoothSetupAdapter
 {
 
-    private final SmoothSyncApi mApi;
+    private final Single<ProviderService> mProviderService;
     private final List<Provider> mProviders = new ArrayList<>();
     private final OnProviderSelectListener mListener;
 
 
-    public ApiSmoothSetupAdapter(@NonNull SmoothSyncApi api, @NonNull OnProviderSelectListener listener)
+    public ApiSmoothSetupAdapter(@NonNull Single<ProviderService> providerService, @NonNull OnProviderSelectListener listener)
     {
-        mApi = api;
+        mProviderService = providerService;
         mListener = listener;
     }
 
@@ -107,22 +108,15 @@ public final class ApiSmoothSetupAdapter extends AbstractSmoothSetupAdapter
             return;
         }
 
-        new ProviderSearchTask(mApi, new ThrowingAsyncTask.OnResultCallback<List<Provider>>()
-        {
-            @Override
-            public void onResult(AsyncTaskResult<List<Provider>> result)
-            {
-                try
-                {
+        mProviderService.flatMapObservable(s -> s.byDomain(domain))
+                .collect((Supplier<ArrayList<Provider>>) ArrayList::new, ArrayList::add)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(providers -> {
                     mProviders.clear();
-                    mProviders.addAll(result.value());
+                    mProviders.addAll(providers);
                     notifyDataSetChanged();
-                }
-                catch (Exception e)
-                {
+                }, error -> {
                     // ignore
-                }
-            }
-        }).execute(domain);
+                });
     }
 }

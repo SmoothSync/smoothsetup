@@ -21,7 +21,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Parcel;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -151,8 +150,6 @@ public final class ValidateCustomMicroFragment implements MicroFragment<Validate
     public static class LoadFragment extends Fragment implements ThrowingAsyncTask.OnResultCallback<AccountDetails>
     {
         private final static int DELAY_WAIT_MESSAGE = 2500;
-        private final Runnable mShowWaitMessage = () -> getView().findViewById(android.R.id.message).animate().alpha(1f).start();
-        private Handler mHandler = new Handler();
         private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
         private Params mParams;
         private final Timestamp mTimestamp = new UiTimestamp();
@@ -173,7 +170,7 @@ public final class ValidateCustomMicroFragment implements MicroFragment<Validate
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
         {
             View result = inflater.inflate(R.layout.smoothsetup_microfragment_loading, container, false);
-            mHandler.postDelayed(mShowWaitMessage, DELAY_WAIT_MESSAGE);
+            result.findViewById(android.R.id.message).animate().setStartDelay(DELAY_WAIT_MESSAGE).alpha(1f).start();
             return result;
         }
 
@@ -198,14 +195,6 @@ public final class ValidateCustomMicroFragment implements MicroFragment<Validate
                             .providerForUrl(mParams.accountDetails().account().provider(), mParams.accountDetails().credentials());
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }
-
-
-        @Override
-        public void onDestroyView()
-        {
-            mHandler.removeCallbacks(mShowWaitMessage);
-            super.onDestroyView();
         }
 
 

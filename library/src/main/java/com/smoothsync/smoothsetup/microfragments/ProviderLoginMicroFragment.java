@@ -21,12 +21,12 @@ import android.os.Parcel;
 import android.widget.Adapter;
 import android.widget.Filterable;
 
-import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.ProviderAutoCompleteAdapter;
 import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.model.BasicAccount;
+import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.ProviderSmoothSetupAdapter;
 import com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter;
@@ -41,12 +41,16 @@ import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.jems.generator.Generator;
+import org.dmfs.jems.iterable.elementary.Seq;
 import org.dmfs.jems.optional.Optional;
 import org.dmfs.jems.optional.elementary.Present;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 
 /**
@@ -169,7 +173,7 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
 
         @NonNull
         @Override
-        public <T extends RecyclerView.Adapter<BasicButtonViewHolder> & SetupButtonAdapter> T setupButtonAdapter(@NonNull Context context, @NonNull MicroFragmentHost host, @NonNull SmoothSyncApi api, @NonNull Generator<String> name)
+        public <T extends RecyclerView.Adapter<BasicButtonViewHolder> & SetupButtonAdapter> T setupButtonAdapter(@NonNull Context context, @NonNull MicroFragmentHost host, @NonNull Single<ProviderService> providerService, @NonNull Generator<String> name)
         {
             return (T) new ProviderSmoothSetupAdapter(
                     mProvider,
@@ -185,9 +189,37 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
 
         @NonNull
         @Override
-        public <T extends Adapter & Filterable> T autoCompleteAdapter(@NonNull Context context, @NonNull SmoothSyncApi api)
+        public <T extends Adapter & Filterable> T autoCompleteAdapter(@NonNull Context context, @NonNull Single<ProviderService> providerService)
         {
-            return (T) new ProviderAutoCompleteAdapter(mProvider);
+            return (T) new ProviderAutoCompleteAdapter(Single.just(new ProviderService()
+            {
+                @Override
+                public Maybe<Provider> byId(String id)
+                {
+                    return Maybe.empty();
+                }
+
+
+                @Override
+                public Observable<Provider> byDomain(String domain)
+                {
+                    return Observable.empty();
+                }
+
+
+                @Override
+                public Observable<Provider> all()
+                {
+                    return Observable.empty();
+                }
+
+
+                @Override
+                public Observable<String> autoComplete(String domainFragment)
+                {
+                    return Single.fromCallable(mProvider::domains).flattenAsObservable(Seq::new).filter(d -> d.startsWith(domainFragment));
+                }
+            }));
         }
 
 

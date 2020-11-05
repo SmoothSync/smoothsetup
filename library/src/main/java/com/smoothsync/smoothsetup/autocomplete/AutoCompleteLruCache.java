@@ -20,12 +20,13 @@ import android.util.LruCache;
 
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.AutoCompleteResult;
-import com.smoothsync.api.requests.AutoComplete;
+import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
 
-import org.dmfs.httpessentials.exceptions.ProtocolError;
-import org.dmfs.httpessentials.exceptions.ProtocolException;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.io.IOException;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.functions.Supplier;
 
 
 /**
@@ -36,38 +37,40 @@ import java.io.IOException;
  *
  * @author Marten Gajda
  */
-public final class AutoCompleteLruCache extends LruCache<String, AutoCompleteResult>
+public final class AutoCompleteLruCache extends LruCache<String, List<String>>
 {
-    private final SmoothSyncApi mApi;
+    private final Single<ProviderService> mProviderService;
 
 
     /**
-     * @param api
+     * @param providerService
      *         A {@link SmoothSyncApi}.
      * @param maxSize
      *         for caches that do not override {@link #sizeOf}, this is the maximum number of entries in the cache. For all other caches, this is the maximum
      *         sum of the sizes of the entries in this cache.
      */
-    public AutoCompleteLruCache(SmoothSyncApi api, int maxSize)
+    public AutoCompleteLruCache(Single<ProviderService> providerService, int maxSize)
     {
         super(maxSize);
-        mApi = api;
+        mProviderService = providerService;
     }
 
 
     @Override
-    protected AutoCompleteResult create(String key)
+    protected List<String> create(String key)
     {
         try
         {
             // if the key doesn't have a . at the last position, we can use the result of the key minus one char and filter on the client
-            if (key.length() > 2 && key.charAt(key.length() - 1) != '.')
+            if (key.length() > 1 && key.charAt(key.length() - 1) != '.')
             {
                 return get(key.substring(0, key.length() - 1));
             }
-            return mApi.resultOf(new AutoComplete(key));
+            return mProviderService
+                    .flatMapObservable(s -> s.autoComplete(key))
+                    .collect((Supplier<ArrayList<String>>) ArrayList::new, ArrayList::add).blockingGet();
         }
-        catch (IOException | ProtocolException | ProtocolError e)
+        catch (Exception e)
         {
             // ignore any error and just don't auto-complete
             return null;

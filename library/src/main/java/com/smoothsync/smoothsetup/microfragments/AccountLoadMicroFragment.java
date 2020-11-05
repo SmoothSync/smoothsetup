@@ -20,7 +20,6 @@ import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Parcel;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -153,8 +152,6 @@ public final class AccountLoadMicroFragment implements MicroFragment<AccountLoad
     public final static class LoadFragment extends Fragment implements ThrowingAsyncTask.OnResultCallback<com.smoothsync.smoothsetup.model.Account>
     {
         private final static int DELAY_WAIT_MESSAGE = 2500;
-        private final Runnable mShowWaitMessage = () -> getView().findViewById(android.R.id.message).animate().alpha(1f).start();
-        private Handler mHandler = new Handler();
         private FutureServiceConnection<AccountService> mAccountService;
         private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
         private Timestamp mTimestamp = new UiTimestamp();
@@ -177,7 +174,7 @@ public final class AccountLoadMicroFragment implements MicroFragment<AccountLoad
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
         {
             View result = inflater.inflate(R.layout.smoothsetup_microfragment_loading, container, false);
-            mHandler.postDelayed(mShowWaitMessage, DELAY_WAIT_MESSAGE);
+            result.findViewById(android.R.id.message).animate().setStartDelay(DELAY_WAIT_MESSAGE).alpha(1f).start();
             return result;
         }
 
@@ -194,14 +191,6 @@ public final class AccountLoadMicroFragment implements MicroFragment<AccountLoad
                     return mAccountService.service(5000).providerForAccount(params[0]);
                 }
             }.execute(mMicroFragmentEnvironment.microFragment().parameter().account());
-        }
-
-
-        @Override
-        public void onDestroyView()
-        {
-            mHandler.removeCallbacks(mShowWaitMessage);
-            super.onDestroyView();
         }
 
 

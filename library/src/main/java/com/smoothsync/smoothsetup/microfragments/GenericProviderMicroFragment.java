@@ -22,12 +22,12 @@ import android.text.TextUtils;
 import android.widget.Adapter;
 import android.widget.Filterable;
 
-import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
-import com.smoothsync.smoothsetup.autocomplete.ApiAutoCompleteAdapter;
+import com.smoothsync.smoothsetup.autocomplete.ProviderAutoCompleteAdapter;
 import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.model.BasicAccount;
+import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
 import com.smoothsync.smoothsetup.setupbuttons.ApiSmoothSetupAdapter;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.FixedButtonSetupAdapter;
@@ -47,6 +47,7 @@ import org.dmfs.jems.predicate.composite.Not;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+import io.reactivex.rxjava3.core.Single;
 
 import static org.dmfs.optional.Absent.absent;
 
@@ -170,10 +171,10 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
         @Override
         public <T extends RecyclerView.Adapter<BasicButtonViewHolder> & SetupButtonAdapter> T setupButtonAdapter(@NonNull Context context,
                                                                                                                  @NonNull MicroFragmentHost host,
-                                                                                                                 @NonNull SmoothSyncApi api,
+                                                                                                                 @NonNull Single<ProviderService> providerService,
                                                                                                                  @NonNull Generator<String> name)
         {
-            T adapter = (T) new ApiSmoothSetupAdapter(api,
+            T adapter = (T) new ApiSmoothSetupAdapter(providerService,
                     provider -> host.execute(
                             context,
                             new Swiped(
@@ -206,9 +207,9 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
 
         @NonNull
         @Override
-        public <T extends Adapter & Filterable> T autoCompleteAdapter(@NonNull Context context, @NonNull SmoothSyncApi api)
+        public <T extends Adapter & Filterable> T autoCompleteAdapter(@NonNull Context context, @NonNull Single<ProviderService> providerService)
         {
-            return (T) new ApiAutoCompleteAdapter(api);
+            return (T) new ProviderAutoCompleteAdapter(providerService);
         }
 
 

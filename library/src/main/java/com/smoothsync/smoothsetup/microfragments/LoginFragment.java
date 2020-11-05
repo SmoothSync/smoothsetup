@@ -30,19 +30,17 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputLayout;
-import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.AbstractAutoCompleteAdapter;
 import com.smoothsync.smoothsetup.restrictions.AccountRestriction;
 import com.smoothsync.smoothsetup.restrictions.ProviderAccountRestrictions;
-import com.smoothsync.smoothsetup.services.FutureApiServiceConnection;
-import com.smoothsync.smoothsetup.services.SmoothSyncApiProxy;
+import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
+import com.smoothsync.smoothsetup.services.binders.PackageServiceBinder;
 import com.smoothsync.smoothsetup.setupbuttons.AbstractSmoothSetupAdapter;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter;
 
-import org.dmfs.android.bolts.service.FutureServiceConnection;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
@@ -59,6 +57,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import io.reactivex.rxjava3.core.Single;
 
 
 /**
@@ -69,8 +68,8 @@ import androidx.recyclerview.widget.RecyclerView;
 public final class LoginFragment extends Fragment
 {
     private AutoCompleteTextView mLogin;
-    private FutureServiceConnection<SmoothSyncApi> mApiService;
     private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
+    private Single<ProviderService> mProviderService;
 
 
     @Override
@@ -78,7 +77,7 @@ public final class LoginFragment extends Fragment
     {
         super.onCreate(savedInstanceState);
         mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
-        mApiService = new FutureApiServiceConnection(getActivity());
+        mProviderService = new PackageServiceBinder(getContext()).wrapped();
     }
 
 
@@ -91,7 +90,7 @@ public final class LoginFragment extends Fragment
         mLogin = result.findViewById(android.R.id.input);
 
         LoginFormAdapterFactory loginFormAdapterFactory = mMicroFragmentEnvironment.microFragment().parameter().loginFormAdapterFactory();
-        AbstractAutoCompleteAdapter autoCompleteAdapter = loginFormAdapterFactory.autoCompleteAdapter(getContext(), new SmoothSyncApiProxy(mApiService));
+        AbstractAutoCompleteAdapter autoCompleteAdapter = loginFormAdapterFactory.autoCompleteAdapter(getContext(), mProviderService);
         mLogin.setAdapter(autoCompleteAdapter);
         mLogin.setOnItemClickListener((parent, view, position, id) -> mLogin.post(() ->
         {
@@ -110,7 +109,8 @@ public final class LoginFragment extends Fragment
         list.setLayoutManager(llm);
 
         final AbstractSmoothSetupAdapter adapter = loginFormAdapterFactory.setupButtonAdapter(getContext(), mMicroFragmentEnvironment.host(),
-                new SmoothSyncApiProxy(mApiService), () -> mLogin.getText().toString());
+                mProviderService,
+                () -> mLogin.getText().toString());
         list.setAdapter(adapter);
 
         mLogin.addTextChangedListener(new TextWatcher()
@@ -185,14 +185,6 @@ public final class LoginFragment extends Fragment
     }
 
 
-    @Override
-    public void onDestroy()
-    {
-        mApiService.disconnect();
-        super.onDestroy();
-    }
-
-
     public interface Params
     {
         LoginFormAdapterFactory loginFormAdapterFactory();
@@ -204,12 +196,12 @@ public final class LoginFragment extends Fragment
     public interface LoginFormAdapterFactory
     {
         @NonNull
-        <T extends Adapter & Filterable> T autoCompleteAdapter(@NonNull Context context, @NonNull SmoothSyncApi api);
+        <T extends Adapter & Filterable> T autoCompleteAdapter(@NonNull Context context, @NonNull Single<ProviderService> providerService);
 
         @NonNull
         <T extends RecyclerView.Adapter<BasicButtonViewHolder> & SetupButtonAdapter> T setupButtonAdapter(@NonNull Context context,
                                                                                                           @NonNull MicroFragmentHost host,
-                                                                                                          @NonNull SmoothSyncApi api,
+                                                                                                          @NonNull Single<ProviderService> providerService,
                                                                                                           @NonNull Generator<String> name);
 
         @NonNull

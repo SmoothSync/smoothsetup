@@ -17,27 +17,19 @@
 package com.smoothsync.smoothsetup.microfragments;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Parcel;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.api.model.Provider;
-import com.smoothsync.smoothsetup.ProviderLoadTask;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.ParcelableProvider;
-import com.smoothsync.smoothsetup.services.FutureApiServiceConnection;
-import com.smoothsync.smoothsetup.services.SmoothSyncApiProxy;
-import com.smoothsync.smoothsetup.utils.AsyncTaskResult;
+import com.smoothsync.smoothsetup.services.binders.PackageServiceBinder;
 import com.smoothsync.smoothsetup.utils.LoginInfo;
 import com.smoothsync.smoothsetup.utils.LoginRequest;
-import com.smoothsync.smoothsetup.utils.ThrowingAsyncTask;
 
-import org.dmfs.android.bolts.service.FutureServiceConnection;
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentEnvironment;
@@ -56,6 +48,8 @@ import org.dmfs.optional.NullSafe;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
 
 
 /**
@@ -162,19 +156,9 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
     }
 
 
-    public final static class LoadFragment extends Fragment implements ThrowingAsyncTask.OnResultCallback<Provider>
+    public final static class LoadFragment extends Fragment
     {
         private final static int DELAY_WAIT_MESSAGE = 2500;
-        private final Runnable mShowWaitMessage = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                getView().findViewById(android.R.id.message).animate().alpha(1f).start();
-            }
-        };
-        private Handler mHandler = new Handler();
-        private FutureServiceConnection<SmoothSyncApi> mApiService;
         private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
         private Timestamp mTimestamp = new UiTimestamp();
 
@@ -183,7 +167,6 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
         public void onCreate(@Nullable Bundle savedInstanceState)
         {
             super.onCreate(savedInstanceState);
-            mApiService = new FutureApiServiceConnection(getActivity());
             mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
         }
 
@@ -193,7 +176,7 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
         {
             View result = inflater.inflate(R.layout.smoothsetup_microfragment_loading, container, false);
-            mHandler.postDelayed(mShowWaitMessage, DELAY_WAIT_MESSAGE);
+            result.findViewById(android.R.id.message).animate().setStartDelay(DELAY_WAIT_MESSAGE).alpha(1f).start();
             return result;
         }
 
@@ -202,50 +185,33 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
         public void onResume()
         {
             super.onResume();
-            new ProviderLoadTask(new SmoothSyncApiProxy(mApiService), this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
-                    mMicroFragmentEnvironment.microFragment().parameter().loginRequest().providerId());
+            new PackageServiceBinder(getContext()).wrapped()
+                    .flatMapMaybe(ps -> ps.byId(mMicroFragmentEnvironment.microFragment().parameter().loginRequest().providerId()))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::onResult,
+                            e -> mMicroFragmentEnvironment.host()
+                                    .execute(getActivity(),
+                                            new XFaded(new ForwardTransition<>(new ErrorResetMicroFragment(mMicroFragmentEnvironment.microFragment()),
+                                                    mTimestamp))));
+
         }
 
 
-        @Override
-        public void onDestroyView()
-        {
-            mHandler.removeCallbacks(mShowWaitMessage);
-            super.onDestroyView();
-        }
-
-
-        @Override
-        public void onDestroy()
-        {
-            mApiService.disconnect();
-            super.onDestroy();
-        }
-
-
-        @Override
-        public void onResult(final AsyncTaskResult<Provider> result)
+        private void onResult(final Provider result)
         {
             if (isResumed())
             {
-                try
-                {
-                    mMicroFragmentEnvironment.host()
-                            .execute(getActivity(),
-                                    new XFaded(new ForwardTransition<>(
-                                            mMicroFragmentEnvironment.microFragment()
-                                                    .parameter()
-                                                    .next()
-                                                    .microFragment(getActivity(), new SimpleProviderInfo(result.value(),
-                                                            mMicroFragmentEnvironment.microFragment().parameter().loginRequest().username())),
-                                            mTimestamp)));
-                }
-                catch (Exception e)
-                {
-                    mMicroFragmentEnvironment.host()
-                            .execute(getActivity(),
-                                    new XFaded(new ForwardTransition<>(new ErrorResetMicroFragment(mMicroFragmentEnvironment.microFragment()), mTimestamp)));
-                }
+                mMicroFragmentEnvironment.host()
+                        .execute(getActivity(),
+                                new XFaded(new ForwardTransition<>(
+                                        mMicroFragmentEnvironment.microFragment()
+                                                .parameter()
+                                                .next()
+                                                .microFragment(
+                                                        getActivity(),
+                                                        new SimpleProviderInfo(result,
+                                                                mMicroFragmentEnvironment.microFragment().parameter().loginRequest().username())),
+                                        mTimestamp)));
             }
         }
     }

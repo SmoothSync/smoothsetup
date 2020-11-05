@@ -1,0 +1,3 @@
+<resources>
+    <string name="smoothsetup_provider_service" translatable="false">com.smoothsync.smoothsetup.services.providerservice.ApiProviderService</string>
+</resources>

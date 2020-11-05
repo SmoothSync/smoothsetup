@@ -16,7 +16,7 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
-import org.dmfs.iterators.Function;
+import org.dmfs.jems.function.Function;
 
 
 /**
@@ -49,7 +49,7 @@ public final class LocalPartConverter implements Function<String, String>
 
 
     @Override
-    public String apply(String element)
+    public String value(String element)
     {
         mBuilder.append(element);
         String result = mBuilder.toString();
