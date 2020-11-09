@@ -121,7 +121,7 @@ public final class AccountRestrictions implements Iterable<AccountRestriction>
                                 },
                                 new Joined<>(
                                         new Mapped<>(
-                                                array -> new Seq<>((Bundle[]) array),
+                                                array -> new Mapped<>(b -> (Bundle) b, new Seq<>(array)),
                                                 new PresentValues<>(
                                                         new NullSafe<>(((Bundle) parcelable).getParcelableArray("settings")))))).value();
                     }

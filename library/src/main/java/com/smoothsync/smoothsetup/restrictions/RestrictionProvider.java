@@ -24,6 +24,7 @@ import com.smoothsync.api.model.Service;
 
 import org.dmfs.httpessentials.types.Link;
 import org.dmfs.iterators.EmptyIterator;
+import org.dmfs.jems.iterable.composite.Joined;
 import org.dmfs.jems.iterable.decorators.Mapped;
 import org.dmfs.jems.iterable.elementary.Seq;
 import org.dmfs.jems.optional.elementary.NullSafe;
@@ -79,7 +80,7 @@ public final class RestrictionProvider implements Provider
     {
         return new Mapped<Parcelable, Service>(
                 parcelable -> new RestrictionService((Bundle) parcelable),
-                new Seq<>(mBundle.getParcelableArray("services"))).iterator();
+                new Joined<>(new org.dmfs.jems.optional.decorators.Mapped<>(Seq::new, new NullSafe<>(mBundle.getParcelableArray("services"))))).iterator();
     }
 
 
