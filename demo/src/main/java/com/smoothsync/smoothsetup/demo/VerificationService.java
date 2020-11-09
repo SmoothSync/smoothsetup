@@ -19,6 +19,8 @@ package com.smoothsync.smoothsetup.demo;
 
 import com.smoothsync.api.model.Service;
 import com.smoothsync.smoothsetup.services.delegating.DelegatingVerificationService;
+import com.smoothsync.smoothsetup.utils.HasAny;
+import com.smoothsync.smoothsetup.utils.TrivialResponseHandler;
 import com.smoothsync.smoothsetup.utils.Trusted;
 
 import org.dmfs.httpessentials.HttpMethod;
@@ -29,8 +31,6 @@ import org.dmfs.httpessentials.client.HttpRequestExecutor;
 import org.dmfs.httpessentials.client.HttpResponse;
 import org.dmfs.httpessentials.client.HttpResponseHandler;
 import org.dmfs.httpessentials.entities.EmptyHttpRequestEntity;
-import org.dmfs.httpessentials.exceptions.ProtocolError;
-import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.httpessentials.exceptions.UnauthorizedException;
 import org.dmfs.httpessentials.executors.authorizing.Authorizing;
 import org.dmfs.httpessentials.executors.following.Following;
@@ -41,15 +41,30 @@ import org.dmfs.httpessentials.executors.following.policies.Relative;
 import org.dmfs.httpessentials.executors.following.policies.Secure;
 import org.dmfs.httpessentials.executors.retrying.Retrying;
 import org.dmfs.httpessentials.executors.retrying.policies.DefaultRetryPolicy;
+import org.dmfs.httpessentials.executors.useragent.Branded;
 import org.dmfs.httpessentials.headers.EmptyHeaders;
 import org.dmfs.httpessentials.headers.Headers;
 import org.dmfs.httpessentials.httpurlconnection.HttpUrlConnectionExecutor;
 import org.dmfs.httpessentials.httpurlconnection.factories.DefaultHttpUrlConnectionFactory;
 import org.dmfs.httpessentials.httpurlconnection.factories.decorators.Finite;
-import org.dmfs.httpessentials.responsehandlers.TrivialResponseHandler;
+import org.dmfs.httpessentials.methods.SafeMethod;
+import org.dmfs.httpessentials.types.SimpleProduct;
+import org.dmfs.iterables.Split;
 import org.dmfs.iterators.decorators.Filtered;
+import org.dmfs.jems.optional.adapters.First;
+import org.dmfs.jems.optional.decorators.Mapped;
+import org.dmfs.jems.optional.decorators.Sieved;
+import org.dmfs.jems.optional.elementary.NullSafe;
+import org.dmfs.jems.predicate.Predicate;
+import org.dmfs.jems.single.combined.Backed;
+import org.dmfs.rfc3986.encoding.Precoded;
+import org.dmfs.rfc3986.parameters.Parameter;
+import org.dmfs.rfc3986.parameters.ParameterList;
+import org.dmfs.rfc3986.parameters.adapters.XwfueParameterList;
 
-import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.regex.Pattern;
 
 
 /**
@@ -59,6 +74,10 @@ import java.io.IOException;
  */
 public final class VerificationService extends DelegatingVerificationService
 {
+    private final static Collection<String> SAFE_METHODS = Arrays.asList("PROPFIND", "GET", "HEAD", "OPTIONS");
+    private final static Pattern STATUS_PATTERN = Pattern.compile("^[1-5]\\d\\d$");
+
+
     public VerificationService()
     {
         super(context -> (provider, authStrategy) ->
@@ -68,8 +87,11 @@ public final class VerificationService extends DelegatingVerificationService
             HttpRequestExecutor executor = new Following(
                     new Authorizing(
                             new Retrying(
-                                    new HttpUrlConnectionExecutor(
-                                            new Trusted(new Finite(new DefaultHttpUrlConnectionFactory(), 10000, 10000), service.keyStore())),
+                                    new Branded(
+                                            new HttpUrlConnectionExecutor(
+                                                    new Trusted(
+                                                            new Finite(new DefaultHttpUrlConnectionFactory(), 10000, 10000), service.keyStore())),
+                                            new SimpleProduct("Smoothsync")),
                                     new DefaultRetryPolicy(3)),
                             authStrategy),
                     new Limited(5,
@@ -79,12 +101,23 @@ public final class VerificationService extends DelegatingVerificationService
 
             try
             {
+                ParameterList fragmentParameters = new XwfueParameterList(new Mapped<>(Precoded::new, new NullSafe<>(service.uri().getRawFragment())));
                 return executor.execute(service.uri(), new HttpRequest<Boolean>()
                 {
                     @Override
                     public HttpMethod method()
                     {
-                        return HttpMethod.GET;
+                        return new Backed<>(
+                                new Mapped<>(
+                                        m -> new SafeMethod(m, false /* maybe later */),
+                                        new Sieved<>(
+                                                SAFE_METHODS::contains,
+                                                new Mapped<>(
+                                                        p -> p.textValue().toString(),
+                                                        new First<>(
+                                                                fragmentParameters,
+                                                                (Predicate<Parameter>) p -> "method".equals(p.name().toString()))))),
+                                HttpMethod.GET).value();
                     }
 
 
@@ -103,9 +136,22 @@ public final class VerificationService extends DelegatingVerificationService
 
 
                     @Override
-                    public HttpResponseHandler<Boolean> responseHandler(HttpResponse response) throws IOException, ProtocolError, ProtocolException
+                    public HttpResponseHandler<Boolean> responseHandler(HttpResponse response)
                     {
-                        return new TrivialResponseHandler<>(!HttpStatus.UNAUTHORIZED.equals(response.status()));
+                        return new TrivialResponseHandler<>(
+                                new Backed<>(
+                                        new Mapped<>(
+                                                new HasAny<Integer>(t -> response.status().statusCode() == t)::satisfiedBy,
+                                                new Mapped<>(
+                                                        // map the list of strings to a list of integers
+                                                        p -> new org.dmfs.jems.iterable.decorators.Mapped<>(
+                                                                c -> Integer.parseInt(c.toString()),
+                                                                new org.dmfs.iterables.decorators.Sieved<>(
+                                                                        c -> STATUS_PATTERN.matcher(c).matches(),
+                                                                        new Split(p.textValue(), ','))),
+                                                        new First<>(fragmentParameters,
+                                                                (Predicate<Parameter>) p -> "success_codes".equals(p.name().toString())))),
+                                        !HttpStatus.UNAUTHORIZED.equals(response.status())).value());
                     }
                 });
             }
