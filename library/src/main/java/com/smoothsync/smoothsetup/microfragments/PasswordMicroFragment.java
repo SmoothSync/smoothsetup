@@ -21,10 +21,13 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.PasswordTransformationMethod;
+import android.text.method.TransformationMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -171,6 +174,7 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
         private Params mParams;
         private EditText mPassword;
         private Button mButton;
+        private TextInputLayout mTextInputLayout;
         private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
         private Dovecote<AppSpecificWebviewFragment.PasswordResult> mDovecote;
 
@@ -191,10 +195,12 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
             View result = inflater.inflate(R.layout.smoothsetup_microfragment_password, container, false);
             TextView messageView = ((TextView) result.findViewById(android.R.id.message));
 
+            mTextInputLayout = result.findViewById(R.id.text_input_layout);
+
             mButton = (Button) result.findViewById(R.id.button);
             mButton.setOnClickListener(this);
 
-            mPassword = (EditText) result.findViewById(android.R.id.input);
+            mPassword = (EditText) mTextInputLayout.findViewById(android.R.id.input);
             mPassword.addTextChangedListener(new TextWatcher()
             {
                 @Override
@@ -218,6 +224,22 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
                 }
             });
 
+            mTextInputLayout.setEndIconOnClickListener(
+                    (textInputLayout) -> {
+                        // set secure flag while the password is visible
+                        TransformationMethod tm = mPassword.getTransformationMethod();
+                        if (tm == null)
+                        {
+                            getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+                            mPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                        }
+                        else
+                        {
+                            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+                            mPassword.setTransformationMethod(null);
+                        }
+                    });
+
             Provider provider = mMicroFragmentEnvironment.microFragment().parameter().account().provider();
             try
             {
@@ -232,9 +254,8 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
                     // can't override any restriction for this account
                     mPassword.setText(credentialsRestrictions.value().password());
                     mPassword.setEnabled(false);
-                    TextInputLayout til = result.findViewById(R.id.text_input_layout);
-                    til.setHelperText("Provided by Managed Profile ");
-                    til.setEnabled(false);
+                    mTextInputLayout.setHelperText("Provided by Managed Profile ");
+                    mTextInputLayout.setEnabled(false);
                     // fast forward view
                     //          result.post(() -> authenticate(credentialsRestrictions.value().password().toString()));
                 }
@@ -300,6 +321,17 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
                 });
             }
             return result;
+        }
+
+
+        @Override
+        public void onPause()
+        {
+            // ensure we hide the password when we leave the activity for any reason
+            mPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            mPassword.invalidate();
+            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+            super.onPause();
         }
 
 
