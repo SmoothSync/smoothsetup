@@ -177,6 +177,22 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
         private TextInputLayout mTextInputLayout;
         private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
         private Dovecote<AppSpecificWebviewFragment.PasswordResult> mDovecote;
+        private View.OnClickListener mPasswordToggleListener = textInputLayout -> {
+            // set secure flag while the password is visible
+            TransformationMethod tm = mPassword.getTransformationMethod();
+            if (tm == null)
+            {
+                PasswordFragment.this.getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+                mPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            }
+            else
+            {
+                PasswordFragment.this.getActivity()
+                        .getWindow()
+                        .setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+                mPassword.setTransformationMethod(null);
+            }
+        };
 
 
         @Override
@@ -224,21 +240,7 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
                 }
             });
 
-            mTextInputLayout.setEndIconOnClickListener(
-                    (textInputLayout) -> {
-                        // set secure flag while the password is visible
-                        TransformationMethod tm = mPassword.getTransformationMethod();
-                        if (tm == null)
-                        {
-                            getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
-                            mPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                        }
-                        else
-                        {
-                            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
-                            mPassword.setTransformationMethod(null);
-                        }
-                    });
+            mTextInputLayout.setEndIconOnClickListener(mPasswordToggleListener);
 
             Provider provider = mMicroFragmentEnvironment.microFragment().parameter().account().provider();
             try
@@ -325,12 +327,19 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
 
 
         @Override
+        public void onResume()
+        {
+            super.onResume();
+            mPasswordToggleListener.onClick(mTextInputLayout);
+        }
+
+
+        @Override
         public void onPause()
         {
             // ensure we hide the password when we leave the activity for any reason
             mPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
             mPassword.invalidate();
-            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
             super.onPause();
         }
 
@@ -339,6 +348,7 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
         public void onDestroyView()
         {
             mDovecote.dispose();
+            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
             super.onDestroyView();
         }
 
