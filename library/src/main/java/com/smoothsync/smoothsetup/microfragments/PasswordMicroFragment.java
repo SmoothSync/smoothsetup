@@ -177,7 +177,7 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
         private TextInputLayout mTextInputLayout;
         private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
         private Dovecote<AppSpecificWebviewFragment.PasswordResult> mDovecote;
-        private View.OnClickListener mPasswordToggleListener = textInputLayout -> {
+        private final View.OnClickListener mPasswordToggleListener = textInputLayout -> {
             // set secure flag while the password is visible
             TransformationMethod tm = mPassword.getTransformationMethod();
             if (tm == null)
@@ -330,6 +330,7 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
         public void onResume()
         {
             super.onResume();
+            mPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
             mPasswordToggleListener.onClick(mTextInputLayout);
         }
 
