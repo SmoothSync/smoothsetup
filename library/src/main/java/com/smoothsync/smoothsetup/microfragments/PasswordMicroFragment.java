@@ -331,7 +331,7 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
         {
             super.onResume();
             mPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
-            mPasswordToggleListener.onClick(mTextInputLayout);
+            PasswordFragment.this.getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
         }
 
 
