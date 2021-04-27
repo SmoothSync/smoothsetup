@@ -26,7 +26,7 @@ import android.view.ViewGroup;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
-import com.smoothsync.smoothsetup.services.binders.PackageServiceBinder;
+import com.smoothsync.smoothsetup.services.binders.ProviderServiceBinder;
 
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
@@ -51,7 +51,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.functions.Supplier;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -186,7 +185,7 @@ public final class ProvidersLoadMicroFragment implements MicroFragment<Providers
         public void onResume()
         {
             super.onResume();
-            new PackageServiceBinder(getContext()).wrapped()
+            new ProviderServiceBinder(getContext()).wrapped()
                     .flatMapObservable(ProviderService::all)
                     .collect((Supplier<ArrayList<Provider>>) ArrayList::new, ArrayList::add)
                     .observeOn(AndroidSchedulers.mainThread())

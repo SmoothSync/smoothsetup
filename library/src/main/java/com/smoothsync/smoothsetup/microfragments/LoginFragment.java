@@ -36,7 +36,7 @@ import com.smoothsync.smoothsetup.autocomplete.AbstractAutoCompleteAdapter;
 import com.smoothsync.smoothsetup.restrictions.AccountRestriction;
 import com.smoothsync.smoothsetup.restrictions.ProviderAccountRestrictions;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
-import com.smoothsync.smoothsetup.services.binders.PackageServiceBinder;
+import com.smoothsync.smoothsetup.services.binders.ProviderServiceBinder;
 import com.smoothsync.smoothsetup.setupbuttons.AbstractSmoothSetupAdapter;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter;
@@ -77,7 +77,7 @@ public final class LoginFragment extends Fragment
     {
         super.onCreate(savedInstanceState);
         mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
-        mProviderService = new PackageServiceBinder(getContext()).wrapped();
+        mProviderService = new ProviderServiceBinder(getContext()).wrapped();
     }
 
 

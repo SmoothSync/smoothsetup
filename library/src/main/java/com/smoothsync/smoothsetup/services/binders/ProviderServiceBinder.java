@@ -33,9 +33,9 @@ import static com.smoothsync.smoothsetup.utils.ServiceBinder.localServiceByClass
  * A {@link Single} {@link ProviderService}.
  */
 @Keep
-public final class PackageServiceBinder extends DelegatingSingle<ProviderService>
+public final class ProviderServiceBinder extends DelegatingSingle<ProviderService>
 {
-    public PackageServiceBinder(@NonNull Context context)
+    public ProviderServiceBinder(@NonNull Context context)
     {
         super(localServiceByClassNameResource(context, R.string.smoothsetup_provider_service));
     }

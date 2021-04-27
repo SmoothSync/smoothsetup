@@ -23,6 +23,7 @@ import com.smoothsync.api.model.impl.JsonObjectArrayIterator;
 import com.smoothsync.api.model.impl.JsonProvider;
 import com.smoothsync.smoothsetup.providerdata.ProviderData;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
+import com.smoothsync.smoothsetup.services.providerservice.WithIdPrefix;
 
 import org.dmfs.iterables.EmptyIterable;
 import org.dmfs.iterables.decorators.Sieved;
@@ -43,6 +44,10 @@ import io.reactivex.rxjava3.core.Observable;
  */
 public final class StaticProviders implements Function<Context, ProviderService>
 {
+    public final static String PREFIX = "com.smoothsync.static:";
+    private final io.reactivex.rxjava3.functions.Function<? super Provider, ? extends Provider> prefixFunction =
+            provider -> new WithIdPrefix(PREFIX, provider);
+
     private final ProviderData mData;
 
 
@@ -67,9 +72,11 @@ public final class StaticProviders implements Function<Context, ProviderService>
                             new Mapped<JSONObject, Provider>(
                                     JsonProvider::new,
                                     new Sieved<>(
-                                            (Predicate<? super JSONObject>) o -> id.equals(o.optString("id")),
+                                            (Predicate<? super JSONObject>) o -> id.equals(o.optString("id"))
+                                                    || (PREFIX + id).equals(o.optString("id")),
                                             () -> new JsonObjectArrayIterator(data.optJSONArray("providers")))))
-                            .firstElement();
+                            .firstElement()
+                            .map(prefixFunction);
                 }
 
 
@@ -87,7 +94,8 @@ public final class StaticProviders implements Function<Context, ProviderService>
                     return Observable.fromIterable(
                             new Mapped<>(
                                     JsonProvider::new,
-                                    () -> new JsonObjectArrayIterator(data.optJSONArray("providers"))));
+                                    () -> new JsonObjectArrayIterator(data.optJSONArray("providers"))))
+                            .map(prefixFunction);
                 }
 
 

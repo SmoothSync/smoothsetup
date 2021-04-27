@@ -26,7 +26,7 @@ import android.view.ViewGroup;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.ParcelableProvider;
-import com.smoothsync.smoothsetup.services.binders.PackageServiceBinder;
+import com.smoothsync.smoothsetup.services.binders.ProviderServiceBinder;
 import com.smoothsync.smoothsetup.utils.LoginInfo;
 import com.smoothsync.smoothsetup.utils.LoginRequest;
 
@@ -49,7 +49,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Single;
 
 
 /**
@@ -185,7 +184,7 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
         public void onResume()
         {
             super.onResume();
-            new PackageServiceBinder(getContext()).wrapped()
+            new ProviderServiceBinder(getContext()).wrapped()
                     .flatMapMaybe(ps -> ps.byId(mMicroFragmentEnvironment.microFragment().parameter().loginRequest().providerId()))
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::onResult,

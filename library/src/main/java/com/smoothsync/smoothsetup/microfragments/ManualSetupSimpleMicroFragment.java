@@ -35,6 +35,7 @@ import com.smoothsync.api.model.Service;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.model.BasicAccount;
+import com.smoothsync.smoothsetup.services.providerservice.functions.ManualProviders;
 import com.smoothsync.smoothsetup.utils.AccountDetails;
 import com.smoothsync.smoothsetup.utils.AccountDetailsBox;
 
@@ -381,7 +382,7 @@ public final class ManualSetupSimpleMicroFragment implements MicroFragment<Manua
                                                                 @Override
                                                                 public String id()
                                                                 {
-                                                                    return "custom:" + uri.toString();
+                                                                    return ManualProviders.PREFIX + uri.toString();
                                                                 }
 
 

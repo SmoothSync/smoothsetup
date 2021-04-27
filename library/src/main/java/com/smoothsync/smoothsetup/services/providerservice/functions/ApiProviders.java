@@ -26,6 +26,7 @@ import com.smoothsync.api.requests.ProviderMultiget;
 import com.smoothsync.api.requests.ProviderSearch;
 import com.smoothsync.smoothsetup.services.binders.ApiServiceBinder;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
+import com.smoothsync.smoothsetup.services.providerservice.WithIdPrefix;
 
 import org.dmfs.httpessentials.exceptions.NotFoundException;
 import org.dmfs.jems.function.Function;
@@ -43,6 +44,11 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
  */
 public final class ApiProviders implements Function<Context, ProviderService>
 {
+    public final static String PREFIX = "com.smoothsync.api:";
+    private final io.reactivex.rxjava3.functions.Function<? super Provider, ? extends Provider> prefixFunction =
+            provider -> new WithIdPrefix(PREFIX, provider);
+
+
     @Override
     public ProviderService value(Context context)
     {
@@ -54,10 +60,11 @@ public final class ApiProviders implements Function<Context, ProviderService>
             {
                 return apiSingle
                         .observeOn(Schedulers.io())
-                        .flatMapMaybe(api -> (MaybeSource<Provider>) observer -> {
+                        .filter(ignored -> id.startsWith(PREFIX) || !id.startsWith("com.smoothsync") /* for backwards compatibility */)
+                        .flatMap(api -> (MaybeSource<Provider>) observer -> {
                             try
                             {
-                                observer.onSuccess(api.resultOf(new ProviderGet(id)));
+                                observer.onSuccess(api.resultOf(new ProviderGet(id.startsWith(PREFIX) ? id.substring(PREFIX.length()) : id)));
                             }
                             catch (NotFoundException e)
                             {
@@ -67,7 +74,8 @@ public final class ApiProviders implements Function<Context, ProviderService>
                             {
                                 observer.onError(exception);
                             }
-                        });
+                        })
+                        .map(prefixFunction);
             }
 
 
@@ -76,7 +84,8 @@ public final class ApiProviders implements Function<Context, ProviderService>
             {
                 return apiSingle
                         .observeOn(Schedulers.io())
-                        .flattenAsObservable(api -> api.resultOf(new ProviderSearch(domain)));
+                        .flattenAsObservable(api -> api.resultOf(new ProviderSearch(domain)))
+                        .map(prefixFunction);
             }
 
 
@@ -85,7 +94,8 @@ public final class ApiProviders implements Function<Context, ProviderService>
             {
                 return apiSingle
                         .observeOn(Schedulers.io())
-                        .flattenAsObservable(api -> api.resultOf(new ProviderMultiget()));
+                        .flattenAsObservable(api -> api.resultOf(new ProviderMultiget()))
+                        .map(prefixFunction);
             }
 
 

@@ -16,32 +16,30 @@
 
 package com.smoothsync.smoothsetup.services.providerservice.functions;
 
+import android.accounts.AccountManager;
 import android.content.Context;
-import android.os.Build;
 
 import com.smoothsync.api.model.Provider;
-import com.smoothsync.smoothsetup.restrictions.ProviderRestrictions;
+import com.smoothsync.api.model.impl.JsonProvider;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
 import com.smoothsync.smoothsetup.services.providerservice.WithIdPrefix;
 
 import org.dmfs.jems.function.Function;
 import org.dmfs.jems.iterable.elementary.Seq;
-import org.dmfs.jems.optional.adapters.First;
-import org.dmfs.jems.predicate.Predicate;
-import org.dmfs.jems.predicate.composite.AnyOf;
+import org.json.JSONObject;
 
-import androidx.annotation.RequiresApi;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 
 
 /**
- * A {@link ProviderService} {@link Function} to return the providers configured in the restrictions.
+ * A {@link ProviderService} {@link Function} to manually configured providers.
  */
-@RequiresApi(api = Build.VERSION_CODES.M)
-public final class RestrictionsProviders implements Function<Context, ProviderService>
+public final class ManualProviders implements Function<Context, ProviderService>
 {
-    public final static String PREFIX = "com.smoothsync.restrictions:";
+    public final static String PREFIX = "com.smoothsync.manual:";
+    public final static String KEY_PROVIDER = "provider";
+
     private final io.reactivex.rxjava3.functions.Function<? super Provider, ? extends Provider> prefixFunction =
             provider -> new WithIdPrefix(PREFIX, provider);
 
@@ -49,43 +47,40 @@ public final class RestrictionsProviders implements Function<Context, ProviderSe
     @Override
     public ProviderService value(Context context)
     {
-        Observable<Provider> restrictionProviders = new ProviderRestrictions(context).wrapped().cache();
+        AccountManager am = AccountManager.get(context);
         return new ProviderService()
         {
             @Override
             public Maybe<Provider> byId(String id)
             {
-                return restrictionProviders.filter(provider -> new AnyOf<>(id, PREFIX + id).satisfiedBy(provider.id()))
+                return Observable.fromIterable(new Seq<>(am.getAccountsByTypeForPackage(null, context.getPackageName())))
+                        .filter(account -> account.name.equals(id.substring(PREFIX.length())))
                         .firstElement()
-                        .map(prefixFunction);
+                        .map(account -> new JsonProvider(new JSONObject(am.getUserData(account, KEY_PROVIDER))));
             }
 
 
             @Override
             public Observable<Provider> byDomain(String domain)
             {
-                return restrictionProviders.filter(
-                        provider -> new First<>(
-                                new Seq<>(provider.domains()),
-                                (Predicate<? super String>) domain::equals).isPresent())
-                        .map(prefixFunction);
+                // TODO
+                return Observable.empty();
             }
 
 
             @Override
             public Observable<Provider> all()
             {
-                return restrictionProviders
-                        .map(prefixFunction);
+                // TODO
+                return Observable.empty();
             }
 
 
             @Override
             public Observable<String> autoComplete(String domainFragment)
             {
-                return restrictionProviders
-                        .flatMapIterable(p -> new Seq<>(p.domains()))
-                        .filter(d -> toString().startsWith(domainFragment));
+                // TODO
+                return Observable.empty();
             }
         };
     }
