@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.smoothsync.smoothsetup.services.providerservice;
+package com.smoothsync.smoothsetup.utils;
 
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.api.model.Service;

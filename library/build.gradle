@@ -31,6 +31,9 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.2.0'
     implementation 'com.google.android.material:material:1.3.0'
     api 'io.reactivex.rxjava3:rxjava:3.0.7'
+    implementation ('org.dmfs:express-json:0.1.1') {
+        exclude group: "org.hamcrest"
+    }
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
 
     implementation 'org.dmfs:http-client-essentials:' + HTTP_CLIENT_ESSENTIALS_VERSION

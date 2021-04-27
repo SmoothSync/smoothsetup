@@ -26,6 +26,7 @@ import com.smoothsync.api.model.impl.BasicInstance;
 import com.smoothsync.api.requests.Ping;
 import com.smoothsync.smoothsetup.services.binders.ApiServiceBinder;
 import com.smoothsync.smoothsetup.services.providerresolution.pingStrategy.PingStrategy;
+import com.smoothsync.smoothsetup.utils.UnPrefixed;
 
 import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.Duration;
@@ -34,7 +35,6 @@ import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import io.reactivex.rxjava3.core.Maybe;
-import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -45,6 +45,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public final class Accounting implements ProviderResolutionStrategy
 {
     final static String KEY_LAST_API_PING = "last-api-ping";
+    final static Duration PING_GRACE_PERIOD = new Duration(1, 8);
 
     private final PingStrategy mPingStrategy;
     private final ProviderResolutionStrategy mDelegate;
@@ -65,7 +66,6 @@ public final class Accounting implements ProviderResolutionStrategy
     {
         AccountManager am = AccountManager.get(context);
         return mDelegate.provider(context, account)
-                .subscribeOn(Schedulers.io())
                 .flatMap(provider -> mPingStrategy
                         // get the provider to ping
                         .pingProvider(provider)
@@ -75,16 +75,25 @@ public final class Accounting implements ProviderResolutionStrategy
                                         .map(DateTime::parse)
                                         .switchIfEmpty(Maybe.fromCallable(() -> new DateTime(0)))
                                         .filter(this::ping)
-                                        .subscribeOn(Schedulers.io())
                                         // at this point we have a value if we need to send a ping
-                                        .flatMapSingle(lastPing ->
+                                        .flatMap(lastPing ->
                                                 Single.wrap(new ApiServiceBinder(context))
-                                                        .subscribeOn(Schedulers.io())
+                                                        .observeOn(Schedulers.io())
                                                         .map(smoothSyncApi -> smoothSyncApi.resultOf(
-                                                                new Ping(new BasicInstance(pingProvider, context.getPackageName(), account.name))))
+                                                                new Ping(new BasicInstance(new UnPrefixed(pingProvider), context.getPackageName(),
+                                                                        account.name))))
                                                         .timeout(100, TimeUnit.SECONDS)
                                                         .doOnSuccess(pingResponse -> am.setUserData(account, KEY_LAST_API_PING, DateTime.now().toString()))
-                                                        .map(PingResponse::provider)))
+                                                        .map(PingResponse::provider)
+                                                        .doOnSuccess(newProvider -> {
+                                                            // wipe cache date if the provider is updated
+                                                            if (!pingProvider.lastModified().equals(provider.lastModified()))
+                                                            {
+                                                                am.setUserData(account, Caching.KEY_CACHE_DATE, null);
+                                                            }
+                                                        })
+                                                        // allow ping to fail for a while before we allow the error to bubble up
+                                                        .onErrorComplete(ignored -> DateTime.now().after(lastPing.addDuration(PING_GRACE_PERIOD)))))
                         // return the original provider if no ping was done
                         .switchIfEmpty(Maybe.just(provider)));
     }

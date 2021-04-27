@@ -26,7 +26,7 @@ import com.smoothsync.api.requests.ProviderMultiget;
 import com.smoothsync.api.requests.ProviderSearch;
 import com.smoothsync.smoothsetup.services.binders.ApiServiceBinder;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
-import com.smoothsync.smoothsetup.services.providerservice.WithIdPrefix;
+import com.smoothsync.smoothsetup.utils.WithIdPrefix;
 
 import org.dmfs.httpessentials.exceptions.NotFoundException;
 import org.dmfs.jems.function.Function;

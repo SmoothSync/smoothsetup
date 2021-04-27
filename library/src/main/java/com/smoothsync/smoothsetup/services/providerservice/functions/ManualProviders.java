@@ -22,7 +22,7 @@ import android.content.Context;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.api.model.impl.JsonProvider;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
-import com.smoothsync.smoothsetup.services.providerservice.WithIdPrefix;
+import com.smoothsync.smoothsetup.utils.WithIdPrefix;
 
 import org.dmfs.jems.function.Function;
 import org.dmfs.jems.iterable.elementary.Seq;

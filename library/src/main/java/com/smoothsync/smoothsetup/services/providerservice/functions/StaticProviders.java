@@ -23,7 +23,7 @@ import com.smoothsync.api.model.impl.JsonObjectArrayIterator;
 import com.smoothsync.api.model.impl.JsonProvider;
 import com.smoothsync.smoothsetup.providerdata.ProviderData;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
-import com.smoothsync.smoothsetup.services.providerservice.WithIdPrefix;
+import com.smoothsync.smoothsetup.utils.WithIdPrefix;
 
 import org.dmfs.iterables.EmptyIterable;
 import org.dmfs.iterables.decorators.Sieved;
