@@ -74,6 +74,7 @@ public final class Accounting implements ProviderResolutionStrategy
                                         .map(DateTime::parse)
                                         .switchIfEmpty(Maybe.fromCallable(() -> new DateTime(0)))
                                         .filter(this::ping)
+                                        .subscribeOn(Schedulers.io())
                                         // at this point we have a value if we need to send a ping
                                         .flatMapSingle(lastPing ->
                                                 Single.wrap(new ApiServiceBinder(context))
