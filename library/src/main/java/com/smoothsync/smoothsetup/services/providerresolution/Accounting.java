@@ -34,7 +34,9 @@ import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 
 /**
@@ -75,6 +77,7 @@ public final class Accounting implements ProviderResolutionStrategy
                                         // at this point we have a value if we need to send a ping
                                         .flatMapSingle(lastPing ->
                                                 Single.wrap(new ApiServiceBinder(context))
+                                                        .subscribeOn(Schedulers.io())
                                                         .map(smoothSyncApi -> smoothSyncApi.resultOf(
                                                                 new Ping(new BasicInstance(pingProvider, context.getPackageName(), account.name))))
                                                         .timeout(100, TimeUnit.SECONDS)
