@@ -65,6 +65,7 @@ public final class Accounting implements ProviderResolutionStrategy
     {
         AccountManager am = AccountManager.get(context);
         return mDelegate.provider(context, account)
+                .subscribeOn(Schedulers.io())
                 .flatMap(provider -> mPingStrategy
                         // get the provider to ping
                         .pingProvider(provider)
