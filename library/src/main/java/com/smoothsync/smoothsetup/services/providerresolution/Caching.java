@@ -32,14 +32,19 @@ import org.dmfs.express.json.elementary.JsonText;
 import org.dmfs.express.json.elementary.Member;
 import org.dmfs.express.json.elementary.Object;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
+import org.dmfs.iterables.EmptyIterable;
 import org.dmfs.jems.iterable.decorators.Mapped;
+import org.dmfs.jems.optional.elementary.NullSafe;
+import org.dmfs.jems.single.combined.Backed;
 import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.Duration;
 import org.json.JSONObject;
 
+import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.CertificateEncodingException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
@@ -97,38 +102,45 @@ public final class Caching implements ProviderResolutionStrategy
                 new Member("services", new Array(
                         new Mapped<>(
                                 s -> {
-                                    try
-                                    {
-                                        return new Object(
-                                                new Member("service-type", s.serviceType()),
-                                                new Member("name", s.name()),
-                                                new Member("uri", s.uri().toASCIIString()),
-                                                new Member("com-smoothsync-certificates", new Array(
-                                                        new Mapped<>(
-                                                                alias ->
-                                                                {
-                                                                    try
-                                                                    {
-                                                                        return new org.dmfs.express.json.elementary.String(
-                                                                                "-----BEGIN CERTIFICATE-----\n" +
-                                                                                        Base64.encodeBytes(s.keyStore().getCertificate(alias).getEncoded()) +
-                                                                                        "\n-----END CERTIFICATE-----");
-                                                                    }
-                                                                    catch (CertificateEncodingException | KeyStoreException e)
-                                                                    {
-                                                                        throw new RuntimeException("can't get certificate", e);
+                                    return new Object(
+                                            new Member("service-type", s.serviceType()),
+                                            new Member("name", s.name()),
+                                            new Member("uri", s.uri().toASCIIString()),
+                                            new Member("com-smoothsync-certificates",
+                                                    s.keyStore() == null ? null :
+                                                            new Array(
+                                                                    new Mapped<>(
+                                                                            alias ->
+                                                                            {
+                                                                                try
+                                                                                {
+                                                                                    return new org.dmfs.express.json.elementary.String(
+                                                                                            "-----BEGIN CERTIFICATE-----\n" +
+                                                                                                    Base64.encodeBytes(
+                                                                                                            s.keyStore().getCertificate(alias).getEncoded()) +
+                                                                                                    "\n-----END CERTIFICATE-----");
+                                                                                }
+                                                                                catch (CertificateEncodingException | KeyStoreException e)
+                                                                                {
+                                                                                    throw new RuntimeException("can't get certificate", e);
 
-                                                                    }
-                                                                },
-                                                                Collections.list(s.keyStore().aliases())
-                                                        )
-                                                ))
-                                        );
-                                    }
-                                    catch (KeyStoreException e)
-                                    {
-                                        throw new RuntimeException("can't get certificate", e);
-                                    }
+                                                                                }
+                                                                            },
+                                                                            new Backed<Iterable<String>>(
+                                                                                    new org.dmfs.jems.optional.decorators.Mapped<KeyStore, List<String>>(
+                                                                                            ks -> {
+                                                                                                try
+                                                                                                {
+                                                                                                    return Collections.list(ks.aliases());
+                                                                                                }
+                                                                                                catch (KeyStoreException e)
+                                                                                                {
+                                                                                                    throw new RuntimeException("Error reading keystore");
+                                                                                                }
+                                                                                            },
+                                                                                            new NullSafe<>(s.keyStore())), new EmptyIterable<>()).value())
+                                                            )
+                                            ));
                                 },
                                 () -> {
                                     try

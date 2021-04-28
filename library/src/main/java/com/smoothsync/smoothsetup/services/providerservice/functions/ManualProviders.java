@@ -39,6 +39,7 @@ public final class ManualProviders implements Function<Context, ProviderService>
 {
     public final static String PREFIX = "com.smoothsync.manual:";
     public final static String KEY_PROVIDER = "provider";
+    public static final String KEY_PROVIDER_ID = "provider_id";
 
     private final io.reactivex.rxjava3.functions.Function<? super Provider, ? extends Provider> prefixFunction =
             provider -> new WithIdPrefix(PREFIX, provider);
@@ -54,7 +55,7 @@ public final class ManualProviders implements Function<Context, ProviderService>
             public Maybe<Provider> byId(String id)
             {
                 return Observable.fromIterable(new Seq<>(am.getAccountsByTypeForPackage(null, context.getPackageName())))
-                        .filter(account -> account.name.equals(id.substring(PREFIX.length())))
+                        .filter(account -> id.equals(am.getUserData(account, KEY_PROVIDER_ID)))
                         .firstElement()
                         .map(account -> new JsonProvider(new JSONObject(am.getUserData(account, KEY_PROVIDER))));
             }
