@@ -30,6 +30,7 @@ import net.iharder.Base64;
 import org.dmfs.express.json.elementary.Array;
 import org.dmfs.express.json.elementary.JsonText;
 import org.dmfs.express.json.elementary.Member;
+import org.dmfs.express.json.elementary.Null;
 import org.dmfs.express.json.elementary.Object;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.iterables.EmptyIterable;
@@ -107,7 +108,7 @@ public final class Caching implements ProviderResolutionStrategy
                                             new Member("name", s.name()),
                                             new Member("uri", s.uri().toASCIIString()),
                                             new Member("com-smoothsync-certificates",
-                                                    s.keyStore() == null ? null :
+                                                    s.keyStore() == null ? new Null() :
                                                             new Array(
                                                                     new Mapped<>(
                                                                             alias ->
