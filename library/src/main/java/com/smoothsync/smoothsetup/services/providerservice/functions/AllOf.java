@@ -59,7 +59,7 @@ public final class AllOf implements Function<Context, ProviderService>
             @Override
             public Maybe<Provider> byId(String id)
             {
-                return Maybe.concat(new Mapped<>(s -> byId(id), services)).firstElement();
+                return Maybe.concat(new Mapped<>(s -> s.byId(id), services)).firstElement();
             }
 
 
