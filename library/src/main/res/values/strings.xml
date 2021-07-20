@@ -192,7 +192,7 @@
     <!--
     Message that's faded in if a blocking operation (usually a network operation) takes longer than a few seconds.
     -->
-    <string name="smoothsetup_message_please_wait">This can take up to 2 minutes.</string>
+    <string name="smoothsetup_message_please_wait">This can take a moment.</string>
 
     <!--
     Message presented to the user when an authentication error occurred.

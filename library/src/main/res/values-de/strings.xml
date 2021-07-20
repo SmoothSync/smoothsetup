@@ -36,7 +36,7 @@
     <string name="smoothsetup_button_retry_now">Erneut versuchen</string>
 
     <string name="smoothsetup_message_setup_completed">%1$s ist jetzt eingerichtet und die Synchronisation beginnt in Kürze</string>
-    <string name="smoothsetup_message_please_wait">Dies kann bis zu 2 Minuten dauern.</string>
+    <string name="smoothsetup_message_please_wait">Dies kann einen Moment dauern.</string>
 
     <string name="smoothsetup_error_load_provider">Konnte Providerdaten nicht laden.\n\nBitte prüfe die Internetverbindung oder versuche es später noch einmal.</string>
     <string name="smoothsetup_error_authentication">Anmeldung fehlgeschlagen.\n\nBitte prüfe Dein Passwort und versuche es erneut.</string>
