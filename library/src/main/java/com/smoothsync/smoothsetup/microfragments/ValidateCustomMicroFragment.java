@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcel;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +45,7 @@ import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.android.microfragments.transitions.XFaded;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Unboxed;
+import org.dmfs.httpessentials.exceptions.UnauthorizedException;
 
 import java.util.concurrent.TimeUnit;
 
@@ -153,6 +153,7 @@ public final class ValidateCustomMicroFragment implements MicroFragment<Validate
         private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
         private Params mParams;
         private final Timestamp mTimestamp = new UiTimestamp();
+        private Runnable backGroundVerification;
 
 
         @Override
@@ -161,6 +162,23 @@ public final class ValidateCustomMicroFragment implements MicroFragment<Validate
             super.onCreate(savedInstanceState);
             mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
             mParams = mMicroFragmentEnvironment.microFragment().parameter();
+            final Context context = getContext();
+            backGroundVerification = () ->
+                    new ThrowingAsyncTask<Void, Void, AccountDetails>(this)
+                    {
+                        @Override
+                        protected AccountDetails doInBackgroundWithException(Void[] params) throws Exception
+                        {
+                            FutureServiceConnection<ProviderValidationService> serviceConnection =
+                                    new FutureLocalServiceConnection<>(
+                                            context,
+                                            new Intent(ProviderValidationService.ACTION)
+                                                    .setPackage(context.getPackageName()));
+                            return serviceConnection
+                                    .service(1000)
+                                    .providerForUrl(mParams.accountDetails().account().provider(), mParams.accountDetails().credentials());
+                        }
+                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         }
 
@@ -179,22 +197,15 @@ public final class ValidateCustomMicroFragment implements MicroFragment<Validate
         public void onResume()
         {
             super.onResume();
-            final Context context = getContext();
-            new ThrowingAsyncTask<Void, Void, AccountDetails>(this)
-            {
-                @Override
-                protected AccountDetails doInBackgroundWithException(Void[] params) throws Exception
-                {
-                    FutureServiceConnection<ProviderValidationService> serviceConnection =
-                            new FutureLocalServiceConnection<>(
-                                    context,
-                                    new Intent(ProviderValidationService.ACTION)
-                                            .setPackage(context.getPackageName()));
-                    return serviceConnection
-                            .service(1000)
-                            .providerForUrl(mParams.accountDetails().account().provider(), mParams.accountDetails().credentials());
-                }
-            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            getView().postDelayed(backGroundVerification, 50);
+        }
+
+
+        @Override
+        public void onPause()
+        {
+            getView().removeCallbacks(backGroundVerification);
+            super.onPause();
         }
 
 
@@ -208,9 +219,12 @@ public final class ValidateCustomMicroFragment implements MicroFragment<Validate
                 {
                     forward(activity, mParams.next().microFragment(activity, result.value()));
                 }
+                catch (UnauthorizedException e)
+                {
+                    forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_authentication)));
+                }
                 catch (Exception e)
                 {
-                    Log.v("SmoothSetup", "Network error", e);
                     forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_network)));
                 }
             }
