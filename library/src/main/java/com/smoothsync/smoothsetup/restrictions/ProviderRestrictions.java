@@ -22,10 +22,10 @@ import android.os.Bundle;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.utils.DelegatingObservable;
 
-import org.dmfs.jems.iterable.composite.Joined;
-import org.dmfs.jems.iterable.decorators.Mapped;
-import org.dmfs.jems.iterable.elementary.Seq;
-import org.dmfs.jems.optional.elementary.NullSafe;
+import org.dmfs.jems2.iterable.Joined;
+import org.dmfs.jems2.iterable.Mapped;
+import org.dmfs.jems2.iterable.Seq;
+import org.dmfs.jems2.optional.NullSafe;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -50,7 +50,7 @@ public final class ProviderRestrictions extends DelegatingObservable<Provider>
                 bundle -> new Mapped<>(
                         parcelable -> new RestrictionProvider((Bundle) parcelable),
                         new Joined<>(
-                                new org.dmfs.jems.optional.decorators.Mapped<>(
+                                new org.dmfs.jems2.optional.Mapped<>(
                                         Seq::new,
                                         new NullSafe<>(bundle.getParcelableArray("providers")))))));
     }

@@ -33,10 +33,10 @@ import org.dmfs.express.json.elementary.Member;
 import org.dmfs.express.json.elementary.Null;
 import org.dmfs.express.json.elementary.Object;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
-import org.dmfs.iterables.EmptyIterable;
-import org.dmfs.jems.iterable.decorators.Mapped;
-import org.dmfs.jems.optional.elementary.NullSafe;
-import org.dmfs.jems.single.combined.Backed;
+import org.dmfs.jems2.iterable.EmptyIterable;
+import org.dmfs.jems2.iterable.Mapped;
+import org.dmfs.jems2.optional.NullSafe;
+import org.dmfs.jems2.single.Backed;
 import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.Duration;
 import org.json.JSONObject;
@@ -128,7 +128,7 @@ public final class Caching implements ProviderResolutionStrategy
                                                                                 }
                                                                             },
                                                                             new Backed<Iterable<String>>(
-                                                                                    new org.dmfs.jems.optional.decorators.Mapped<KeyStore, List<String>>(
+                                                                                    new org.dmfs.jems2.optional.Mapped<>(
                                                                                             ks -> {
                                                                                                 try
                                                                                                 {
@@ -139,7 +139,8 @@ public final class Caching implements ProviderResolutionStrategy
                                                                                                     throw new RuntimeException("Error reading keystore");
                                                                                                 }
                                                                                             },
-                                                                                            new NullSafe<>(s.keyStore())), new EmptyIterable<>()).value())
+                                                                                            new NullSafe<>(s.keyStore())),
+                                                                                    EmptyIterable.emptyIterable()).value())
                                                             )
                                             ));
                                 },

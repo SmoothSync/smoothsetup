@@ -23,8 +23,8 @@ import android.os.Bundle;
 import android.os.Parcelable;
 
 import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
+import org.dmfs.iterables.elementary.PresentValues;
 import org.dmfs.iterators.EmptyIterator;
-import org.dmfs.jems.iterable.adapters.PresentValues;
 import org.dmfs.jems.iterable.composite.Joined;
 import org.dmfs.jems.iterable.decorators.Mapped;
 import org.dmfs.jems.iterable.elementary.Seq;

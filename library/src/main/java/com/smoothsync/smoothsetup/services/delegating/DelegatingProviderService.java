@@ -26,7 +26,7 @@ import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.services.ProviderValidationService;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
 
-import org.dmfs.jems.function.Function;
+import org.dmfs.jems2.Function;
 
 import androidx.annotation.Nullable;
 import io.reactivex.rxjava3.core.Maybe;

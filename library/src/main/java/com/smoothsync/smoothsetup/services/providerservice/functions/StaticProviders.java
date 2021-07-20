@@ -25,11 +25,11 @@ import com.smoothsync.smoothsetup.providerdata.ProviderData;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
 import com.smoothsync.smoothsetup.utils.WithIdPrefix;
 
-import org.dmfs.iterables.EmptyIterable;
-import org.dmfs.iterables.decorators.Sieved;
-import org.dmfs.jems.function.Function;
-import org.dmfs.jems.iterable.decorators.Mapped;
-import org.dmfs.jems.predicate.Predicate;
+import org.dmfs.jems2.Function;
+import org.dmfs.jems2.Predicate;
+import org.dmfs.jems2.iterable.EmptyIterable;
+import org.dmfs.jems2.iterable.Mapped;
+import org.dmfs.jems2.iterable.Sieved;
 import org.json.JSONException;
 import org.json.JSONObject;
 

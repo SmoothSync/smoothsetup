@@ -29,8 +29,8 @@ import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
 import com.smoothsync.smoothsetup.utils.WithIdPrefix;
 
 import org.dmfs.httpessentials.exceptions.NotFoundException;
-import org.dmfs.jems.function.Function;
-import org.dmfs.jems.iterable.elementary.Seq;
+import org.dmfs.jems2.Function;
+import org.dmfs.jems2.iterable.Seq;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.MaybeSource;

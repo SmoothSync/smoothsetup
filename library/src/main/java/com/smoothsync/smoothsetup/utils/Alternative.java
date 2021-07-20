@@ -16,8 +16,8 @@
 
 package com.smoothsync.smoothsetup.utils;
 
-import org.dmfs.jems.function.Function;
-import org.dmfs.jems.predicate.Predicate;
+import org.dmfs.jems2.Function;
+import org.dmfs.jems2.Predicate;
 
 
 /**

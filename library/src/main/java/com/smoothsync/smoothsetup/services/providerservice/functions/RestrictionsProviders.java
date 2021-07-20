@@ -24,11 +24,11 @@ import com.smoothsync.smoothsetup.restrictions.ProviderRestrictions;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
 import com.smoothsync.smoothsetup.utils.WithIdPrefix;
 
-import org.dmfs.jems.function.Function;
-import org.dmfs.jems.iterable.elementary.Seq;
-import org.dmfs.jems.optional.adapters.First;
-import org.dmfs.jems.predicate.Predicate;
-import org.dmfs.jems.predicate.composite.AnyOf;
+import org.dmfs.jems2.Function;
+import org.dmfs.jems2.Predicate;
+import org.dmfs.jems2.iterable.Seq;
+import org.dmfs.jems2.optional.First;
+import org.dmfs.jems2.predicate.AnyOf;
 
 import androidx.annotation.RequiresApi;
 import io.reactivex.rxjava3.core.Maybe;
@@ -66,8 +66,8 @@ public final class RestrictionsProviders implements Function<Context, ProviderSe
             {
                 return restrictionProviders.filter(
                         provider -> new First<>(
-                                new Seq<>(provider.domains()),
-                                (Predicate<? super String>) domain::equals).isPresent())
+                                (Predicate<? super String>) domain::equals,
+                                new Seq<>(provider.domains())).isPresent())
                         .map(prefixFunction);
             }
 

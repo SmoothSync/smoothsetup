@@ -16,9 +16,9 @@
 
 package com.smoothsync.smoothsetup.utils;
 
-import org.dmfs.iterables.decorators.Sieved;
-import org.dmfs.jems.optional.adapters.First;
-import org.dmfs.jems.predicate.Predicate;
+import org.dmfs.jems2.Predicate;
+import org.dmfs.jems2.iterable.Sieved;
+import org.dmfs.jems2.optional.First;
 
 
 /**

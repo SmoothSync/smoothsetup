@@ -21,9 +21,9 @@ import android.content.Context;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
 
-import org.dmfs.jems.function.Function;
-import org.dmfs.jems.iterable.decorators.Mapped;
-import org.dmfs.jems.iterable.elementary.Seq;
+import org.dmfs.jems2.Function;
+import org.dmfs.jems2.iterable.Mapped;
+import org.dmfs.jems2.iterable.Seq;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;

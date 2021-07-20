@@ -219,9 +219,16 @@ public final class ValidateCustomMicroFragment implements MicroFragment<Validate
                 {
                     forward(activity, mParams.next().microFragment(activity, result.value()));
                 }
-                catch (UnauthorizedException e)
+                catch (RuntimeException e)
                 {
-                    forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_authentication)));
+                    if (e.getCause() instanceof UnauthorizedException)
+                    {
+                        forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_authentication)));
+                    }
+                    else
+                    {
+                        forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_network)));
+                    }
                 }
                 catch (Exception e)
                 {
