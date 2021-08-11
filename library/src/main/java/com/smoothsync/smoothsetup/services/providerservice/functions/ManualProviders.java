@@ -18,18 +18,25 @@ package com.smoothsync.smoothsetup.services.providerservice.functions;
 
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.api.model.impl.JsonProvider;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
+import com.smoothsync.smoothsetup.utils.ProviderJson;
+import com.smoothsync.smoothsetup.utils.SharedPrefs;
 import com.smoothsync.smoothsetup.utils.WithIdPrefix;
 
+import org.dmfs.express.json.elementary.JsonText;
 import org.dmfs.jems.function.Function;
 import org.dmfs.jems.iterable.elementary.Seq;
 import org.json.JSONObject;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.functions.Consumer;
 
 
 /**
@@ -40,9 +47,10 @@ public final class ManualProviders implements Function<Context, ProviderService>
     public final static String PREFIX = "com.smoothsync.manual:";
     public final static String KEY_PROVIDER = "provider";
     public static final String KEY_PROVIDER_ID = "provider_id";
+    private static final String PROVIDER_STORE = "manual_providers";
 
     private final io.reactivex.rxjava3.functions.Function<? super Provider, ? extends Provider> prefixFunction =
-            provider -> new WithIdPrefix(PREFIX, provider);
+        provider -> new WithIdPrefix(PREFIX, provider);
 
 
     @Override
@@ -54,10 +62,14 @@ public final class ManualProviders implements Function<Context, ProviderService>
             @Override
             public Maybe<Provider> byId(String id)
             {
-                return Observable.fromIterable(new Seq<>(am.getAccountsByTypeForPackage(null, context.getPackageName())))
-                        .filter(account -> id.equals(am.getUserData(account, KEY_PROVIDER_ID)))
-                        .firstElement()
-                        .map(account -> new JsonProvider(new JSONObject(am.getUserData(account, KEY_PROVIDER))));
+                return new SharedPrefs(context, PROVIDER_STORE)
+                    .flatMapMaybe(prefs -> Maybe.fromCallable(() -> prefs.getString(id, null)))
+                    .map(providerJson -> (Provider) new JsonProvider(new JSONObject(providerJson)))
+                    .switchIfEmpty(
+                        Observable.fromIterable(new Seq<>(am.getAccountsByTypeForPackage(null, context.getPackageName())))
+                            .filter(account -> id.equals(am.getUserData(account, KEY_PROVIDER_ID)))
+                            .firstElement()
+                            .map(account -> new JsonProvider(new JSONObject(am.getUserData(account, KEY_PROVIDER)))));
             }
 
 
@@ -72,8 +84,9 @@ public final class ManualProviders implements Function<Context, ProviderService>
             @Override
             public Observable<Provider> all()
             {
-                // TODO
-                return Observable.empty();
+                return new SharedPrefs(context, PROVIDER_STORE)
+                    .flattenAsObservable(sharedPreferences -> sharedPreferences.getAll().values())
+                    .map(providerJson -> new JsonProvider(new JSONObject(providerJson.toString())));
             }
 
 
@@ -84,5 +97,35 @@ public final class ManualProviders implements Function<Context, ProviderService>
                 return Observable.empty();
             }
         };
+    }
+
+
+    public static final class ProviderStorageProcedure implements Consumer<Provider>
+    {
+
+        private final Single<SharedPreferences> mSharedPreferencesSingle;
+
+
+        public ProviderStorageProcedure(@NonNull Context context)
+        {
+            this(new SharedPrefs(context, PROVIDER_STORE));
+        }
+
+
+        public ProviderStorageProcedure(@NonNull Single<SharedPreferences> preferencesSingle)
+        {
+            mSharedPreferencesSingle = preferencesSingle;
+        }
+
+
+        @Override
+        public void accept(@NonNull Provider provider) throws Throwable
+        {
+            mSharedPreferencesSingle.subscribe(sharedPreferences ->
+                sharedPreferences
+                    .edit()
+                    .putString(provider.id(), new JsonText(new ProviderJson(provider)).value())
+                    .apply());
+        }
     }
 }
