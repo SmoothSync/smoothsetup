@@ -28,8 +28,8 @@ import com.smoothsync.smoothsetup.utils.SharedPrefs;
 import com.smoothsync.smoothsetup.utils.WithIdPrefix;
 
 import org.dmfs.express.json.elementary.JsonText;
-import org.dmfs.jems.function.Function;
 import org.dmfs.jems.iterable.elementary.Seq;
+import org.dmfs.jems2.Function;
 import org.json.JSONObject;
 
 import io.reactivex.rxjava3.annotations.NonNull;
@@ -119,7 +119,7 @@ public final class ManualProviders implements Function<Context, ProviderService>
 
 
         @Override
-        public void accept(@NonNull Provider provider) throws Throwable
+        public void accept(@NonNull Provider provider)
         {
             mSharedPreferencesSingle.subscribe(sharedPreferences ->
                 sharedPreferences
