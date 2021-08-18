@@ -52,8 +52,8 @@ public final class Accounting implements ProviderResolutionStrategy
 
 
     public Accounting(
-            @NonNull PingStrategy pingStrategy,
-            @NonNull ProviderResolutionStrategy delegate)
+        @NonNull PingStrategy pingStrategy,
+        @NonNull ProviderResolutionStrategy delegate)
     {
         mPingStrategy = pingStrategy;
         mDelegate = delegate;
@@ -66,36 +66,36 @@ public final class Accounting implements ProviderResolutionStrategy
     {
         AccountManager am = AccountManager.get(context);
         return mDelegate.provider(context, account)
-                .flatMap(provider -> mPingStrategy
-                        // get the provider to ping
-                        .pingProvider(provider)
-                        // ping if necessary
-                        .flatMap(pingProvider ->
-                                Maybe.fromCallable(() -> am.getUserData(account, KEY_LAST_API_PING))
-                                        .map(DateTime::parse)
-                                        .switchIfEmpty(Maybe.fromCallable(() -> new DateTime(0)))
-                                        .filter(this::ping)
-                                        // at this point we have a value if we need to send a ping
-                                        .flatMap(lastPing ->
-                                                Single.wrap(new ApiServiceBinder(context))
-                                                        .observeOn(Schedulers.io())
-                                                        .map(smoothSyncApi -> smoothSyncApi.resultOf(
-                                                                new Ping(new BasicInstance(new UnPrefixed(pingProvider), context.getPackageName(),
-                                                                        account.name))))
-                                                        .timeout(100, TimeUnit.SECONDS)
-                                                        .doOnSuccess(pingResponse -> am.setUserData(account, KEY_LAST_API_PING, DateTime.now().toString()))
-                                                        .map(PingResponse::provider)
-                                                        .doOnSuccess(newProvider -> {
-                                                            // wipe cache date if the provider is updated
-                                                            if (!pingProvider.lastModified().equals(provider.lastModified()))
-                                                            {
-                                                                am.setUserData(account, Caching.KEY_CACHE_DATE, null);
-                                                            }
-                                                        })
-                                                        // allow ping to fail for a while before we allow the error to bubble up
-                                                        .onErrorComplete(ignored -> DateTime.now().after(lastPing.addDuration(PING_GRACE_PERIOD)))))
-                        // return the original provider if no ping was done
-                        .switchIfEmpty(Maybe.just(provider)));
+            .flatMap(provider -> mPingStrategy
+                // get the provider to ping
+                .pingProvider(provider)
+                // ping if necessary
+                .flatMap(pingProvider ->
+                    Maybe.fromCallable(() -> am.getUserData(account, KEY_LAST_API_PING))
+                        .map(DateTime::parse)
+                        .switchIfEmpty(Maybe.fromCallable(() -> new DateTime(0)))
+                        .filter(this::ping)
+                        // at this point we have a value if we need to send a ping
+                        .flatMap(lastPing ->
+                            Single.wrap(new ApiServiceBinder(context))
+                                .observeOn(Schedulers.io())
+                                .map(smoothSyncApi -> smoothSyncApi.resultOf(
+                                    new Ping(new BasicInstance(new UnPrefixed(pingProvider), context.getPackageName(),
+                                        account.name))))
+                                .timeout(100, TimeUnit.SECONDS)
+                                .doOnSuccess(pingResponse -> am.setUserData(account, KEY_LAST_API_PING, DateTime.now().toString()))
+                                .map(PingResponse::provider)
+                                .doOnSuccess(newProvider -> {
+                                    // wipe cache date if the provider is updated
+                                    if (pingProvider.lastModified().before(newProvider.lastModified()))
+                                    {
+                                        am.setUserData(account, Caching.KEY_CACHE_DATE, null);
+                                    }
+                                })
+                                // allow ping to fail for a while before we allow the error to bubble up
+                                .onErrorComplete(ignored -> DateTime.now().after(lastPing.addDuration(PING_GRACE_PERIOD)))))
+                // return the original provider if no ping was done
+                .switchIfEmpty(Maybe.just(provider)));
     }
 
 

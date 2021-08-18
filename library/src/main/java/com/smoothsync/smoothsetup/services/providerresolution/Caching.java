@@ -24,27 +24,12 @@ import com.smoothsync.api.model.Provider;
 import com.smoothsync.api.model.impl.JsonProvider;
 import com.smoothsync.smoothsetup.services.providerservice.functions.ApiProviders;
 import com.smoothsync.smoothsetup.services.providerservice.functions.ManualProviders;
+import com.smoothsync.smoothsetup.utils.ProviderJson;
 
-import net.iharder.Base64;
-
-import org.dmfs.express.json.elementary.Array;
 import org.dmfs.express.json.elementary.JsonText;
-import org.dmfs.express.json.elementary.Member;
-import org.dmfs.express.json.elementary.Null;
-import org.dmfs.express.json.elementary.Object;
-import org.dmfs.httpessentials.exceptions.ProtocolException;
-import org.dmfs.jems2.iterable.EmptyIterable;
-import org.dmfs.jems2.iterable.Mapped;
-import org.dmfs.jems2.optional.NullSafe;
-import org.dmfs.jems2.single.Backed;
 import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.Duration;
 import org.json.JSONObject;
-
-import java.security.KeyStoreException;
-import java.security.cert.CertificateEncodingException;
-import java.util.Collections;
-import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import io.reactivex.rxjava3.core.Maybe;
@@ -84,83 +69,9 @@ public final class Caching implements ProviderResolutionStrategy
             {
                 if (provider.id().startsWith(ApiProviders.PREFIX))
                 {
-                    am.setUserData(account, ManualProviders.KEY_PROVIDER, providerString(provider));
+                    am.setUserData(account, ManualProviders.KEY_PROVIDER, new JsonText(new ProviderJson(provider)).value());
                     am.setUserData(account, KEY_CACHE_DATE, DateTime.now().toString());
                 }
             });
     }
-
-
-    private String providerString(Provider origProvider) throws ProtocolException
-    {
-        return new JsonText(new Object(
-            new Member("id", origProvider.id()),
-            new Member("name", origProvider.name()),
-            new Member("domains", new Array(origProvider.domains())),
-            new Member("last-modified", formatDateTime(origProvider.lastModified())),
-            new Member("services", new Array(
-                new Mapped<>(
-                    s -> {
-                        return new Object(
-                            new Member("service-type", s.serviceType()),
-                            new Member("name", s.name()),
-                            new Member("uri", s.uri().toASCIIString()),
-                            new Member("com-smoothsync-certificates",
-                                s.keyStore() == null ? new Null() :
-                                    new Array(
-                                        new Mapped<>(
-                                            alias ->
-                                            {
-                                                try
-                                                {
-                                                    return new org.dmfs.express.json.elementary.String(
-                                                        "-----BEGIN CERTIFICATE-----\n" +
-                                                            Base64.encodeBytes(
-                                                                s.keyStore().getCertificate(alias).getEncoded()) +
-                                                            "\n-----END CERTIFICATE-----");
-                                                }
-                                                catch (CertificateEncodingException | KeyStoreException e)
-                                                {
-                                                    throw new RuntimeException("can't get certificate", e);
-
-                                                }
-                                            },
-                                            new Backed<Iterable<String>>(
-                                                new org.dmfs.jems2.optional.Mapped<>(
-                                                    ks -> {
-                                                        try
-                                                        {
-                                                            return Collections.list(ks.aliases());
-                                                        }
-                                                        catch (KeyStoreException e)
-                                                        {
-                                                            throw new RuntimeException("Error reading keystore");
-                                                        }
-                                                    },
-                                                    new NullSafe<>(s.keyStore())),
-                                                EmptyIterable.emptyIterable()).value())
-                                    )
-                            ));
-                    },
-                    () -> {
-                        try
-                        {
-                            return origProvider.services();
-                        }
-                        catch (ProtocolException e)
-                        {
-                            throw new RuntimeException("can't get services", e);
-                        }
-                    })
-            ))
-        )).value();
-    }
-
-
-    private String formatDateTime(DateTime dateTime)
-    {
-        return String.format(Locale.ENGLISH, "%04d-%02d-%02dT%02d:%02d:%02dZ", dateTime.getYear(), dateTime.getMonth() + 1, dateTime.getDayOfMonth(),
-            dateTime.getHours(), dateTime.getMinutes(), dateTime.getSeconds());
-    }
-
 }
