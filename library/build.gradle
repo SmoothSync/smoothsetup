@@ -42,7 +42,7 @@ dependencies {
     implementation 'org.dmfs:http-client-headers:' + HTTP_CLIENT_ESSENTIALS_VERSION
     // api for UserClientCredentials
     api 'org.dmfs:http-executor-decorators:' + HTTP_CLIENT_ESSENTIALS_VERSION
-    implementation 'org.dmfs:httpurlconnection-executor:' + HTTP_CLIENT_ESSENTIALS_VERSION
+    implementation 'org.dmfs:okhttp-executor:' + HTTP_CLIENT_ESSENTIALS_VERSION
     implementation('org.dmfs:oauth2-essentials:' + OAUTH2_ESSENTIALS_VERSION)
     api 'org.dmfs:rfc5545-datetime:0.3'
     implementation 'org.dmfs:jems2:' + JEMS_VERSION

@@ -16,33 +16,27 @@
 
 package com.smoothsync.smoothsetup.utils;
 
-import org.dmfs.httpessentials.httpurlconnection.HttpUrlConnectionFactory;
+import org.dmfs.jems2.Generator;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URI;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+
+import okhttp3.OkHttpClient;
 
 
-/**
- * An {@link HttpUrlConnectionFactory} decorator that sets a custom truststore for SSL connections.
- *
- * @author Marten Gajda
- */
-public final class Trusted implements HttpUrlConnectionFactory
+public final class Trusted implements Generator<OkHttpClient.Builder>
 {
-    private final HttpUrlConnectionFactory mDelegate;
+    private final Generator<OkHttpClient.Builder> mDelegate;
     private final KeyStore mTrustStore;
 
 
-    public Trusted(HttpUrlConnectionFactory delegate, KeyStore trustStore)
+    public Trusted(Generator<OkHttpClient.Builder> delegate, KeyStore trustStore)
     {
         mDelegate = delegate;
         mTrustStore = trustStore;
@@ -50,21 +44,15 @@ public final class Trusted implements HttpUrlConnectionFactory
 
 
     @Override
-    public HttpURLConnection httpUrlConnection(URI uri) throws IllegalArgumentException, IOException
+    public OkHttpClient.Builder next()
     {
-        HttpURLConnection urlConnection = mDelegate.httpUrlConnection(uri);
-        if (!(urlConnection instanceof HttpsURLConnection))
-        {
-            return urlConnection;
-        }
         try
         {
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             trustManagerFactory.init(mTrustStore);
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
-            ((HttpsURLConnection) urlConnection).setSSLSocketFactory(sslContext.getSocketFactory());
-            return urlConnection;
+            return mDelegate.next().sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) trustManagerFactory.getTrustManagers()[0]);
         }
         catch (NoSuchAlgorithmException e)
         {
