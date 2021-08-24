@@ -29,6 +29,7 @@ import org.dmfs.httpessentials.executors.following.policies.Secure;
 import org.dmfs.httpessentials.executors.retrying.Retrying;
 import org.dmfs.httpessentials.executors.retrying.policies.DefaultRetryPolicy;
 import org.dmfs.httpessentials.okhttp.OkHttpExecutor;
+import org.dmfs.jems.single.elementary.Frozen;
 import org.dmfs.oauth2.client.BasicOAuth2ClientCredentials;
 import org.dmfs.oauth2.client.OAuth2ClientCredentials;
 
@@ -47,7 +48,9 @@ public class SmoothSyncApiService extends DelegatingSmoothSyncApiService
             HttpRequestExecutor executor = new Following(
                 new Retrying(
                     new OkHttpExecutor(
-                        new Finite(new DefaultOkHttpGenerator(), 10000, 30000).next()::build),
+                        new Frozen<>(
+                            new Finite(new
+                                DefaultOkHttpGenerator(), 10000, 30000).next()::build)),
                     new DefaultRetryPolicy(3)),
                 new Limited(5, new Secure(new FollowPolicy())));
 
