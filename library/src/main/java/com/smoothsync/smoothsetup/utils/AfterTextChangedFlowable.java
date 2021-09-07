@@ -22,42 +22,40 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.ObservableSource;
-import io.reactivex.rxjava3.disposables.Disposable;
 
 
 /**
  * An {@link ObservableSource} to monitor the changes of a {@link TextView}.
  */
-public final class AfterTextChangedObservable extends DelegatingObservable<String>
+public final class AfterTextChangedFlowable extends DelegatingFlowable<String>
 {
-    public AfterTextChangedObservable(@NonNull EditText editText)
+    public AfterTextChangedFlowable(@NonNull EditText editText)
     {
-        super(observer -> {
+        super(create(emitter -> {
             TextWatcher textWatcher = new TextWatcher()
             {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2)
                 {
-
                 }
 
 
                 @Override
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2)
                 {
-
                 }
 
 
                 @Override
                 public void afterTextChanged(Editable editable)
                 {
-                    observer.onNext(editable.toString());
+                    emitter.onNext(editable.toString());
                 }
             };
             editText.addTextChangedListener(textWatcher);
-            observer.onSubscribe(Disposable.fromAction(() -> editText.removeTextChangedListener(textWatcher)));
-        });
+            emitter.setCancellable(() -> editText.removeTextChangedListener(textWatcher));
+        }, BackpressureStrategy.LATEST));
     }
 }

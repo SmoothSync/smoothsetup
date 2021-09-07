@@ -82,7 +82,6 @@ public final class VerificationService extends DelegatingVerificationService
     {
         super(context -> (provider, authStrategy) ->
         {
-
             Service service = new Filtered<>(provider.services(), element -> "com.smoothsync.authenticate".equals(element.serviceType())).next();
             HttpRequestExecutor executor = new Following(
                 new Authorizing(
