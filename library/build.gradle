@@ -47,7 +47,7 @@ dependencies {
     api 'org.dmfs:rfc5545-datetime:0.3'
     implementation 'org.dmfs:jems2:' + JEMS_VERSION
     implementation 'net.iharder:base64:2.3.9'
-    api 'com.github.SmoothSync:smoothsync-api-client:0.10'
+    api 'org.dmfs:smoothsync-api-client:1.0.0'
     api 'com.github.dmfs.MicroFragments:microwizard:0.4'
     implementation 'com.github.dmfs.PigeonPost:localbroadcast-pigeon:0.4'
     implementation 'com.github.dmfs.Bolts:service-bolts:0.2'

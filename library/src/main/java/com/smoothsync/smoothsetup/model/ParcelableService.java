@@ -21,6 +21,9 @@ import android.os.Parcelable;
 
 import com.smoothsync.api.model.Service;
 
+import org.dmfs.jems2.Optional;
+import org.dmfs.jems2.optional.Present;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,6 +32,8 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+
+import static org.dmfs.jems2.optional.Absent.absent;
 
 
 /**
@@ -44,7 +49,7 @@ public final class ParcelableService implements Service, Parcelable
         public ParcelableService createFromParcel(Parcel source)
         {
             return new ParcelableService(
-                    new UnparcelledService(source.readString(), source.readString(), (URI) source.readSerializable(), source.createByteArray()));
+                new UnparcelledService(source.readString(), source.readString(), (URI) source.readSerializable(), source.createByteArray()));
         }
 
 
@@ -85,7 +90,7 @@ public final class ParcelableService implements Service, Parcelable
 
 
     @Override
-    public KeyStore keyStore()
+    public Optional<KeyStore> keyStore()
     {
         return mDecorated.keyStore();
     }
@@ -105,23 +110,23 @@ public final class ParcelableService implements Service, Parcelable
         dest.writeString(serviceType());
         dest.writeSerializable(uri());
 
-        KeyStore keyStore = keyStore();
-        if (keyStore == null)
-        {
-            dest.writeByteArray(new byte[0]);
-        }
-        else
+        Optional<KeyStore> keyStore = keyStore();
+        if (keyStore.isPresent())
         {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             try
             {
-                keyStore.store(outputStream, null);
+                keyStore.value().store(outputStream, null);
             }
             catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException e)
             {
                 throw new RuntimeException("Can't serialize KeyStore", e);
             }
             dest.writeByteArray(outputStream.toByteArray());
+        }
+        else
+        {
+            dest.writeByteArray(new byte[0]);
         }
     }
 
@@ -166,17 +171,17 @@ public final class ParcelableService implements Service, Parcelable
 
 
         @Override
-        public KeyStore keyStore()
+        public Optional<KeyStore> keyStore()
         {
             if (mKeyStoreBytes == null || mKeyStoreBytes.length == 0)
             {
-                return null;
+                return absent();
             }
             try
             {
                 KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
                 keyStore.load(new ByteArrayInputStream(mKeyStoreBytes), null);
-                return keyStore;
+                return new Present<>(keyStore);
             }
             catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e)
             {

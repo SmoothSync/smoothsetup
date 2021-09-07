@@ -20,7 +20,6 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
 
-import com.smoothsync.api.model.PingResponse;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.api.model.impl.BasicInstance;
 import com.smoothsync.api.requests.Ping;
@@ -84,7 +83,7 @@ public final class Accounting implements ProviderResolutionStrategy
                                         account.name))))
                                 .timeout(100, TimeUnit.SECONDS)
                                 .doOnSuccess(pingResponse -> am.setUserData(account, KEY_LAST_API_PING, DateTime.now().toString()))
-                                .map(PingResponse::provider)
+                                .flatMap(r -> r.provider().isPresent() ? Single.just(r.provider().value()) : Single.just(provider))
                                 .doOnSuccess(newProvider -> {
                                     // wipe cache date if the provider is updated
                                     if (pingProvider.lastModified().before(newProvider.lastModified()))

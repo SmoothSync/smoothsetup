@@ -28,7 +28,6 @@ import org.dmfs.express.json.elementary.Object;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.iterables.EmptyIterable;
 import org.dmfs.jems2.iterable.Mapped;
-import org.dmfs.jems2.optional.NullSafe;
 import org.dmfs.jems2.single.Backed;
 import org.dmfs.rfc5545.DateTime;
 
@@ -51,48 +50,48 @@ public final class ProviderJson extends DelegatingJsonValue
             new Member("last-modified", formatDateTime(origProvider.lastModified())),
             new Member("services", new Array(
                 new Mapped<>(
-                    s -> {
-                        return new Object(
-                            new Member("service-type", s.serviceType()),
-                            new Member("name", s.name()),
-                            new Member("uri", s.uri().toASCIIString()),
-                            new Member("com-smoothsync-certificates",
-                                s.keyStore() == null ? new Null() :
-                                    new Array(
-                                        new Mapped<>(
-                                            alias ->
+                    s -> new Object(
+                        new Member("service-type", s.serviceType()),
+                        new Member("name", s.name()),
+                        new Member("uri", s.uri().toASCIIString()),
+                        new Member("com-smoothsync-certificates",
+                            new Backed<>(
+                                new org.dmfs.jems2.optional.Mapped<>(
+                                    keystore->
+                                new Array(
+                                    new Mapped<>(
+                                        alias ->
+                                        {
+                                            try
                                             {
-                                                try
-                                                {
-                                                    return new org.dmfs.express.json.elementary.String(
-                                                        "-----BEGIN CERTIFICATE-----\n" +
-                                                            Base64.encodeBytes(
-                                                                s.keyStore().getCertificate(alias).getEncoded()) +
-                                                            "\n-----END CERTIFICATE-----");
-                                                }
-                                                catch (CertificateEncodingException | KeyStoreException e)
-                                                {
-                                                    throw new RuntimeException("can't get certificate", e);
+                                                return new org.dmfs.express.json.elementary.String(
+                                                    "-----BEGIN CERTIFICATE-----\n" +
+                                                        Base64.encodeBytes(
+                                                            keystore.getCertificate(alias).getEncoded()) +
+                                                        "\n-----END CERTIFICATE-----");
+                                            }
+                                            catch (CertificateEncodingException | KeyStoreException e)
+                                            {
+                                                throw new RuntimeException("can't get certificate", e);
 
-                                                }
-                                            },
-                                            new Backed<Iterable<String>>(
-                                                new org.dmfs.jems2.optional.Mapped<>(
-                                                    ks -> {
-                                                        try
-                                                        {
-                                                            return Collections.list(ks.aliases());
-                                                        }
-                                                        catch (KeyStoreException e)
-                                                        {
-                                                            throw new RuntimeException("Error reading keystore");
-                                                        }
-                                                    },
-                                                    new NullSafe<>(s.keyStore())),
-                                                new EmptyIterable<>()).value())
-                                    )
-                            ));
-                    },
+                                            }
+                                        },
+                                        new Backed<Iterable<String>>(
+                                            new org.dmfs.jems2.optional.Mapped<>(
+                                                ks -> {
+                                                    try
+                                                    {
+                                                        return Collections.list(keystore.aliases());
+                                                    }
+                                                    catch (KeyStoreException e)
+                                                    {
+                                                        throw new RuntimeException("Error reading keystore");
+                                                    }
+                                                },
+                                                s.keyStore()),
+                                            new EmptyIterable<>()).value())
+                                ), s.keyStore()),
+                                new Null()).value())),
                     () -> {
                         try
                         {

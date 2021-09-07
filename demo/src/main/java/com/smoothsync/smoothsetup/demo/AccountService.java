@@ -13,11 +13,14 @@ import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.httpessentials.types.Link;
 import org.dmfs.iterators.EmptyIterator;
 import org.dmfs.iterators.elementary.Seq;
+import org.dmfs.jems2.Optional;
 import org.dmfs.rfc5545.DateTime;
 
 import java.net.URI;
 import java.security.KeyStore;
 import java.util.Iterator;
+
+import static org.dmfs.jems2.optional.Absent.absent;
 
 
 /**
@@ -91,9 +94,9 @@ public class AccountService extends DelegatingAccountService
 
 
                             @Override
-                            public KeyStore keyStore()
+                            public Optional<KeyStore> keyStore()
                             {
-                                return null;
+                                return absent();
                             }
                         });
                     }

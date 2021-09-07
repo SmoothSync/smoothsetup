@@ -19,6 +19,7 @@ package com.smoothsync.smoothsetup.services.providerservice.functions;
 import android.content.Context;
 
 import com.smoothsync.api.SmoothSyncApi;
+import com.smoothsync.api.model.AutoCompleteResult;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.api.requests.AutoComplete;
 import com.smoothsync.api.requests.ProviderGet;
@@ -105,7 +106,7 @@ public final class ApiProviders implements Function<Context, ProviderService>
                 return apiSingle
                         .observeOn(Schedulers.io())
                         .map(api -> api.resultOf(new AutoComplete(domainFragment)))
-                        .flattenAsObservable(result -> new Seq<>(result.autoComplete()));
+                        .flattenAsObservable(AutoCompleteResult::autoComplete);
             }
         };
     }

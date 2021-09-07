@@ -22,9 +22,12 @@ import com.smoothsync.api.model.Service;
 
 import org.dmfs.jems.optional.elementary.NullSafe;
 import org.dmfs.jems.single.combined.Backed;
+import org.dmfs.jems2.Optional;
 
 import java.net.URI;
 import java.security.KeyStore;
+
+import static org.dmfs.jems2.optional.Absent.absent;
 
 
 public final class RestrictionService implements Service
@@ -60,8 +63,8 @@ public final class RestrictionService implements Service
 
 
     @Override
-    public KeyStore keyStore()
+    public Optional<KeyStore> keyStore()
     {
-        return null;
+        return absent();
     }
 }

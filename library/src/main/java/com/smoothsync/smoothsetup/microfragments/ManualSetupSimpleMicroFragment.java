@@ -56,6 +56,7 @@ import org.dmfs.iterators.elementary.Seq;
 import org.dmfs.jems.optional.Optional;
 import org.dmfs.jems.optional.elementary.Present;
 import org.dmfs.jems.procedure.Procedure;
+import org.dmfs.jems2.optional.Absent;
 import org.dmfs.rfc5545.DateTime;
 
 import java.net.InetAddress;
@@ -435,9 +436,9 @@ public final class ManualSetupSimpleMicroFragment implements MicroFragment<Manua
 
 
                                                                                 @Override
-                                                                                public KeyStore keyStore()
+                                                                                public org.dmfs.jems2.Optional<KeyStore> keyStore()
                                                                                 {
-                                                                                    return null;
+                                                                                    return new Absent<>();
                                                                                 }
                                                                             },
                                                                             new Service()
@@ -464,9 +465,9 @@ public final class ManualSetupSimpleMicroFragment implements MicroFragment<Manua
 
 
                                                                                 @Override
-                                                                                public KeyStore keyStore()
+                                                                                public org.dmfs.jems2.Optional<KeyStore> keyStore()
                                                                                 {
-                                                                                    return null;
+                                                                                    return new Absent<>();
                                                                                 }
                                                                             },
                                                                             new Service()
@@ -493,9 +494,9 @@ public final class ManualSetupSimpleMicroFragment implements MicroFragment<Manua
 
 
                                                                                 @Override
-                                                                                public KeyStore keyStore()
+                                                                                public org.dmfs.jems2.Optional<KeyStore> keyStore()
                                                                                 {
-                                                                                    return null;
+                                                                                    return new Absent<>();
                                                                                 }
                                                                             }
                                                                     );

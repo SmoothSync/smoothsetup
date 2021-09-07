@@ -89,7 +89,7 @@ public final class VerificationService extends DelegatingVerificationService
                     new Retrying(
                         new Branded(
                             new OkHttpExecutor(
-                                new Trusted(new Finite(new DefaultOkHttpGenerator(), 10000, 10000), service.keyStore()).next()::build),
+                                new Trusted(new Finite(new DefaultOkHttpGenerator(), 10000, 10000), service.keyStore().isPresent()? service.keyStore().value():null).next()::build),
                             new SimpleProduct("Smoothsync")),
                         new DefaultRetryPolicy(3)),
                     authStrategy),

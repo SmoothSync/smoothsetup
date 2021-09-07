@@ -123,10 +123,6 @@ public final class ParcelableProvider implements Provider, Parcelable
         return mDecorated.lastModified();
     }
 
-
-    ;
-
-
     @Override
     public int describeContents()
     {
