@@ -27,7 +27,6 @@ import com.smoothsync.smoothsetup.services.ProviderValidationService;
 import com.smoothsync.smoothsetup.services.VerificationService;
 import com.smoothsync.smoothsetup.utils.AccountDetails;
 
-import org.dmfs.httpessentials.exceptions.ProtocolError;
 import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
 
 import androidx.annotation.Nullable;
@@ -76,7 +75,7 @@ public abstract class DelegatingValidationService extends Service
          * Create a new {@link ProviderValidationService}.
          *
          * @param context
-         *         A Context.
+         *     A Context.
          *
          * @return
          */
@@ -100,7 +99,7 @@ public abstract class DelegatingValidationService extends Service
 
 
         @Override
-        public AccountDetails providerForUrl(Provider provider, UserCredentials credentials) throws ProtocolError
+        public AccountDetails providerForUrl(Provider provider, UserCredentials credentials) throws Exception
         {
             return mVerificationService.providerForUrl(provider, credentials);
         }

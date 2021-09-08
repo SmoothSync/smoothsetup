@@ -19,7 +19,6 @@ package com.smoothsync.smoothsetup.services;
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.utils.AccountDetails;
 
-import org.dmfs.httpessentials.exceptions.ProtocolError;
 import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
 
 
@@ -33,9 +32,7 @@ public interface ProviderValidationService
     String ACTION = "com.smoothsync.action.MANUAL_LOGIN_SERVICE";
 
     /**
-     * Validates the given provider and returns a corrected version or a {@link ProtocolError}.
-     *
-     * @return
+     * Validates the given provider and returns a corrected version or an {@link Exception}.
      */
-    AccountDetails providerForUrl(Provider provider, UserCredentials credentials) throws ProtocolError;
+    AccountDetails providerForUrl(Provider provider, UserCredentials credentials) throws Exception;
 }
