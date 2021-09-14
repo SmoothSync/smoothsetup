@@ -220,6 +220,25 @@
     -->
     <string name="smoothsetup_error_network">Connection failed.\n\nPlease check your internet connection or retry later.</string>
 
+    <!--
+    Generic network error message that's shown when there any other issue.
+    -->
+    <string name="smoothsetup_error_other">Unknown Error: "%s"</string>
+
+    <!--
+    Error message shown when the user entered a host name that can't be resolved.
+    -->
+    <string name="smoothsetup_error_unknown_host">Host not found.</string>
+
+    <!--
+    Error message shown when the user entered a host name that can't be resolved.
+    -->
+    <string name="smoothsetup_error_invalid_url">Please enter a valid hostname or https URL.</string>
+
+    <!--
+    Error message shown when the user entered an URL without https scheme.
+    -->
+    <string name="smoothsetup_error_insecure_scheme">Please use the https scheme.</string>
 
     <!-- EditText hints -->
 

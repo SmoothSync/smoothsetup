@@ -289,19 +289,19 @@ public final class ManualSetupSimpleMicroFragment implements MicroFragment<Manua
             }
             catch (UnknownHostException e)
             {
-                mUriInputLayout.setError("Host not found.");
+                mUriInputLayout.setError(getString(R.string.smoothsetup_error_unknown_host));
             }
             catch (URISyntaxException e)
             {
-                mUriInputLayout.setError("Please enter a valid hostname or https URL.");
+                mUriInputLayout.setError(getString(R.string.smoothsetup_error_invalid_url));
             }
             catch (InsecureSchemeException e)
             {
-                mUriInputLayout.setError("Please use the https scheme.");
+                mUriInputLayout.setError(getString(R.string.smoothsetup_error_insecure_scheme));
             }
             catch (Throwable e)
             {
-                mUriInputLayout.setError("Unknown error " + e.getClass().getName() + ": " + e.getMessage());
+                mUriInputLayout.setError(getString(R.string.smoothsetup_error_other,e.getMessage()));
             }
         }
 

@@ -47,6 +47,7 @@ import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.httpessentials.exceptions.UnauthorizedException;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
@@ -164,21 +165,21 @@ public final class ValidateCustomMicroFragment implements MicroFragment<Validate
             mParams = mMicroFragmentEnvironment.microFragment().parameter();
             final Context context = getContext();
             backGroundVerification = () ->
-                    new ThrowingAsyncTask<Void, Void, AccountDetails>(this)
+                new ThrowingAsyncTask<Void, Void, AccountDetails>(this)
+                {
+                    @Override
+                    protected AccountDetails doInBackgroundWithException(Void[] params) throws Exception
                     {
-                        @Override
-                        protected AccountDetails doInBackgroundWithException(Void[] params) throws Exception
-                        {
-                            FutureServiceConnection<ProviderValidationService> serviceConnection =
-                                    new FutureLocalServiceConnection<>(
-                                            context,
-                                            new Intent(ProviderValidationService.ACTION)
-                                                    .setPackage(context.getPackageName()));
-                            return serviceConnection
-                                    .service(1000)
-                                    .providerForUrl(mParams.accountDetails().account().provider(), mParams.accountDetails().credentials());
-                        }
-                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        FutureServiceConnection<ProviderValidationService> serviceConnection =
+                            new FutureLocalServiceConnection<>(
+                                context,
+                                new Intent(ProviderValidationService.ACTION)
+                                    .setPackage(context.getPackageName()));
+                        return serviceConnection
+                            .service(1000)
+                            .providerForUrl(mParams.accountDetails().account().provider(), mParams.accountDetails().credentials());
+                    }
+                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         }
 
@@ -219,20 +220,18 @@ public final class ValidateCustomMicroFragment implements MicroFragment<Validate
                 {
                     forward(activity, mParams.next().microFragment(activity, result.value()));
                 }
-                catch (RuntimeException e)
+                catch (UnauthorizedException e)
                 {
-                    if (e.getCause() instanceof UnauthorizedException)
-                    {
-                        forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_authentication)));
-                    }
-                    else
-                    {
-                        forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_network)));
-                    }
+                    forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_authentication), null,
+                        getString(R.string.smoothsetup_wizard_title_authentication_error)));
+                }
+                catch (IOException e)
+                {
+                    forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_network)));
                 }
                 catch (Exception e)
                 {
-                    forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_network)));
+                    forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_other, e.getMessage())));
                 }
             }
         }
@@ -241,10 +240,10 @@ public final class ValidateCustomMicroFragment implements MicroFragment<Validate
         private void forward(Activity activity, MicroFragment<?> mf)
         {
             mMicroFragmentEnvironment.host()
-                    .execute(activity,
-                            mTimestamp.nanoSeconds() + TimeUnit.MILLISECONDS.toNanos(400) < System.nanoTime() ?
-                                    new XFaded(new ForwardTransition<>(mf)) :
-                                    new Swiped(new ForwardTransition<>(mf)));
+                .execute(activity,
+                    mTimestamp.nanoSeconds() + TimeUnit.MILLISECONDS.toNanos(400) < System.nanoTime() ?
+                        new XFaded(new ForwardTransition<>(mf)) :
+                        new Swiped(new ForwardTransition<>(mf)));
         }
     }
 

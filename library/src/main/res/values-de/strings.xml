@@ -63,4 +63,8 @@
     <string name="smoothsetup_hostname_or_address">Servername oder -adresse</string>
     <string name="smoothsetup_enter_your_provider_data">Gib Deine Kontodaten ein</string>
     <string name="smoothsync_manual_setup">Manuelle Einrichtung</string>
+    <string name="smoothsetup_error_other">Unbekannter Fehler: %s</string>
+    <string name="smoothsetup_error_unknown_host">Adresse nicht gefunden.</string>
+    <string name="smoothsetup_error_invalid_url">Bitte gib einen gültige https Adresse ein.</string>
+    <string name="smoothsetup_error_insecure_scheme">Bitte gibt eine https Adresse ein.</string>
 </resources>
