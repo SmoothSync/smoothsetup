@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -34,13 +35,14 @@ import org.dmfs.android.microfragments.MicroFragmentState;
 import org.dmfs.android.microfragments.SimpleMicroFragmentFlow;
 import org.dmfs.android.microfragments.transitions.BackTransition;
 import org.dmfs.android.microfragments.utils.BooleanDovecote;
+import org.dmfs.jems2.optional.NullSafe;
+import org.dmfs.jems2.procedure.ForEach;
 import org.dmfs.pigeonpost.Dovecote;
 import org.dmfs.pigeonpost.localbroadcast.ParcelableDovecote;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.widget.NestedScrollView;
 
 
 /**
@@ -55,7 +57,7 @@ public final class MicroFragmentHostActivity extends AppCompatActivity implement
     private Dovecote<MicroFragmentState> mMicroFragmentStateDovecote;
     private Dovecote<Boolean> mBackDovecote;
     private MicroFragmentHost mMicroFragmentHost;
-    private NestedScrollView mFragmentHostView;
+    private View mFragmentHostView;
     private AppBarLayout mAppBarLayout;
 
 
@@ -76,9 +78,13 @@ public final class MicroFragmentHostActivity extends AppCompatActivity implement
         super.onCreate(savedInstanceState);
         setContentView(R.layout.smoothsetup_activity_microfragment_host);
 
-        mCollapsingToolbar = findViewById(R.id.collapsing_toolbar);
-        setSupportActionBar(mCollapsingToolbar.findViewById(R.id.toolbar));
+        setSupportActionBar(findViewById(R.id.toolbar));
         mActionBar = getSupportActionBar();
+        mCollapsingToolbar = findViewById(R.id.collapsing_toolbar);
+        if (mCollapsingToolbar == null)
+        {
+            mActionBar.setDisplayShowTitleEnabled(false);
+        }
         mMicroFragmentStateDovecote = new ParcelableDovecote<>(this, "hostactivity", this);
         mBackDovecote = new BooleanDovecote(this, "backresult", aBoolean ->
         {
@@ -94,34 +100,37 @@ public final class MicroFragmentHostActivity extends AppCompatActivity implement
             Bundle nestedExtras = getIntent().getBundleExtra("org.dmfs.nestedExtras");
             MicroFragment<?> initialMicroFragment = nestedExtras.getParcelable("MicroFragment");
             mMicroFragmentHost = new SimpleMicroFragmentFlow(initialMicroFragment, R.id.microfragment_host).withPigeonCage(mMicroFragmentStateDovecote.cage())
-                    .start(this);
+                .start(this);
         }
         else
         {
             mMicroFragmentHost = savedInstanceState.getParcelable("microfragmenthost");
         }
-        mAppBarLayout = findViewById(R.id.appbar);
-        mFragmentHostView = findViewById(R.id.microfragment_host);
-        mFragmentHostView.getViewTreeObserver().addOnGlobalLayoutListener(() ->
+        if (mCollapsingToolbar != null)
         {
-            // collapse appbar if the microfragment content doesn't fit on the screen
-            Rect windowRect = new Rect();
-            mAppBarLayout.getWindowVisibleDisplayFrame(windowRect);
-
-            FrameLayout bottomView = mFragmentHostView.findViewById(org.dmfs.android.microfragments.R.id.microfragments_host);
-            if (bottomView.getChildCount() > 0)
+            mAppBarLayout = findViewById(R.id.appbar);
+            mFragmentHostView = findViewById(R.id.microfragment_host);
+            mFragmentHostView.getViewTreeObserver().addOnGlobalLayoutListener(() ->
             {
-                View childView = bottomView.getChildAt(0);
-                Rect childRect = new Rect();
-                childView.getGlobalVisibleRect(childRect);
-                if (!"collapsed".equals(childView.getTag()) && !windowRect.contains(childRect))
+                // collapse appbar if the microfragment content doesn't fit on the screen
+                Rect windowRect = new Rect();
+                mAppBarLayout.getWindowVisibleDisplayFrame(windowRect);
+
+                FrameLayout bottomView = mFragmentHostView.findViewById(org.dmfs.android.microfragments.R.id.microfragments_host);
+                if (bottomView.getChildCount() > 0)
                 {
-                    mAppBarLayout.postDelayed(() -> mAppBarLayout.setExpanded(false, true), 100);
-                    // tag the child as "collapsed" so we don't collapse it again while visible
-                    childView.setTag("collapsed");
+                    View childView = bottomView.getChildAt(0);
+                    Rect childRect = new Rect();
+                    childView.getGlobalVisibleRect(childRect);
+                    if (!"collapsed".equals(childView.getTag()) && !windowRect.contains(childRect))
+                    {
+                        mAppBarLayout.postDelayed(() -> mAppBarLayout.setExpanded(false, true), 100);
+                        // tag the child as "collapsed" so we don't collapse it again while visible
+                        childView.setTag("collapsed");
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
 
@@ -164,7 +173,11 @@ public final class MicroFragmentHostActivity extends AppCompatActivity implement
     @Override
     public void onPigeonReturn(@NonNull MicroFragmentState microFragmentState)
     {
-        mCollapsingToolbar.setTitle(microFragmentState.currentStep().title(this));
+        if (mCollapsingToolbar != null)
+        {
+            mCollapsingToolbar.setTitle(microFragmentState.currentStep().title(this));
+        }
+        new ForEach<>(new NullSafe<TextView>(findViewById(android.R.id.title))).process(view -> view.setText(microFragmentState.currentStep().title(this)));
         mActionBar.setTitle(microFragmentState.currentStep().title(this));
         mActionBar.setDisplayHomeAsUpEnabled(microFragmentState.backStackSize() > 0);
         mActionBar.setDisplayShowHomeEnabled(microFragmentState.backStackSize() > 0);
