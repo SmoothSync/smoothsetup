@@ -233,10 +233,11 @@ public final class ManualSetupSimpleMicroFragment implements MicroFragment<Manua
             }
 
             Flowable<Boolean> addressValid = new AfterTextChangedFlowable(mUri)
-                .subscribeOn(Schedulers.io())
-                .debounce(1, TimeUnit.SECONDS)
+                .debounce(item -> (item.isEmpty() ? Flowable.empty() : Flowable.timer(1, TimeUnit.SECONDS)))
                 .map(String::trim)
-                .concatMapSingle(urlString -> just(urlString)
+                .onBackpressureLatest()
+                .switchMapSingle(urlString -> just(urlString)
+                    .subscribeOn(Schedulers.io())
                     .filter(url -> !url.isEmpty())
                     .map(uri -> Uri.encode(uri, ":/.%"))
                     .map(uri -> HOST_PATTERN.matcher(uri).matches() ? URI.create("https://" + uri) : new URI(uri))
@@ -245,14 +246,9 @@ public final class ManualSetupSimpleMicroFragment implements MicroFragment<Manua
                     .observeOn(AndroidSchedulers.mainThread())
                     .switchIfEmpty(just(false))
                     .doOnError(this::showError)
+                    .doOnSuccess(next -> mUriInputLayout.post(() -> mUriInputLayout.setError(null)))
                     .onErrorReturnItem(false)
-                )
-                .doOnNext(next -> {
-                    if (next || mUri.getText().toString().isEmpty())
-                    {
-                        mUriInputLayout.post(() -> mUriInputLayout.setError(null));
-                    }
-                });
+                );
             mObserverDisposable = Flowable.combineLatest(
                 new AfterTextChangedFlowable(mUsername),
                 new AfterTextChangedFlowable(mPassword),
@@ -301,7 +297,7 @@ public final class ManualSetupSimpleMicroFragment implements MicroFragment<Manua
             }
             catch (Throwable e)
             {
-                mUriInputLayout.setError(getString(R.string.smoothsetup_error_other,e.getMessage()));
+                mUriInputLayout.setError(getString(R.string.smoothsetup_error_other, e.toString()));
             }
         }
 
