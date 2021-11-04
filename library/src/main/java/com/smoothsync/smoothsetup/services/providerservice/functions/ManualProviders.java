@@ -32,6 +32,7 @@ import org.dmfs.jems.iterable.elementary.Seq;
 import org.dmfs.jems2.Function;
 import org.json.JSONObject;
 
+import androidx.annotation.StringRes;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
@@ -53,6 +54,18 @@ public final class ManualProviders implements Function<Context, ProviderService>
         provider -> new WithIdPrefix(PREFIX, provider);
 
 
+    private final @StringRes int accountTypeResource;
+
+
+    /**
+     * Creates a {@link ManualProviders} {@link ProviderService} for the given account type resource.
+     */
+    public ManualProviders(@StringRes int accountTypeResource)
+    {
+        this.accountTypeResource = accountTypeResource;
+    }
+
+
     @Override
     public ProviderService value(Context context)
     {
@@ -66,7 +79,8 @@ public final class ManualProviders implements Function<Context, ProviderService>
                     .flatMapMaybe(prefs -> Maybe.fromCallable(() -> prefs.getString(id, null)))
                     .map(providerJson -> (Provider) new JsonProvider(new JSONObject(providerJson)))
                     .switchIfEmpty(
-                        Observable.fromIterable(new Seq<>(am.getAccountsByTypeForPackage(null, context.getPackageName())))
+                        Observable.fromIterable(new Seq<>(
+                            am.getAccountsByTypeForPackage(context.getString(accountTypeResource), context.getPackageName())))
                             .filter(account -> id.equals(am.getUserData(account, KEY_PROVIDER_ID)))
                             .firstElement()
                             .map(account -> new JsonProvider(new JSONObject(am.getUserData(account, KEY_PROVIDER)))));
