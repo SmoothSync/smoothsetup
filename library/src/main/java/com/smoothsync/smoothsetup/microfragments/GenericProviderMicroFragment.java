@@ -17,37 +17,20 @@
 package com.smoothsync.smoothsetup.microfragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Parcel;
-import android.text.TextUtils;
-import android.widget.Adapter;
-import android.widget.Filterable;
 
-import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
-import com.smoothsync.smoothsetup.autocomplete.ProviderAutoCompleteAdapter;
-import com.smoothsync.smoothsetup.model.Account;
-import com.smoothsync.smoothsetup.model.BasicAccount;
-import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
-import com.smoothsync.smoothsetup.setupbuttons.ApiSmoothSetupAdapter;
-import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
-import com.smoothsync.smoothsetup.setupbuttons.FixedButtonSetupAdapter;
-import com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter;
+import com.smoothsync.smoothsetup.utils.AccountDetails;
 
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
-import org.dmfs.android.microfragments.transitions.ForwardTransition;
-import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Unboxed;
-import org.dmfs.jems.generator.Generator;
 import org.dmfs.jems.optional.Optional;
-import org.dmfs.jems.optional.adapters.Conditional;
-import org.dmfs.jems.predicate.composite.Not;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
-import io.reactivex.rxjava3.core.Single;
 
 import static org.dmfs.optional.Absent.absent;
 
@@ -57,16 +40,15 @@ import static org.dmfs.optional.Absent.absent;
  *
  * @author Marten Gajda
  */
-public final class GenericProviderMicroFragment implements MicroFragment<LoginFragment.Params>
+public final class GenericProviderMicroFragment implements MicroFragment<GenericLoginFragment.Params>
 {
     public final static Creator<GenericProviderMicroFragment> CREATOR = new Creator<GenericProviderMicroFragment>()
     {
         @Override
         public GenericProviderMicroFragment createFromParcel(Parcel source)
         {
-            return new GenericProviderMicroFragment(new Unboxed<MicroWizard<Account>>(source).value(),
-                    new Unboxed<MicroWizard<Optional<String>>>(source).value(),
-                    new Unboxed<MicroWizard<Optional<String>>>(source).value());
+            return new GenericProviderMicroFragment(new Unboxed<MicroWizard<AccountDetails>>(source).value(),
+                source.readParcelable(getClass().getClassLoader()));
         }
 
 
@@ -77,16 +59,14 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
         }
     };
 
-    private final MicroWizard<Account> mNext;
-    private final MicroWizard<Optional<String>> mChooser;
-    private final MicroWizard<Optional<String>> mManual;
+    private final MicroWizard<AccountDetails> mNext;
+    private final Intent mSetupChoicesService;
 
 
-    public GenericProviderMicroFragment(MicroWizard<Account> next, MicroWizard<Optional<String>> chooser, MicroWizard<Optional<String>> manual)
+    public GenericProviderMicroFragment(MicroWizard<AccountDetails> next, Intent setupChoicesService)
     {
         mNext = next;
-        mChooser = chooser;
-        mManual = manual;
+        mSetupChoicesService = setupChoicesService;
     }
 
 
@@ -109,27 +89,37 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
     @Override
     public Fragment fragment(@NonNull Context context, @NonNull MicroFragmentHost host)
     {
-        return new LoginFragment();
+        return new GenericLoginFragment();
     }
 
 
     @NonNull
     @Override
-    public LoginFragment.Params parameter()
+    public GenericLoginFragment.Params parameter()
     {
-        return new LoginFragment.Params()
+        return new GenericLoginFragment.Params()
         {
-            @Override
-            public LoginFragment.LoginFormAdapterFactory loginFormAdapterFactory()
-            {
-                return new ApiLoginFormAdapterFactory(mNext, mChooser, mManual);
-            }
-
-
+            @NonNull
             @Override
             public Optional<String> username()
             {
                 return absent();
+            }
+
+
+            @NonNull
+            @Override
+            public MicroWizard<AccountDetails> next()
+            {
+                return mNext;
+            }
+
+
+            @NonNull
+            @Override
+            public Intent setupChoicesService()
+            {
+                return mSetupChoicesService;
             }
 
         };
@@ -147,84 +137,6 @@ public final class GenericProviderMicroFragment implements MicroFragment<LoginFr
     public void writeToParcel(Parcel dest, int flags)
     {
         dest.writeParcelable(mNext.boxed(), flags);
-        dest.writeParcelable(mChooser.boxed(), flags);
-        dest.writeParcelable(mManual.boxed(), flags);
-    }
-
-
-    private final static class ApiLoginFormAdapterFactory implements LoginFragment.LoginFormAdapterFactory
-    {
-        private final MicroWizard<Account> mAccountSetup;
-        private final MicroWizard<Optional<String>> mChooserSetup;
-        private final MicroWizard<Optional<String>> mManualSetup;
-
-
-        private ApiLoginFormAdapterFactory(MicroWizard<Account> accountSetup, MicroWizard<Optional<String>> chooserSetup, MicroWizard<Optional<String>> manualSetup)
-        {
-            mAccountSetup = accountSetup;
-            mChooserSetup = chooserSetup;
-            mManualSetup = manualSetup;
-        }
-
-
-        @NonNull
-        @Override
-        public <T extends RecyclerView.Adapter<BasicButtonViewHolder> & SetupButtonAdapter> T setupButtonAdapter(@NonNull Context context,
-                                                                                                                 @NonNull MicroFragmentHost host,
-                                                                                                                 @NonNull Single<ProviderService> providerService,
-                                                                                                                 @NonNull Generator<String> name)
-        {
-            T adapter = (T) new ApiSmoothSetupAdapter(providerService,
-                    provider -> host.execute(
-                            context,
-                            new Swiped(
-                                    new ForwardTransition<>(
-                                            mAccountSetup.microFragment(
-                                                    context,
-                                                    new BasicAccount(name.next(), provider))))));
-
-            adapter = (T) new FixedButtonSetupAdapter<>(adapter,
-                    () -> host.execute(
-                            context,
-                            new Swiped(
-                                    new ForwardTransition<>(
-                                            mChooserSetup.microFragment(context, new Conditional<String>(new Not<>(TextUtils::isEmpty), name::next))))),
-                    () -> R.string.smoothsetup_button_choose_provider);
-
-            if (context.getResources().getBoolean(R.bool.smoothsetup_allow_manual_setup))
-            {
-                adapter = (T) new FixedButtonSetupAdapter<>(adapter,
-                        () -> host.execute(
-                                context,
-                                new Swiped(
-                                        new ForwardTransition<>(
-                                                mManualSetup.microFragment(context, new Conditional<String>(new Not<>(TextUtils::isEmpty), name::next))))),
-                        () -> R.string.smoothsetup_button_manual_setup);
-            }
-            return adapter;
-        }
-
-
-        @NonNull
-        @Override
-        public <T extends Adapter & Filterable> T autoCompleteAdapter(@NonNull Context context, @NonNull Single<ProviderService> providerService)
-        {
-            return (T) new ProviderAutoCompleteAdapter(providerService);
-        }
-
-
-        @NonNull
-        @Override
-        public String promptText(@NonNull Context context)
-        {
-            return context.getString(R.string.smoothsetup_prompt_login);
-        }
-
-
-        @Override
-        public Optional<Provider> provider()
-        {
-            return absent();
-        }
+        dest.writeParcelable(mSetupChoicesService, flags);
     }
 }

@@ -30,17 +30,13 @@ import com.smoothsync.smoothsetup.utils.AccountDetails;
 import com.smoothsync.smoothsetup.utils.LoginInfo;
 import com.smoothsync.smoothsetup.utils.SimpleLoginRequest;
 import com.smoothsync.smoothsetup.utils.StringMeta;
-import com.smoothsync.smoothsetup.wizard.ChooseProvider;
 import com.smoothsync.smoothsetup.wizard.Congratulations;
 import com.smoothsync.smoothsetup.wizard.CreateAccount;
 import com.smoothsync.smoothsetup.wizard.EnterPassword;
 import com.smoothsync.smoothsetup.wizard.GenericLogin;
 import com.smoothsync.smoothsetup.wizard.LoadProvider;
-import com.smoothsync.smoothsetup.wizard.LoadProviders;
-import com.smoothsync.smoothsetup.wizard.ManualLogin;
 import com.smoothsync.smoothsetup.wizard.RequestPermissions;
 import com.smoothsync.smoothsetup.wizard.UsernameLogin;
-import com.smoothsync.smoothsetup.wizard.ValidateCustomAccountLogin;
 import com.smoothsync.smoothsetup.wizard.VerifyLogin;
 
 import org.dmfs.android.microfragments.FragmentEnvironment;
@@ -214,9 +210,7 @@ public final class SetupDispatchMicroFragment implements MicroFragment<SetupDisp
                     return;
                 }
 
-                MicroWizard<Void> genericLogin = new GenericLogin(passwordWizard,
-                        new LoadProviders(new ChooseProvider(loginWizard)),
-                        new ManualLogin(new ValidateCustomAccountLogin(permissionsWizard)));
+                MicroWizard<Void> genericLogin = new GenericLogin(permissionsWizard, R.string.smoothsetup_setup_choices_service);
                 // check if shared preferences contain a provider id
                 SharedPreferences pref = getContext().getSharedPreferences("com.smoothsync.smoothsetup.prefs", 0);
                 if (pref.contains(PREF_REFERRER))

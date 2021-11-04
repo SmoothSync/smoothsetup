@@ -1,3 +1,6 @@
 <resources>
-    <string name="smoothsetup_provider_service" translatable="false">com.smoothsync.smoothsetup.services.providerservice.ApiProviderService</string>
+    <string name="smoothsetup_provider_service"
+            translatable="false">com.smoothsync.smoothsetup.services.providerservice.ApiProviderService</string>
+    <string name="smoothsetup_setup_choices_service"
+            translatable="false">com.smoothsync.smoothsetup.services.defaults.DefaultSetupChoicesService</string>
 </resources>

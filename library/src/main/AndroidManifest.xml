@@ -85,6 +85,11 @@
             </intent-filter>
         </service>
 
+        <service
+                android:name=".services.defaults.DefaultSetupChoicesService"
+                android:enabled="true"
+                android:exported="false" />
+
         <meta-data
                 android:name="com.smoothsync.meta.ACCOUNT_SETUP_WIZARD_SERVICE"
                 android:value="com.smoothsync.action.DEFAULT_ACCOUNT_SETUP_SERVICE" />

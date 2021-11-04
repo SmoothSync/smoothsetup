@@ -16,17 +16,20 @@
 
 package com.smoothsync.smoothsetup.wizard;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Parcel;
 
 import com.smoothsync.smoothsetup.microfragments.GenericProviderMicroFragment;
-import com.smoothsync.smoothsetup.model.Account;
+import com.smoothsync.smoothsetup.utils.AccountDetails;
 
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Box;
 import org.dmfs.android.microwizard.box.Unboxed;
-import org.dmfs.jems.optional.Optional;
+
+import androidx.annotation.StringRes;
 
 
 /**
@@ -34,45 +37,42 @@ import org.dmfs.jems.optional.Optional;
  */
 public final class GenericLogin implements MicroWizard<Void>
 {
-    private final MicroWizard<Account> mNext;
-    private final MicroWizard<Optional<String>> mFallback;
-    private final MicroWizard<Optional<String>> mManual;
+    private final MicroWizard<AccountDetails> mNext;
+    @StringRes
+    private final int mSetupChoicesService;
 
 
-    public GenericLogin(MicroWizard<Account> next, MicroWizard<Optional<String>> chooser, MicroWizard<Optional<String>> manual)
+    public GenericLogin(MicroWizard<AccountDetails> next, @StringRes int setupChoicesService)
     {
         mNext = next;
-        mFallback = chooser;
-        mManual = manual;
+        mSetupChoicesService = setupChoicesService;
     }
 
 
     @Override
     public MicroFragment<?> microFragment(Context context, Void dummy)
     {
-        return new GenericProviderMicroFragment(mNext, mFallback, mManual);
+        return new GenericProviderMicroFragment(mNext, new Intent().setComponent(new ComponentName(context, context.getString(mSetupChoicesService))));
     }
 
 
     @Override
     public Box<MicroWizard<Void>> boxed()
     {
-        return new WizardBox(mNext, mFallback, mManual);
+        return new WizardBox(mNext, mSetupChoicesService);
     }
 
 
     private final static class WizardBox implements Box<MicroWizard<Void>>
     {
-        private final MicroWizard<Account> mNext;
-        private final MicroWizard<Optional<String>> mChooser;
-        private final MicroWizard<Optional<String>> mManual;
+        private final MicroWizard<AccountDetails> mNext;
+        private final int mSetupChoiceComponent;
 
 
-        protected WizardBox(MicroWizard<Account> next, MicroWizard<Optional<String>> chooser, MicroWizard<Optional<String>> manual)
+        protected WizardBox(MicroWizard<AccountDetails> next, int setupChoiceComponent)
         {
             mNext = next;
-            mChooser = chooser;
-            mManual = manual;
+            mSetupChoiceComponent = setupChoiceComponent;
         }
 
 
@@ -85,14 +85,13 @@ public final class GenericLogin implements MicroWizard<Void>
         public final void writeToParcel(Parcel dest, int flags)
         {
             dest.writeParcelable(mNext.boxed(), flags);
-            dest.writeParcelable(mChooser.boxed(), flags);
-            dest.writeParcelable(mManual.boxed(), flags);
+            dest.writeInt(mSetupChoiceComponent);
         }
 
 
         public final MicroWizard<Void> value()
         {
-            return new GenericLogin(mNext, mChooser, mManual);
+            return new GenericLogin(mNext, mSetupChoiceComponent);
         }
 
 
@@ -102,9 +101,8 @@ public final class GenericLogin implements MicroWizard<Void>
             public WizardBox createFromParcel(Parcel parcel)
             {
                 return new WizardBox(
-                        new Unboxed<MicroWizard<Account>>(parcel).value(),
-                        new Unboxed<MicroWizard<Optional<String>>>(parcel).value(),
-                        new Unboxed<MicroWizard<Optional<String>>>(parcel).value());
+                    new Unboxed<MicroWizard<AccountDetails>>(parcel).value(),
+                    parcel.readInt());
             }
 
 
