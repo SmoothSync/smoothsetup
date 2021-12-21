@@ -93,7 +93,7 @@ public final class GenericLoginFragment extends Fragment
             mMicroFragmentEnvironment.microFragment().parameter().setupChoicesService()).cache();
 
         mLogin = result.findViewById(android.R.id.input);
-        mLogin.setAdapter(new AutoCompleteAdapter(domain->setupChoiceService.flatMapPublisher(s->s.autoComplete(domain)).doOnNext(l-> Log.v("4444444444", ""+l))));
+        mLogin.setAdapter(new AutoCompleteAdapter(domain -> setupChoiceService.flatMapPublisher(s -> s.autoComplete(domain))));
         mLogin.setOnItemClickListener((parent, view, position, id) -> mLogin.post(() ->
         {
             // an autocomplete item has been clicked, trigger autocomplete once again by setting the same text.
@@ -108,15 +108,16 @@ public final class GenericLoginFragment extends Fragment
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         llm.setOrientation(RecyclerView.VERTICAL);
         list.setLayoutManager(llm);
+        list.setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
         final Adapter adapter = new Adapter();
         list.setAdapter(adapter);
         mDisposable = new CompositeDisposable();
 
         mDisposable.add(
-            Flowable.just("")
-                .concatWith(new AfterTextChangedFlowable(mLogin))
+            new AfterTextChangedFlowable(mLogin)
                 .map(login -> new Domain(login).value())
-                .debounce(item -> (item.isEmpty() ? Flowable.empty() : Flowable.timer(500, TimeUnit.MILLISECONDS)))
+                .publish(publishedItems -> publishedItems.take(1)
+                    .concatWith(publishedItems.skip(1).debounce(item -> (item.isEmpty() ? Flowable.empty() : Flowable.timer(500, TimeUnit.MILLISECONDS)))))
                 .subscribeOn(Schedulers.io())
                 .distinctUntilChanged()
                 .switchMap(domain -> setupChoiceService.flatMapPublisher(scs -> scs.choices(domain)))
@@ -136,6 +137,21 @@ public final class GenericLoginFragment extends Fragment
                                     new Present<>(mLogin.getText().toString())).value(getActivity()))))));
 
         return result;
+    }
+
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        // trigger button update
+        mLogin.post(() ->
+        {
+            int start = mLogin.getSelectionStart();
+            int end = mLogin.getSelectionEnd();
+            mLogin.setText(mLogin.getText());
+            mLogin.setSelection(start, end);
+        });
     }
 
 
@@ -289,7 +305,10 @@ public final class GenericLoginFragment extends Fragment
                 String domainPart = prefixStr.substring(atPos + 1);
 
                 // fetch the auto-complete result
-                List<String> autoCompleteResult = mAutoCompleter.value(domainPart).lastElement().map(i->new Collected<>(ArrayList::new, i).value()).blockingGet();
+                List<String> autoCompleteResult = mAutoCompleter.value(domainPart)
+                    .lastElement()
+                    .map(i -> new Collected<>(ArrayList::new, i).value())
+                    .blockingGet();
 
                 if (autoCompleteResult == null)
                 {
