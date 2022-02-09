@@ -66,7 +66,6 @@ public final class DiscoveryServices implements SetupChoiceService
                 .autoComplete(name)
                 .retryWhen(throwableObservable -> throwableObservable.flatMap(error -> Observable.timer(5, TimeUnit.SECONDS)))
                 .<List<String>>collect(ArrayList::new, List::add)
-                .doOnSuccess(l-> Log.v("yyyyyyyyyyyyyyyyy", ""+l))
                 .toFlowable());
     }
 

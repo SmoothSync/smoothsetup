@@ -53,7 +53,7 @@ public final class Cached implements SetupChoiceService
         }
         else
         {
-            Flowable<Iterable<String>> response = mDelegate.autoComplete(name).cache().doOnNext(l-> Log.v("333333", ""+l));
+            Flowable<Iterable<String>> response = mDelegate.autoComplete(name).cache();
             // only cache the very last element
             response.lastElement().observeOn(Schedulers.computation()).subscribe(r -> autoCompleteCache.put(name, r), error -> { /* ignore errors */});
             return response;

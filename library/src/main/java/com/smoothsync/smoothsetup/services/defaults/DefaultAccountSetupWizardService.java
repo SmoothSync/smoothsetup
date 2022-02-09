@@ -25,6 +25,7 @@ import com.smoothsync.smoothsetup.services.WizardService;
 import com.smoothsync.smoothsetup.services.delegating.DelegatingWizardService;
 import com.smoothsync.smoothsetup.utils.AccountDetails;
 import com.smoothsync.smoothsetup.utils.LoginInfo;
+import com.smoothsync.smoothsetup.wizard.CheckUnusedAppRestrictions;
 import com.smoothsync.smoothsetup.wizard.Congratulations;
 import com.smoothsync.smoothsetup.wizard.CreateAccount;
 import com.smoothsync.smoothsetup.wizard.Dispatching;
@@ -56,8 +57,9 @@ public final class DefaultAccountSetupWizardService extends DelegatingWizardServ
                     Manifest.permission.WRITE_CALENDAR,
                     Manifest.permission.READ_CONTACTS,
                     Manifest.permission.WRITE_CONTACTS),
-                new CreateAccount(
-                    new Congratulations(R.string.smoothsetup_message_setup_completed)));
+                new CheckUnusedAppRestrictions<>(
+                    new CreateAccount(
+                        new Congratulations(R.string.smoothsetup_message_setup_completed))));
             MicroWizard<Account> passwordWizard =
                 new EnterPassword(
                     new VerifyLogin(requestPermission));

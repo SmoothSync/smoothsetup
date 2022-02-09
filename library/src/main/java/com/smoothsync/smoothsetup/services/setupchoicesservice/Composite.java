@@ -16,8 +16,6 @@
 
 package com.smoothsync.smoothsetup.services.setupchoicesservice;
 
-import android.util.Log;
-
 import com.smoothsync.smoothsetup.services.SetupChoiceService;
 
 import org.dmfs.jems2.iterable.Distinct;
@@ -45,21 +43,23 @@ public final class Composite implements SetupChoiceService
         mDelegates = delegates;
     }
 
+
     @NonNull
     @Override
     public Flowable<Iterable<String>> autoComplete(@NonNull String name)
     {
         return Flowable.combineLatest(
-            new Mapped<>(d -> d.autoComplete(name).doOnNext(l->Log.v("111111111111111234235111", ""+l)), mDelegates),
+            new Mapped<>(d -> d.autoComplete(name), mDelegates),
             choices -> new Distinct<>(new Joined<>(new Mapped<>(o -> ((Iterable<String>) o), new Seq<>(choices)))));
     }
+
 
     @NonNull
     @Override
     public Flowable<Iterable<SetupChoice>> choices(@NonNull String domain)
     {
         return Flowable.combineLatest(
-            new Mapped<>(d -> d.choices(domain).doOnNext(e-> Log.v("xxxxxxxxxx", "next "+e)), mDelegates),
+            new Mapped<>(d -> d.choices(domain), mDelegates),
             choices -> new Distinct<>(SetupChoice::id, new Joined<>(new Mapped<>(o -> ((Iterable<SetupChoice>) o), new Seq<>(choices)))));
     }
 }

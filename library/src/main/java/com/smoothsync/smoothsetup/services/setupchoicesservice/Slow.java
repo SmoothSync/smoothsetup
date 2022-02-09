@@ -16,8 +16,6 @@
 
 package com.smoothsync.smoothsetup.services.setupchoicesservice;
 
-import android.util.Log;
-
 import com.smoothsync.smoothsetup.services.SetupChoiceService;
 
 import androidx.annotation.NonNull;
@@ -41,7 +39,7 @@ public final class Slow implements SetupChoiceService
     @Override
     public Flowable<Iterable<String>> autoComplete(@NonNull String name)
     {
-        return Flowable.<Iterable<String>>just(emptyIterable()).concatWith(mDelegate.autoComplete(name)).doOnNext(l -> Log.v("22222222222222", "" + l));
+        return Flowable.<Iterable<String>>just(emptyIterable()).concatWith(mDelegate.autoComplete(name));
     }
 
 
