@@ -23,8 +23,10 @@ import android.os.Parcel;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.smoothsync.smoothsetup.R;
+import com.smoothsync.smoothsetup.utils.AppLabel;
 import com.smoothsync.smoothsetup.utils.UnusedAppRestriction;
 
 import org.dmfs.android.microfragments.FragmentEnvironment;
@@ -89,7 +91,7 @@ public final class UnusedAppRestrictionsRequestMicroFragment<T extends Boxable<T
     @Override
     public String title(@NonNull Context context)
     {
-        return "Lift unused App Restrictions";
+        return context.getString(R.string.explain_android_title_disable_app_hibernation);
     }
 
 
@@ -152,9 +154,9 @@ public final class UnusedAppRestrictionsRequestMicroFragment<T extends Boxable<T
      */
     public static final class PermissionListFragment<T> extends Fragment
     {
-        private View mView;
         private MicroFragmentEnvironment<Params<T>> mMicroFragmentEnvironment;
         private Disposable mDisposable;
+        private View mView;
 
 
         @Override
@@ -165,7 +167,9 @@ public final class UnusedAppRestrictionsRequestMicroFragment<T extends Boxable<T
             mView.findViewById(R.id.button)
                 .setOnClickListener(
                     view -> startActivityForResult(IntentCompat.createManageUnusedAppRestrictionsIntent(getContext(), getActivity().getPackageName()), 1));
-            mView.findViewById(R.id.button2).setOnClickListener(view -> moveOn(mMicroFragmentEnvironment.microFragment().parameter().next()));
+            String appLabel = new AppLabel(getContext()).value();
+            ((TextView) mView.findViewById(R.id.message1)).setText(getContext().getString(R.string.explain_android_prompt_disable_app_hibernation, appLabel));
+            ((TextView) mView.findViewById(R.id.message2)).setText(getContext().getString(R.string.explain_android_prompt_disable_app_hibernation_reasoning, appLabel));
             return mView;
         }
 
@@ -189,16 +193,12 @@ public final class UnusedAppRestrictionsRequestMicroFragment<T extends Boxable<T
                 .filter(FALSE::equals)
                 .map(ignored -> mMicroFragmentEnvironment.microFragment().parameter().next())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnComplete(() ->
-                {
-                    View button2 = mView.findViewById(R.id.button2);
-                    button2.setVisibility(View.VISIBLE);
-                    button2.animate().alpha(1.0f).setDuration(400).start();
-                })
+                .doOnComplete(
+                    () -> mView.findViewById(R.id.message2).setVisibility(View.VISIBLE)
+                )
                 .subscribe(
                     this::moveOn
                 );
-
         }
 
 
