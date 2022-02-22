@@ -39,15 +39,18 @@ import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Boxable;
 import org.dmfs.android.microwizard.box.Unboxed;
 
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.IntentCompat;
+import androidx.core.content.UnusedAppRestrictionsConstants;
 import androidx.fragment.app.Fragment;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.disposables.Disposable;
 
-import static com.smoothsync.smoothsetup.microfragments.UnusedAppRestrictionsCheckMicroFragment.APP_RESTRICTED_VALUES;
-import static java.lang.Boolean.FALSE;
+import static java.util.Arrays.asList;
 
 
 /**
@@ -57,6 +60,13 @@ import static java.lang.Boolean.FALSE;
  */
 public final class UnusedAppRestrictionsRequestMicroFragment<T extends Boxable<T>> implements MicroFragment<UnusedAppRestrictionsRequestMicroFragment.PermissionListFragment.Params<T>>
 {
+
+    public final static List<Integer> APP_RESTRICTED_VALUES = asList(
+        UnusedAppRestrictionsConstants.API_30_BACKPORT,
+        UnusedAppRestrictionsConstants.API_30,
+        UnusedAppRestrictionsConstants.API_31
+    );
+
     public final static Creator<UnusedAppRestrictionsRequestMicroFragment<?>> CREATOR = new Creator<UnusedAppRestrictionsRequestMicroFragment<?>>()
     {
         @SuppressWarnings("unchecked") // we don't know the generic type in static context
@@ -98,7 +108,7 @@ public final class UnusedAppRestrictionsRequestMicroFragment<T extends Boxable<T
     @Override
     public boolean skipOnBack()
     {
-        return false;
+        return true;
     }
 
 
@@ -169,7 +179,9 @@ public final class UnusedAppRestrictionsRequestMicroFragment<T extends Boxable<T
                     view -> startActivityForResult(IntentCompat.createManageUnusedAppRestrictionsIntent(getContext(), getActivity().getPackageName()), 1));
             String appLabel = new AppLabel(getContext()).value();
             ((TextView) mView.findViewById(R.id.message1)).setText(getContext().getString(R.string.explain_android_prompt_disable_app_hibernation, appLabel));
-            ((TextView) mView.findViewById(R.id.message2)).setText(getContext().getString(R.string.explain_android_prompt_disable_app_hibernation_reasoning, appLabel));
+            ((TextView) mView.findViewById(R.id.message2)).setText(
+                getContext().getString(R.string.explain_android_prompt_disable_app_hibernation_reasoning, appLabel));
+            checkPermission(false);
             return mView;
         }
 
@@ -181,24 +193,29 @@ public final class UnusedAppRestrictionsRequestMicroFragment<T extends Boxable<T
 
             if (requestCode == 1)
             {
-                checkPermission();
+                checkPermission(true);
             }
         }
 
 
-        private void checkPermission()
+        private void checkPermission(boolean showReasoning)
         {
             mDisposable = new UnusedAppRestriction(getContext())
-                .map(APP_RESTRICTED_VALUES::contains)
-                .filter(FALSE::equals)
-                .map(ignored -> mMicroFragmentEnvironment.microFragment().parameter().next())
+                .filter(value->!APP_RESTRICTED_VALUES.contains(value))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnComplete(
-                    () -> mView.findViewById(R.id.message2).setVisibility(View.VISIBLE)
+                .doOnComplete(() ->
+                    {
+                        if (showReasoning)
+                        {
+                            mView.findViewById(R.id.message2).setVisibility(View.VISIBLE);
+                        }
+                        mView.findViewById(R.id.lift_restrictions_root).setAlpha(1);
+                    }
                 )
-                .subscribe(
-                    this::moveOn
-                );
+                .map(ignored -> mMicroFragmentEnvironment.microFragment().parameter().next())
+                // for now we ignore errors and move on
+                .onErrorResumeWith(Maybe.just(mMicroFragmentEnvironment.microFragment().parameter().next()))
+                .subscribe(this::moveOn);
         }
 
 

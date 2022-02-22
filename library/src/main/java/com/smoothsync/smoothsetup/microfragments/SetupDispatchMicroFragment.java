@@ -30,13 +30,13 @@ import com.smoothsync.smoothsetup.utils.AccountDetails;
 import com.smoothsync.smoothsetup.utils.LoginInfo;
 import com.smoothsync.smoothsetup.utils.SimpleLoginRequest;
 import com.smoothsync.smoothsetup.utils.StringMeta;
-import com.smoothsync.smoothsetup.wizard.CheckUnusedAppRestrictions;
 import com.smoothsync.smoothsetup.wizard.Congratulations;
 import com.smoothsync.smoothsetup.wizard.CreateAccount;
 import com.smoothsync.smoothsetup.wizard.EnterPassword;
 import com.smoothsync.smoothsetup.wizard.GenericLogin;
 import com.smoothsync.smoothsetup.wizard.LoadProvider;
 import com.smoothsync.smoothsetup.wizard.RequestPermissions;
+import com.smoothsync.smoothsetup.wizard.RequestUnusedAppRestrictions;
 import com.smoothsync.smoothsetup.wizard.UsernameLogin;
 import com.smoothsync.smoothsetup.wizard.VerifyLogin;
 
@@ -183,7 +183,7 @@ public final class SetupDispatchMicroFragment implements MicroFragment<SetupDisp
                                 Manifest.permission.WRITE_CALENDAR,
                                 Manifest.permission.READ_CONTACTS,
                                 Manifest.permission.WRITE_CONTACTS),
-                    new CheckUnusedAppRestrictions<>(
+                    new RequestUnusedAppRestrictions<>(
                         new CreateAccount(new Congratulations(R.string.smoothsetup_message_setup_completed))));
                 MicroWizard<Account> passwordWizard = new EnterPassword(new VerifyLogin(permissionsWizard));
                 MicroWizard<LoginInfo> loginWizard = new UsernameLogin(passwordWizard);
