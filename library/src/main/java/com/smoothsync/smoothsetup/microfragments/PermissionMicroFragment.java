@@ -135,7 +135,7 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
     @Override
     public boolean skipOnBack()
     {
-        return false;
+        return true;
     }
 
 
@@ -215,16 +215,18 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
                     new Mapped<>(perm -> ContextCompat.checkSelfPermission(activity, perm),
                             mMicroFragmentEnvironment.microFragment().parameter().permissions())).iterator().hasNext())
             {
-                container.post(() ->
+                container.postDelayed(() ->
                 {
-
+                if (isResumed())
+                {
                     mMicroFragmentEnvironment.host()
-                            .execute(activity, new Swiped(
-                                    new ForwardTransition<>(mMicroFragmentEnvironment.microFragment()
-                                            .parameter()
-                                            .next()
-                                            .microFragment(getActivity(), mMicroFragmentEnvironment.microFragment().parameter().data()))));
-                });
+                        .execute(activity, new Swiped(
+                            new ForwardTransition<>(mMicroFragmentEnvironment.microFragment()
+                                .parameter()
+                                .next()
+                                .microFragment(getActivity(), mMicroFragmentEnvironment.microFragment().parameter().data()))));
+                }
+                }, 100);
                 return null;
             }
             mView = inflater.inflate(R.layout.smoothsetup_microfragment_permissions, container, false);
