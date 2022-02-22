@@ -26,7 +26,6 @@ import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Box;
 import org.dmfs.android.microwizard.box.Boxable;
 import org.dmfs.android.microwizard.box.Unboxed;
-import org.dmfs.jems.iterable.decorators.Mapped;
 
 
 public final class RequestUnusedAppRestrictions<T extends Boxable<T>> implements MicroWizard<T>
@@ -93,8 +92,6 @@ public final class RequestUnusedAppRestrictions<T extends Boxable<T>> implements
             @Override
             public RequestUnusedAppRestrictions.WizardBox<?> createFromParcel(Parcel parcel)
             {
-                Iterable<Boxable<String>> boxablePermissions = new Unboxed<Iterable<Boxable<String>>>(parcel).value();
-                Iterable<String> permissions = new Mapped<>(b -> b.boxed().value(), boxablePermissions);
                 return new WizardBox( new RequestUnusedAppRestrictions( new Unboxed<MicroWizard<?>>(parcel).value()));
             }
 
