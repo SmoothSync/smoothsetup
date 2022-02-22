@@ -215,18 +215,13 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
                     new Mapped<>(perm -> ContextCompat.checkSelfPermission(activity, perm),
                             mMicroFragmentEnvironment.microFragment().parameter().permissions())).iterator().hasNext())
             {
-                container.postDelayed(() ->
-                {
-                if (isResumed())
-                {
+                container.post(() ->
                     mMicroFragmentEnvironment.host()
                         .execute(activity, new Swiped(
                             new ForwardTransition<>(mMicroFragmentEnvironment.microFragment()
                                 .parameter()
                                 .next()
-                                .microFragment(getActivity(), mMicroFragmentEnvironment.microFragment().parameter().data()))));
-                }
-                }, 100);
+                                .microFragment(getActivity(), mMicroFragmentEnvironment.microFragment().parameter().data())))));
                 return null;
             }
             mView = inflater.inflate(R.layout.smoothsetup_microfragment_permissions, container, false);
