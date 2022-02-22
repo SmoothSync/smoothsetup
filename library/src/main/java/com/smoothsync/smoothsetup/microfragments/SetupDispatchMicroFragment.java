@@ -213,7 +213,7 @@ public final class SetupDispatchMicroFragment implements MicroFragment<SetupDisp
                     return;
                 }
 
-                MicroWizard<Void> genericLogin = new GenericLogin(permissionsWizard, R.string.smoothsetup_setup_choices_service);
+                MicroWizard<Void> genericLogin = new GenericLogin(new VerifyLogin(permissionsWizard), R.string.smoothsetup_setup_choices_service);
                 // check if shared preferences contain a provider id
                 SharedPreferences pref = getContext().getSharedPreferences("com.smoothsync.smoothsetup.prefs", 0);
                 if (pref.contains(PREF_REFERRER))

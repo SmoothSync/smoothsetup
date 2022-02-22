@@ -68,7 +68,7 @@ public final class DefaultAccountSetupWizardService extends DelegatingWizardServ
                 new WaitForReferrer(
                     new LoadProvider(loginWizard),
                     new GenericLogin(
-                        requestPermission,
+                        new VerifyLogin(requestPermission),
                         R.string.smoothsetup_setup_choices_service)))
                 .microFragment(context, intent.getData() == null ? Uri.EMPTY : intent.getData());
         });
