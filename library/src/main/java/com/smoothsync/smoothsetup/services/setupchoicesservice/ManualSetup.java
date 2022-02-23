@@ -22,6 +22,7 @@ import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.services.SetupChoiceService;
 import com.smoothsync.smoothsetup.utils.AccountDetails;
 import com.smoothsync.smoothsetup.wizard.ManualLogin;
+import com.smoothsync.smoothsetup.wizard.ValidateCustomAccountLogin;
 
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microwizard.MicroWizard;
@@ -86,7 +87,7 @@ public final class ManualSetup implements SetupChoiceService
             @Override
             public Function<Context, ? extends MicroFragment<?>> nextStep(@NonNull MicroWizard<AccountDetails> createAccountStep, @NonNull Optional<String> login)
             {
-                return context -> new ManualLogin(createAccountStep).microFragment(context, login);
+                return context -> new ManualLogin(new ValidateCustomAccountLogin(createAccountStep)).microFragment(context, login);
             }
         }));
     }
