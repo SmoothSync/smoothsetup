@@ -25,6 +25,7 @@ import com.smoothsync.api.model.impl.BasicInstance;
 import com.smoothsync.api.requests.Ping;
 import com.smoothsync.smoothsetup.services.binders.ApiServiceBinder;
 import com.smoothsync.smoothsetup.services.providerresolution.pingStrategy.PingStrategy;
+import com.smoothsync.smoothsetup.utils.FlatMapFirst;
 import com.smoothsync.smoothsetup.utils.UnPrefixed;
 
 import org.dmfs.rfc5545.DateTime;
@@ -33,6 +34,7 @@ import org.dmfs.rfc5545.Duration;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -76,11 +78,13 @@ public final class Accounting implements ProviderResolutionStrategy
                         .filter(this::ping)
                         // at this point we have a value if we need to send a ping
                         .flatMap(lastPing ->
-                            Single.wrap(new ApiServiceBinder(context))
+                            new ApiServiceBinder(context)
                                 .observeOn(Schedulers.io())
-                                .map(smoothSyncApi -> smoothSyncApi.resultOf(
-                                    new Ping(new BasicInstance(new UnPrefixed(pingProvider), context.getPackageName(),
-                                        account.name))))
+                                .compose(new FlatMapFirst<>(smoothSyncApi ->
+                                    Flowable.just(smoothSyncApi.resultOf(
+                                        new Ping(new BasicInstance(new UnPrefixed(pingProvider), context.getPackageName(),
+                                            account.name))))))
+                                .firstOrError()
                                 .timeout(100, TimeUnit.SECONDS)
                                 .doOnSuccess(pingResponse -> am.setUserData(account, KEY_LAST_API_PING, DateTime.now().toString()))
                                 .flatMap(r -> r.provider().isPresent() ? Single.just(r.provider().value()) : Single.just(provider))

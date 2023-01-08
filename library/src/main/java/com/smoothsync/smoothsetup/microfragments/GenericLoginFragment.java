@@ -35,6 +35,7 @@ import com.smoothsync.smoothsetup.utils.AccountDetails;
 import com.smoothsync.smoothsetup.utils.AfterTextChangedFlowable;
 import com.smoothsync.smoothsetup.utils.AutoCompleteIterable;
 import com.smoothsync.smoothsetup.utils.Domain;
+import com.smoothsync.smoothsetup.utils.FlatMapFirst;
 import com.smoothsync.smoothsetup.utils.ServiceBinder;
 
 import org.dmfs.android.microfragments.FragmentEnvironment;
@@ -61,7 +62,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -89,11 +89,11 @@ public final class GenericLoginFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         View result = inflater.inflate(R.layout.smoothsetup_microfragment_login, container, false);
-        Single<SetupChoiceService> setupChoiceService = ServiceBinder.<SetupChoiceService>localService(getContext(),
+        Flowable<SetupChoiceService> setupChoiceService = ServiceBinder.<SetupChoiceService>localService(getContext(),
             mMicroFragmentEnvironment.microFragment().parameter().setupChoicesService()).cache();
 
         mLogin = result.findViewById(android.R.id.input);
-        mLogin.setAdapter(new AutoCompleteAdapter(domain -> setupChoiceService.flatMapPublisher(s -> s.autoComplete(domain))));
+        mLogin.setAdapter(new AutoCompleteAdapter(domain -> setupChoiceService.compose(new FlatMapFirst<>(s -> s.autoComplete(domain)))));
         mLogin.setOnItemClickListener((parent, view, position, id) -> mLogin.post(() ->
         {
             // an autocomplete item has been clicked, trigger autocomplete once again by setting the same text.
@@ -120,7 +120,7 @@ public final class GenericLoginFragment extends Fragment
                     .concatWith(publishedItems.skip(1).debounce(item -> (item.isEmpty() ? Flowable.empty() : Flowable.timer(500, TimeUnit.MILLISECONDS)))))
                 .subscribeOn(Schedulers.io())
                 .distinctUntilChanged()
-                .switchMap(domain -> setupChoiceService.flatMapPublisher(scs -> scs.choices(domain)))
+                .switchMap(domain -> setupChoiceService.compose(new FlatMapFirst<>(scs -> scs.choices(domain))))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     adapter::update,

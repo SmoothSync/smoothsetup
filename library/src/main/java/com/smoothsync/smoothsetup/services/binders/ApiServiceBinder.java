@@ -20,11 +20,13 @@ import android.content.Context;
 
 import com.smoothsync.api.SmoothSyncApi;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
-import com.smoothsync.smoothsetup.utils.DelegatingSingle;
 import com.smoothsync.smoothsetup.utils.ServiceBinder;
+
+import org.reactivestreams.Subscriber;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
 
 
@@ -32,10 +34,21 @@ import io.reactivex.rxjava3.core.Single;
  * A {@link Single} {@link ProviderService}.
  */
 @Keep
-public final class ApiServiceBinder extends DelegatingSingle<SmoothSyncApi>
+public final class ApiServiceBinder extends Flowable<SmoothSyncApi>
 {
+    private final Context mContext;
+
+
     public ApiServiceBinder(@NonNull Context context)
     {
-        super(ServiceBinder.localService(context, "com.smoothsync.action.BIND_API"));
+        mContext = context;
+    }
+
+
+    @Override
+    protected void subscribeActual(@io.reactivex.rxjava3.annotations.NonNull Subscriber<? super SmoothSyncApi> subscriber)
+    {
+        ServiceBinder.<SmoothSyncApi>localService(mContext, "com.smoothsync.action.BIND_API")
+            .subscribe(subscriber);
     }
 }

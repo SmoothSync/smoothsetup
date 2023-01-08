@@ -27,16 +27,15 @@ import com.smoothsync.api.requests.ProviderMultiget;
 import com.smoothsync.api.requests.ProviderSearch;
 import com.smoothsync.smoothsetup.services.binders.ApiServiceBinder;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
+import com.smoothsync.smoothsetup.utils.FlatMapFirst;
 import com.smoothsync.smoothsetup.utils.WithIdPrefix;
 
 import org.dmfs.httpessentials.exceptions.NotFoundException;
 import org.dmfs.jems2.Function;
-import org.dmfs.jems2.iterable.Seq;
 
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Maybe;
-import io.reactivex.rxjava3.core.MaybeSource;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 
@@ -47,66 +46,64 @@ public final class ApiProviders implements Function<Context, ProviderService>
 {
     public final static String PREFIX = "com.smoothsync.api:";
     private final io.reactivex.rxjava3.functions.Function<? super Provider, ? extends Provider> prefixFunction =
-            provider -> new WithIdPrefix(PREFIX, provider);
+        provider -> new WithIdPrefix(PREFIX, provider);
 
 
     @Override
     public ProviderService value(Context context)
     {
-        Single<SmoothSyncApi> apiSingle = new ApiServiceBinder(context).wrapped();
+        Flowable<SmoothSyncApi> apiService = new ApiServiceBinder(context);
         return new ProviderService()
         {
             @Override
             public Maybe<Provider> byId(String id)
             {
-                return apiSingle
-                        .observeOn(Schedulers.io())
-                        .filter(ignored -> id.startsWith(PREFIX) || !id.startsWith("com.smoothsync") /* for backwards compatibility */)
-                        .flatMap(api -> (MaybeSource<Provider>) observer -> {
-                            try
-                            {
-                                observer.onSuccess(api.resultOf(new ProviderGet(id.startsWith(PREFIX) ? id.substring(PREFIX.length()) : id)));
-                            }
-                            catch (NotFoundException e)
-                            {
-                                observer.onComplete();
-                            }
-                            catch (Exception exception)
-                            {
-                                observer.onError(exception);
-                            }
-                        })
-                        .map(prefixFunction);
+                return apiService
+                    .observeOn(Schedulers.io())
+                    .filter(ignored -> id.startsWith(PREFIX) || !id.startsWith("com.smoothsync") /* for backwards compatibility */)
+                    .compose(new FlatMapFirst<>(
+                        api -> Flowable.fromCallable(() -> api.resultOf(new ProviderGet(id.startsWith(PREFIX) ? id.substring(PREFIX.length()) : id)))
+                            .subscribeOn(Schedulers.io())
+                            .onErrorComplete(NotFoundException.class::isInstance)
+                    ))
+                    .firstElement()
+                    .map(prefixFunction);
             }
 
 
             @Override
             public Observable<Provider> byDomain(String domain)
             {
-                return apiSingle
-                        .observeOn(Schedulers.io())
-                        .flattenAsObservable(api -> api.resultOf(new ProviderSearch(domain)))
-                        .map(prefixFunction);
+                return apiService
+                    .observeOn(Schedulers.io())
+                    .compose(new FlatMapFirst<>(api -> Flowable.fromCallable(() -> api.resultOf(new ProviderSearch(domain)))
+                        .subscribeOn(Schedulers.io())))
+                    .flatMapIterable(list -> list)
+                    .toObservable()
+                    .map(prefixFunction);
             }
 
 
             @Override
             public Observable<Provider> all()
             {
-                return apiSingle
-                        .observeOn(Schedulers.io())
-                        .flattenAsObservable(api -> api.resultOf(new ProviderMultiget()))
-                        .map(prefixFunction);
+                return apiService
+                    .compose(new FlatMapFirst<>(api -> Flowable.fromCallable(() -> api.resultOf(new ProviderMultiget()))
+                        .subscribeOn(Schedulers.io())))
+                    .flatMapIterable(list -> list)
+                    .toObservable()
+                    .map(prefixFunction);
             }
 
 
             @Override
             public Observable<String> autoComplete(String domainFragment)
             {
-                return apiSingle
-                        .observeOn(Schedulers.io())
-                        .map(api -> api.resultOf(new AutoComplete(domainFragment)))
-                        .flattenAsObservable(AutoCompleteResult::autoComplete);
+                return apiService
+                    .compose(new FlatMapFirst<>(api -> Flowable.fromCallable(() -> api.resultOf(new AutoComplete(domainFragment)))
+                        .subscribeOn(Schedulers.io())))
+                    .flatMapIterable(AutoCompleteResult::autoComplete)
+                    .toObservable();
             }
         };
     }

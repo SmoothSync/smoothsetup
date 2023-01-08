@@ -35,8 +35,8 @@ import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.autocomplete.AbstractAutoCompleteAdapter;
 import com.smoothsync.smoothsetup.restrictions.AccountRestriction;
 import com.smoothsync.smoothsetup.restrictions.ProviderAccountRestrictions;
-import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
 import com.smoothsync.smoothsetup.services.binders.ProviderServiceBinder;
+import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
 import com.smoothsync.smoothsetup.setupbuttons.AbstractSmoothSetupAdapter;
 import com.smoothsync.smoothsetup.setupbuttons.BasicButtonViewHolder;
 import com.smoothsync.smoothsetup.setupbuttons.SetupButtonAdapter;
@@ -57,7 +57,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.Flowable;
 
 
 /**
@@ -69,7 +69,7 @@ public final class LoginFragment extends Fragment
 {
     private AutoCompleteTextView mLogin;
     private MicroFragmentEnvironment<Params> mMicroFragmentEnvironment;
-    private Single<ProviderService> mProviderService;
+    private Flowable<ProviderService> mProviderService;
 
 
     @Override
@@ -77,7 +77,7 @@ public final class LoginFragment extends Fragment
     {
         super.onCreate(savedInstanceState);
         mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
-        mProviderService = new ProviderServiceBinder(getContext()).wrapped();
+        mProviderService = new ProviderServiceBinder(getContext());
     }
 
 
@@ -109,8 +109,8 @@ public final class LoginFragment extends Fragment
         list.setLayoutManager(llm);
 
         final AbstractSmoothSetupAdapter adapter = loginFormAdapterFactory.setupButtonAdapter(getContext(), mMicroFragmentEnvironment.host(),
-                mProviderService,
-                () -> mLogin.getText().toString());
+            mProviderService,
+            () -> mLogin.getText().toString());
         list.setAdapter(adapter);
 
         mLogin.addTextChangedListener(new TextWatcher()
@@ -154,9 +154,9 @@ public final class LoginFragment extends Fragment
             {
                 String providerId = provider.value().id();
                 Optional<UserCredentials> credentialsRestrictions = new MapCollapsed<>(
-                        AccountRestriction::credentials,
-                        new First<>(
-                                new ProviderAccountRestrictions(getActivity(), providerId)));
+                    AccountRestriction::credentials,
+                    new First<>(
+                        new ProviderAccountRestrictions(getActivity(), providerId)));
 
                 if (credentialsRestrictions.isPresent())
                 {
@@ -196,12 +196,12 @@ public final class LoginFragment extends Fragment
     public interface LoginFormAdapterFactory
     {
         @NonNull
-        <T extends Adapter & Filterable> T autoCompleteAdapter(@NonNull Context context, @NonNull Single<ProviderService> providerService);
+        <T extends Adapter & Filterable> T autoCompleteAdapter(@NonNull Context context, @NonNull Flowable<ProviderService> providerService);
 
         @NonNull
         <T extends RecyclerView.Adapter<BasicButtonViewHolder> & SetupButtonAdapter> T setupButtonAdapter(@NonNull Context context,
                                                                                                           @NonNull MicroFragmentHost host,
-                                                                                                          @NonNull Single<ProviderService> providerService,
+                                                                                                          @NonNull Flowable<ProviderService> providerService,
                                                                                                           @NonNull Generator<String> name);
 
         @NonNull

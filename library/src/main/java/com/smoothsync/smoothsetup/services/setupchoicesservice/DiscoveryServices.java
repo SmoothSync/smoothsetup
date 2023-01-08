@@ -17,7 +17,6 @@
 package com.smoothsync.smoothsetup.services.setupchoicesservice;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.smoothsync.smoothsetup.microfragments.ProviderLoadMicroFragment;
 import com.smoothsync.smoothsetup.model.BasicAccount;
@@ -25,6 +24,7 @@ import com.smoothsync.smoothsetup.services.SetupChoiceService;
 import com.smoothsync.smoothsetup.services.binders.ProviderServiceBinder;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
 import com.smoothsync.smoothsetup.utils.AccountDetails;
+import com.smoothsync.smoothsetup.utils.FlatMapFirst;
 import com.smoothsync.smoothsetup.wizard.EnterPassword;
 import com.smoothsync.smoothsetup.wizard.UsernameLogin;
 
@@ -43,17 +43,16 @@ import java.util.concurrent.TimeUnit;
 import androidx.annotation.NonNull;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Single;
 
 
 public final class DiscoveryServices implements SetupChoiceService
 {
-    private final Single<ProviderService> mProviderService;
+    private final Flowable<ProviderService> mProviderService;
 
 
     public DiscoveryServices(@NonNull Context context)
     {
-        mProviderService = new ProviderServiceBinder(context).wrapped().cache();
+        mProviderService = new ProviderServiceBinder(context);
     }
 
 
@@ -61,12 +60,13 @@ public final class DiscoveryServices implements SetupChoiceService
     @Override
     public Flowable<Iterable<String>> autoComplete(@NonNull String name)
     {
-        return mProviderService.flatMapPublisher(
-            providerService -> providerService
-                .autoComplete(name)
-                .retryWhen(throwableObservable -> throwableObservable.flatMap(error -> Observable.timer(5, TimeUnit.SECONDS)))
-                .<List<String>>collect(ArrayList::new, List::add)
-                .toFlowable());
+        return mProviderService
+            .compose(new FlatMapFirst<>(
+                providerService -> providerService
+                    .autoComplete(name)
+                    .retryWhen(throwableObservable -> throwableObservable.flatMap(error -> Observable.timer(5, TimeUnit.SECONDS)))
+                    .<List<String>>collect(ArrayList::new, List::add)
+                    .toFlowable()));
     }
 
 
@@ -75,7 +75,7 @@ public final class DiscoveryServices implements SetupChoiceService
     public Flowable<Iterable<SetupChoice>> choices(@NonNull String domain)
     {
         return mProviderService
-            .flatMapPublisher(
+            .compose(new FlatMapFirst<>(
                 providerService -> providerService.byDomain(domain)
                     .retryWhen(throwableObservable -> throwableObservable.flatMap(error -> Observable.timer(5, TimeUnit.SECONDS)))
                     .map(provider -> new SetupChoice()
@@ -134,6 +134,6 @@ public final class DiscoveryServices implements SetupChoiceService
                         }
                     })
                     .<List<SetupChoice>>collect(ArrayList::new, List::add)
-                    .toFlowable());
+                    .toFlowable()));
     }
 }

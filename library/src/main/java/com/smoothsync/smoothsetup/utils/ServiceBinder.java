@@ -23,13 +23,14 @@ import android.os.IBinder;
 
 import org.dmfs.android.bolts.service.StubProxy;
 import org.dmfs.android.bolts.service.elementary.LocalServiceStubProxy;
+import org.reactivestreams.Subscriber;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+import io.reactivex.rxjava3.core.BackpressureStrategy;
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.core.SingleObserver;
 import io.reactivex.rxjava3.core.SingleSource;
-import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 
@@ -38,7 +39,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
  * <p>
  * The service gets disconnected when the {@link Single} gets disposed.
  */
-public final class ServiceBinder implements SingleSource<IBinder>
+public final class ServiceBinder extends Flowable<IBinder>
 {
     private final Context context;
     private final Intent intent;
@@ -51,66 +52,72 @@ public final class ServiceBinder implements SingleSource<IBinder>
     }
 
 
-    public static <T> Single<T> service(@NonNull Context context, @NonNull Intent intent, @NonNull StubProxy<T> stubProxy)
+    public static <T> Flowable<T> service(@NonNull Context context, @NonNull Intent intent, @NonNull StubProxy<T> stubProxy)
     {
-        return Single.wrap(new ServiceBinder(context, intent))
-                .subscribeOn(Schedulers.newThread())
-                .map(stubProxy::asInterface);
+        return new ServiceBinder(context, intent)
+            .subscribeOn(Schedulers.computation())
+            .map(stubProxy::asInterface);
     }
 
 
-    public static <T> Single<T> localService(@NonNull Context context, @NonNull Intent intent)
+    public static <T> Flowable<T> localService(@NonNull Context context, @NonNull Intent intent)
     {
         return service(context, intent, new LocalServiceStubProxy<>());
     }
 
 
-    public static <T> Single<T> localService(@NonNull Context context, @NonNull String action)
+    public static <T> Flowable<T> localService(@NonNull Context context, @NonNull String action)
     {
         return service(context, new Intent(action).setPackage(context.getPackageName()), new LocalServiceStubProxy<>());
     }
 
 
-    public static <T> Single<T> localService(@NonNull Context context, @NonNull ComponentName service)
+    public static <T> Flowable<T> localService(@NonNull Context context, @NonNull ComponentName service)
     {
         return service(context, new Intent().setComponent(service), new LocalServiceStubProxy<>());
     }
 
 
-    public static <T> Single<T> localServiceByClassName(@NonNull Context context, @NonNull String className)
+    public static <T> Flowable<T> localServiceByClassName(@NonNull Context context, @NonNull String className)
     {
         return service(context, new Intent().setComponent(new ComponentName(context, className)), new LocalServiceStubProxy<>());
     }
 
 
-    public static <T> Single<T> localServiceByClassNameResource(@NonNull Context context, @StringRes int classNameResource)
+    public static <T> Flowable<T> localServiceByClassNameResource(@NonNull Context context, @StringRes int classNameResource)
     {
         return service(context, new Intent().setComponent(new ComponentName(context, context.getString(classNameResource))), new LocalServiceStubProxy<>());
     }
 
 
     @Override
-    public void subscribe(@io.reactivex.rxjava3.annotations.NonNull SingleObserver<? super IBinder> observer)
+    protected void subscribeActual(@io.reactivex.rxjava3.annotations.NonNull Subscriber<? super IBinder> observer)
     {
-        android.content.ServiceConnection connection = new android.content.ServiceConnection()
-        {
+        Flowable.<IBinder>create(
+                emitter -> {
+                    android.content.ServiceConnection connection = new android.content.ServiceConnection()
+                    {
 
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service)
-            {
-                observer.onSuccess(service);
-            }
+                        @Override
+                        public void onServiceConnected(ComponentName name, IBinder service)
+                        {
+                            emitter.onNext(service);
+                        }
 
 
-            @Override
-            public void onServiceDisconnected(ComponentName name)
-            {
-            }
-        };
-        observer.onSubscribe(Disposable.fromAction(() -> context.unbindService(connection)));
-        if (!context.bindService(intent, connection, Context.BIND_AUTO_CREATE))
-        {
-            observer.onError(new IllegalStateException("Can't connect to service " + intent.toString()));
-        }
+                        @Override
+                        public void onServiceDisconnected(ComponentName name)
+                        {
+                            emitter.onComplete();
+                        }
+                    };
+                    emitter.setCancellable(() -> context.unbindService(connection));
+                    if (!context.bindService(intent, connection, Context.BIND_AUTO_CREATE))
+                    {
+                        emitter.onError(new IllegalStateException("Can't connect to service " + intent.toString()));
+                    }
+                },
+                BackpressureStrategy.MISSING)
+            .subscribe(observer);
     }
 }

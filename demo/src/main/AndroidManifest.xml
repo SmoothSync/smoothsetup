@@ -20,6 +20,7 @@
         <activity
                 android:name="com.smoothsync.smoothsetup.demo.DemoActivity"
                 android:label="@string/title_activity_demo"
+                android:exported="true"
                 android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

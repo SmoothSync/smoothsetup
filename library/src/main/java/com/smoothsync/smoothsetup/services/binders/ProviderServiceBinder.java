@@ -20,23 +20,35 @@ import android.content.Context;
 
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
-import com.smoothsync.smoothsetup.utils.DelegatingSingle;
+import com.smoothsync.smoothsetup.utils.ServiceBinder;
+
+import org.reactivestreams.Subscriber;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
-
-import static com.smoothsync.smoothsetup.utils.ServiceBinder.localServiceByClassNameResource;
 
 
 /**
  * A {@link Single} {@link ProviderService}.
  */
 @Keep
-public final class ProviderServiceBinder extends DelegatingSingle<ProviderService>
+public final class ProviderServiceBinder extends Flowable<ProviderService>
 {
+    private final Context mContext;
+
+
     public ProviderServiceBinder(@NonNull Context context)
     {
-        super(localServiceByClassNameResource(context, R.string.smoothsetup_provider_service));
+        mContext = context;
+    }
+
+
+    @Override
+    protected void subscribeActual(@io.reactivex.rxjava3.annotations.NonNull Subscriber<? super ProviderService> subscriber)
+    {
+        ServiceBinder.<ProviderService>localServiceByClassNameResource(mContext, R.string.smoothsetup_provider_service)
+            .subscribe(subscriber);
     }
 }

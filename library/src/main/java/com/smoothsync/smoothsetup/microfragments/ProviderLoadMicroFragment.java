@@ -27,6 +27,7 @@ import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.ParcelableProvider;
 import com.smoothsync.smoothsetup.services.binders.ProviderServiceBinder;
+import com.smoothsync.smoothsetup.utils.FlatMapFirst;
 import com.smoothsync.smoothsetup.utils.LoginInfo;
 import com.smoothsync.smoothsetup.utils.LoginRequest;
 
@@ -49,6 +50,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 
 /**
@@ -184,14 +186,18 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
         public void onResume()
         {
             super.onResume();
-            new ProviderServiceBinder(getContext()).wrapped()
-                    .flatMapMaybe(ps -> ps.byId(mMicroFragmentEnvironment.microFragment().parameter().loginRequest().providerId()))
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::onResult,
-                            e -> mMicroFragmentEnvironment.host()
-                                    .execute(getActivity(),
-                                            new XFaded(new ForwardTransition<>(new ErrorResetMicroFragment(mMicroFragmentEnvironment.microFragment()),
-                                                    mTimestamp))));
+            new ProviderServiceBinder(getContext())
+                .compose(new FlatMapFirst<>(
+                    ps -> ps.byId(mMicroFragmentEnvironment.microFragment().parameter().loginRequest().providerId())
+                        .toFlowable()
+                ))
+                .firstElement()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onResult,
+                    e -> mMicroFragmentEnvironment.host()
+                        .execute(getActivity(),
+                            new XFaded(new ForwardTransition<>(new ErrorResetMicroFragment(mMicroFragmentEnvironment.microFragment()),
+                                mTimestamp))));
 
         }
 
@@ -201,16 +207,16 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
             if (isResumed())
             {
                 mMicroFragmentEnvironment.host()
-                        .execute(getActivity(),
-                                new XFaded(new ForwardTransition<>(
-                                        mMicroFragmentEnvironment.microFragment()
-                                                .parameter()
-                                                .next()
-                                                .microFragment(
-                                                        getActivity(),
-                                                        new SimpleProviderInfo(result,
-                                                                mMicroFragmentEnvironment.microFragment().parameter().loginRequest().username())),
-                                        mTimestamp)));
+                    .execute(getActivity(),
+                        new XFaded(new ForwardTransition<>(
+                            mMicroFragmentEnvironment.microFragment()
+                                .parameter()
+                                .next()
+                                .microFragment(
+                                    getActivity(),
+                                    new SimpleProviderInfo(result,
+                                        mMicroFragmentEnvironment.microFragment().parameter().loginRequest().username())),
+                            mTimestamp)));
             }
         }
     }

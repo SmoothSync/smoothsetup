@@ -25,8 +25,8 @@ import android.view.ViewGroup;
 
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.R;
-import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
 import com.smoothsync.smoothsetup.services.binders.ProviderServiceBinder;
+import com.smoothsync.smoothsetup.utils.FlatMapFirst;
 
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
@@ -51,6 +51,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.functions.Supplier;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -69,7 +70,7 @@ public final class ProvidersLoadMicroFragment implements MicroFragment<Providers
         public ProvidersLoadMicroFragment createFromParcel(Parcel source)
         {
             return new ProvidersLoadMicroFragment(new NullSafe<>(source.readString()),
-                    new Unboxed<MicroWizard<ChooseProviderMicroFragment.ProviderSelection>>(source).value());
+                new Unboxed<MicroWizard<ChooseProviderMicroFragment.ProviderSelection>>(source).value());
         }
 
 
@@ -96,7 +97,7 @@ public final class ProvidersLoadMicroFragment implements MicroFragment<Providers
      * Create a {@link ProvidersLoadMicroFragment} that loads the provider with the given id.
      *
      * @param account
-     *         An optional account identifier to set up.
+     *     An optional account identifier to set up.
      * @param next
      */
     public ProvidersLoadMicroFragment(@Nullable Optional<String> account, MicroWizard<ChooseProviderMicroFragment.ProviderSelection> next)
@@ -185,19 +186,21 @@ public final class ProvidersLoadMicroFragment implements MicroFragment<Providers
         public void onResume()
         {
             super.onResume();
-            new ProviderServiceBinder(getContext()).wrapped()
-                    .flatMapObservable(ProviderService::all)
-                    .collect((Supplier<ArrayList<Provider>>) ArrayList::new, ArrayList::add)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            this::onResult,
-                            e -> mMicroFragmentEnvironment.host()
-                                    .execute(getActivity(),
-                                            new XFaded(
-                                                    new ForwardTransition<>(
-                                                            new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_load_provider)),
-                                                            mTimestamp)))
-                    );
+            new ProviderServiceBinder(getContext())
+                .compose(new FlatMapFirst<>(
+                    ps -> ps.all().toFlowable(BackpressureStrategy.MISSING)
+                ))
+                .collect((Supplier<ArrayList<Provider>>) ArrayList::new, ArrayList::add)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    this::onResult,
+                    e -> mMicroFragmentEnvironment.host()
+                        .execute(getActivity(),
+                            new XFaded(
+                                new ForwardTransition<>(
+                                    new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_load_provider)),
+                                    mTimestamp)))
+                );
         }
 
 
@@ -218,31 +221,31 @@ public final class ProvidersLoadMicroFragment implements MicroFragment<Providers
                 return;
             }
             FragmentTransition transition = new ForwardTransition<>(
-                    mMicroFragmentEnvironment.microFragment().parameter().next().microFragment(
-                            getActivity(),
-                            new ChooseProviderMicroFragment.ProviderSelection()
-                            {
-                                @NonNull
-                                @Override
-                                public Provider[] providers()
-                                {
-                                    return providers.toArray(new Provider[0]);
-                                }
+                mMicroFragmentEnvironment.microFragment().parameter().next().microFragment(
+                    getActivity(),
+                    new ChooseProviderMicroFragment.ProviderSelection()
+                    {
+                        @NonNull
+                        @Override
+                        public Provider[] providers()
+                        {
+                            return providers.toArray(new Provider[0]);
+                        }
 
 
-                                @NonNull
-                                @Override
-                                public Optional<String> username()
-                                {
-                                    return mMicroFragmentEnvironment.microFragment().parameter().username();
-                                }
-                            }
-                    ));
+                        @NonNull
+                        @Override
+                        public Optional<String> username()
+                        {
+                            return mMicroFragmentEnvironment.microFragment().parameter().username();
+                        }
+                    }
+                ));
 
             mMicroFragmentEnvironment.host().execute(getActivity(),
-                    // if we were quick, swipe, otherwise fade
-                    mTimestamp.nanoSeconds() + MILLISECONDS.toNanos(200) < System.nanoTime() ?
-                            new XFaded(transition) : new Swiped(transition));
+                // if we were quick, swipe, otherwise fade
+                mTimestamp.nanoSeconds() + MILLISECONDS.toNanos(200) < System.nanoTime() ?
+                    new XFaded(transition) : new Swiped(transition));
 
         }
     }

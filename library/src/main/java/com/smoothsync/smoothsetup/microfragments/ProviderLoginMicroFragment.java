@@ -48,6 +48,7 @@ import org.dmfs.jems.optional.elementary.Present;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
@@ -173,23 +174,29 @@ public final class ProviderLoginMicroFragment implements MicroFragment<LoginFrag
 
         @NonNull
         @Override
-        public <T extends RecyclerView.Adapter<BasicButtonViewHolder> & SetupButtonAdapter> T setupButtonAdapter(@NonNull Context context, @NonNull MicroFragmentHost host, @NonNull Single<ProviderService> providerService, @NonNull Generator<String> name)
+        public <T extends RecyclerView.Adapter<BasicButtonViewHolder> & SetupButtonAdapter> T setupButtonAdapter(
+            @NonNull Context context,
+            @NonNull MicroFragmentHost host,
+            @NonNull Flowable<ProviderService> providerService,
+            @NonNull Generator<String> name)
         {
             return (T) new ProviderSmoothSetupAdapter(
-                    mProvider,
-                    provider -> host.execute(
-                            context,
-                            new Swiped(
-                                    new ForwardTransition<>(
-                                            mNext.microFragment(
-                                                    context,
-                                                    new BasicAccount(name.next(), provider))))));
+                mProvider,
+                provider -> host.execute(
+                    context,
+                    new Swiped(
+                        new ForwardTransition<>(
+                            mNext.microFragment(
+                                context,
+                                new BasicAccount(name.next(), provider))))));
         }
 
 
         @NonNull
         @Override
-        public <T extends Adapter & Filterable> T autoCompleteAdapter(@NonNull Context context, @NonNull Single<ProviderService> providerService)
+        public <T extends Adapter & Filterable> T autoCompleteAdapter(
+            @NonNull Context context,
+            @NonNull Flowable<ProviderService> providerService)
         {
             return (T) new ProviderAutoCompleteAdapter(Single.just(new ProviderService()
             {

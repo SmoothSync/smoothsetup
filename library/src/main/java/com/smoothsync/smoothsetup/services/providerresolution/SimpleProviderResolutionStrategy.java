@@ -22,10 +22,11 @@ import android.content.Context;
 
 import com.smoothsync.api.model.Provider;
 import com.smoothsync.smoothsetup.services.binders.ProviderServiceBinder;
+import com.smoothsync.smoothsetup.utils.FlatMapFirst;
 
 import androidx.annotation.NonNull;
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Maybe;
-import io.reactivex.rxjava3.core.Single;
 
 
 public final class SimpleProviderResolutionStrategy implements ProviderResolutionStrategy
@@ -37,10 +38,10 @@ public final class SimpleProviderResolutionStrategy implements ProviderResolutio
     @Override
     public Maybe<Provider> provider(@NonNull Context context, @NonNull Account account)
     {
-        return Single.wrap(new ProviderServiceBinder(context))
-                .flatMapMaybe(
-                        providerService ->
-                                Maybe.fromCallable(() -> AccountManager.get(context).getUserData(account, KEY_PROVIDER_ID))
-                                        .flatMap(providerService::byId));
+        return new ProviderServiceBinder(context)
+            .compose(new FlatMapFirst<>(providerService ->
+                Flowable.fromCallable(() -> AccountManager.get(context).getUserData(account, KEY_PROVIDER_ID))
+                    .flatMapMaybe(providerService::byId)))
+            .firstElement();
     }
 }
