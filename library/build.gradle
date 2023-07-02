@@ -29,7 +29,7 @@ dependencies {
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
     implementation 'androidx.annotation:annotation:1.5.0'
     implementation 'com.google.android.material:material:1.8.0'
-    implementation 'org.dmfs:explain-android:0.0.4'
+    implementation 'org.dmfs:explain-android:0.0.5'
     api 'io.reactivex.rxjava3:rxjava:3.1.6'
     implementation 'com.google.guava:guava:27.0.1-android'
     implementation('org.dmfs:express-json:0.2.0') {
@@ -42,7 +42,7 @@ dependencies {
     implementation 'org.dmfs:http-client-basics:' + HTTP_CLIENT_ESSENTIALS_VERSION
     implementation 'org.dmfs:http-client-headers:' + HTTP_CLIENT_ESSENTIALS_VERSION
     // api for UserClientCredentials
-    compileOnly 'com.squareup.okhttp3:okhttp:3.8.1'
+    compileOnly 'com.squareup.okhttp3:okhttp:3.10.0'
     api 'org.dmfs:http-executor-decorators:' + HTTP_CLIENT_ESSENTIALS_VERSION
     implementation 'org.dmfs:okhttp-executor:' + HTTP_CLIENT_ESSENTIALS_VERSION
     implementation('org.dmfs:oauth2-essentials:' + OAUTH2_ESSENTIALS_VERSION)
