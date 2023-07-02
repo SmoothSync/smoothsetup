@@ -57,7 +57,7 @@ public final class RequestPermissions<T extends Boxable<T>> implements MicroWiza
     public MicroFragment<?> microFragment(Context context, T argument)
     {
         // skip this on Android 5 and below or if all permissions have been granted before
-        return Build.VERSION.SDK_INT < 23 || !new Denied(context, mPermissions).iterator().hasNext() ?
+        return !new Denied(context, mPermissions).iterator().hasNext() ?
                 mNext.microFragment(context, argument) : new PermissionMicroFragment<>(mPermissions, argument, mNext);
     }
 

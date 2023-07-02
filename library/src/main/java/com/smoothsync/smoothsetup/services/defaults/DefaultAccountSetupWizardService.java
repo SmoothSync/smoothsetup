@@ -16,7 +16,6 @@
 
 package com.smoothsync.smoothsetup.services.defaults;
 
-import android.Manifest;
 import android.net.Uri;
 
 import com.smoothsync.smoothsetup.R;
@@ -25,6 +24,7 @@ import com.smoothsync.smoothsetup.services.WizardService;
 import com.smoothsync.smoothsetup.services.delegating.DelegatingWizardService;
 import com.smoothsync.smoothsetup.utils.AccountDetails;
 import com.smoothsync.smoothsetup.utils.LoginInfo;
+import com.smoothsync.smoothsetup.utils.StringArrayResource;
 import com.smoothsync.smoothsetup.wizard.Congratulations;
 import com.smoothsync.smoothsetup.wizard.CreateAccount;
 import com.smoothsync.smoothsetup.wizard.Dispatching;
@@ -38,7 +38,6 @@ import com.smoothsync.smoothsetup.wizard.VerifyLogin;
 import com.smoothsync.smoothsetup.wizard.WaitForReferrer;
 
 import org.dmfs.android.microwizard.MicroWizard;
-import org.dmfs.iterables.elementary.Seq;
 
 
 /**
@@ -53,10 +52,7 @@ public final class DefaultAccountSetupWizardService extends DelegatingWizardServ
         super(() -> (context, intent) ->
         {
             MicroWizard<AccountDetails> requestPermission = new RequestPermissions<>(
-                new Seq<>(Manifest.permission.READ_CALENDAR,
-                    Manifest.permission.WRITE_CALENDAR,
-                    Manifest.permission.READ_CONTACTS,
-                    Manifest.permission.WRITE_CONTACTS),
+                new StringArrayResource(context, R.array.com_smoothsync_smoothsetup_permissions),
                 new RequestUnusedAppRestrictions<>(
                     new CreateAccount(
                         new Congratulations(R.string.smoothsetup_message_setup_completed))));

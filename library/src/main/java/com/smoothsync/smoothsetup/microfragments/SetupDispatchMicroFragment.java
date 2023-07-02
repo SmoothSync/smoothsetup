@@ -16,7 +16,6 @@
 
 package com.smoothsync.smoothsetup.microfragments;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -29,6 +28,7 @@ import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.utils.AccountDetails;
 import com.smoothsync.smoothsetup.utils.LoginInfo;
 import com.smoothsync.smoothsetup.utils.SimpleLoginRequest;
+import com.smoothsync.smoothsetup.utils.StringArrayResource;
 import com.smoothsync.smoothsetup.utils.StringMeta;
 import com.smoothsync.smoothsetup.wizard.Congratulations;
 import com.smoothsync.smoothsetup.wizard.CreateAccount;
@@ -47,7 +47,6 @@ import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.XFaded;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Unboxed;
-import org.dmfs.iterables.elementary.Seq;
 import org.dmfs.jems.optional.Optional;
 import org.dmfs.jems.optional.elementary.NullSafe;
 
@@ -179,10 +178,7 @@ public final class SetupDispatchMicroFragment implements MicroFragment<SetupDisp
             {
 
                 MicroWizard<AccountDetails> permissionsWizard = new RequestPermissions<>(
-                        new Seq<>(Manifest.permission.READ_CALENDAR,
-                                Manifest.permission.WRITE_CALENDAR,
-                                Manifest.permission.READ_CONTACTS,
-                                Manifest.permission.WRITE_CONTACTS),
+                    new StringArrayResource(getContext(), R.array.com_smoothsync_smoothsetup_permissions),
                     new RequestUnusedAppRestrictions<>(
                         new CreateAccount(new Congratulations(R.string.smoothsetup_message_setup_completed))));
                 MicroWizard<Account> passwordWizard = new EnterPassword(new VerifyLogin(permissionsWizard));
@@ -194,10 +190,10 @@ public final class SetupDispatchMicroFragment implements MicroFragment<SetupDisp
                 {
                     Uri uri = Uri.parse(metaData.value());
                     launchWizard(
-                            new LoadProvider(loginWizard),
-                            new SimpleLoginRequest(
-                                    uri.getQueryParameter(PARAM_PROVIDER),
-                                    new NullSafe<>(uri.getQueryParameter(PARAM_ACCOUNT))));
+                        new LoadProvider(loginWizard),
+                        new SimpleLoginRequest(
+                            uri.getQueryParameter(PARAM_PROVIDER),
+                            new NullSafe<>(uri.getQueryParameter(PARAM_ACCOUNT))));
                     return;
                 }
 
@@ -206,10 +202,10 @@ public final class SetupDispatchMicroFragment implements MicroFragment<SetupDisp
                 if (data.getAuthority() != null && data.getQueryParameter(PARAM_PROVIDER) != null)
                 {
                     launchWizard(
-                            new LoadProvider(loginWizard),
-                            new SimpleLoginRequest(
-                                    data.getQueryParameter(PARAM_PROVIDER),
-                                    new NullSafe<>(data.getQueryParameter(PARAM_ACCOUNT))));
+                        new LoadProvider(loginWizard),
+                        new SimpleLoginRequest(
+                            data.getQueryParameter(PARAM_PROVIDER),
+                            new NullSafe<>(data.getQueryParameter(PARAM_ACCOUNT))));
                     return;
                 }
 
@@ -225,10 +221,10 @@ public final class SetupDispatchMicroFragment implements MicroFragment<SetupDisp
                         if (uri.getQueryParameter(PARAM_PROVIDER) != null)
                         {
                             launchWizard(
-                                    new LoadProvider(loginWizard),
-                                    new SimpleLoginRequest(
-                                            uri.getQueryParameter(PARAM_PROVIDER),
-                                            new NullSafe<>(uri.getQueryParameter(PARAM_ACCOUNT))));
+                                new LoadProvider(loginWizard),
+                                new SimpleLoginRequest(
+                                    uri.getQueryParameter(PARAM_PROVIDER),
+                                    new NullSafe<>(uri.getQueryParameter(PARAM_ACCOUNT))));
                             return;
                         }
                     }
@@ -249,7 +245,7 @@ public final class SetupDispatchMicroFragment implements MicroFragment<SetupDisp
         private <T> void launchWizard(MicroWizard<T> microWizard, T argument)
         {
             new FragmentEnvironment<>(this).host().execute(getActivity(), new XFaded(
-                    new ForwardTransition<>(microWizard.microFragment(getContext(), argument))));
+                new ForwardTransition<>(microWizard.microFragment(getContext(), argument))));
         }
     }
 }

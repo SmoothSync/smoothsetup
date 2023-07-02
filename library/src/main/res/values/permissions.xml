@@ -1,0 +1,8 @@
+<resources>
+    <array name="com.smoothsync.smoothsetup.permissions">
+        <item>android.permission.READ_CALENDAR</item>
+        <item>android.permission.READ_CONTACTS</item>
+        <item>android.permission.WRITE_CALENDAR</item>
+        <item>android.permission.WRITE_CONTACTS</item>
+    </array>
+</resources>

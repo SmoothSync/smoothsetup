@@ -80,13 +80,10 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
 
     static
     {
-        if (Build.VERSION.SDK_INT >= 23)
-        {
-            PERMISSION_GROUPS.put(Manifest.permission.READ_CALENDAR, Manifest.permission_group.CALENDAR);
-            PERMISSION_GROUPS.put(Manifest.permission.WRITE_CALENDAR, Manifest.permission_group.CALENDAR);
-            PERMISSION_GROUPS.put(Manifest.permission.READ_CONTACTS, Manifest.permission_group.CONTACTS);
-            PERMISSION_GROUPS.put(Manifest.permission.WRITE_CONTACTS, Manifest.permission_group.CONTACTS);
-        }
+        PERMISSION_GROUPS.put(Manifest.permission.READ_CALENDAR, Manifest.permission_group.CALENDAR);
+        PERMISSION_GROUPS.put(Manifest.permission.WRITE_CALENDAR, Manifest.permission_group.CALENDAR);
+        PERMISSION_GROUPS.put(Manifest.permission.READ_CONTACTS, Manifest.permission_group.CONTACTS);
+        PERMISSION_GROUPS.put(Manifest.permission.WRITE_CONTACTS, Manifest.permission_group.CONTACTS);
     }
 
     public final static Creator<PermissionMicroFragment<?>> CREATOR = new Creator<PermissionMicroFragment<?>>()
