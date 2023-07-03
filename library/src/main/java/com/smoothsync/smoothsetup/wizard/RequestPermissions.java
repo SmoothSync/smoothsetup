@@ -17,7 +17,6 @@
 package com.smoothsync.smoothsetup.wizard;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Parcel;
 
 import com.smoothsync.smoothsetup.microfragments.PermissionMicroFragment;
@@ -30,7 +29,7 @@ import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Box;
 import org.dmfs.android.microwizard.box.Boxable;
 import org.dmfs.android.microwizard.box.Unboxed;
-import org.dmfs.jems.iterable.decorators.Mapped;
+import org.dmfs.jems2.iterable.Mapped;
 
 
 /**
@@ -58,7 +57,7 @@ public final class RequestPermissions<T extends Boxable<T>> implements MicroWiza
     {
         // skip this on Android 5 and below or if all permissions have been granted before
         return !new Denied(context, mPermissions).iterator().hasNext() ?
-                mNext.microFragment(context, argument) : new PermissionMicroFragment<>(mPermissions, argument, mNext);
+            mNext.microFragment(context, argument) : new PermissionMicroFragment<>(mPermissions, argument, mNext);
     }
 
 

@@ -43,12 +43,11 @@ import org.dmfs.android.microfragments.MicroFragmentEnvironment;
 import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.android.microwizard.MicroWizard;
-import org.dmfs.iterables.EmptyIterable;
-import org.dmfs.jems.optional.Optional;
-import org.dmfs.jems.optional.elementary.Present;
-import org.dmfs.jems.single.elementary.Collected;
 import org.dmfs.jems2.Function;
+import org.dmfs.jems2.Optional;
+import org.dmfs.jems2.optional.Present;
 import org.dmfs.jems2.procedure.ForEach;
+import org.dmfs.jems2.single.Collected;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,6 +64,8 @@ import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.processors.PublishProcessor;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+
+import static org.dmfs.jems2.iterable.EmptyIterable.emptyIterable;
 
 
 /**
@@ -341,7 +342,7 @@ public final class GenericLoginFragment extends Fragment
                             @Override
                             public Iterable<String> extensions()
                             {
-                                return EmptyIterable.instance();
+                                return emptyIterable();
                             }
                         });
                     }

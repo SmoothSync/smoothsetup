@@ -42,15 +42,14 @@ import org.dmfs.android.microfragments.transitions.XFaded;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Box;
 import org.dmfs.android.microwizard.box.Unboxed;
-import org.dmfs.jems.optional.Optional;
-import org.dmfs.jems.single.combined.Backed;
-import org.dmfs.optional.NullSafe;
+import org.dmfs.jems2.Optional;
+import org.dmfs.jems2.optional.NullSafe;
+import org.dmfs.jems2.single.Backed;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 
 /**
@@ -279,7 +278,7 @@ public final class ProviderLoadMicroFragment implements MicroFragment<ProviderLo
         public void writeToParcel(Parcel parcel, int i)
         {
             parcel.writeParcelable(new ParcelableProvider(mLoginInfo.provider()), i);
-            parcel.writeString(new Backed<String>(mLoginInfo.username(), () -> null).value());
+            parcel.writeString(new Backed<>(mLoginInfo.username(), () -> null).value());
         }
 
 

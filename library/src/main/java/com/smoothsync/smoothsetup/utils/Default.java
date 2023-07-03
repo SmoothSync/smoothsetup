@@ -16,8 +16,8 @@
 
 package com.smoothsync.smoothsetup.utils;
 
-import org.dmfs.iterators.AbstractBaseIterator;
 import org.dmfs.iterators.SingletonIterator;
+import org.dmfs.jems2.iterator.BaseIterator;
 
 import java.util.Iterator;
 
@@ -27,7 +27,7 @@ import java.util.Iterator;
  *
  * @author Marten Gajda
  */
-public final class Default<E> extends AbstractBaseIterator<E>
+public final class Default<E> extends BaseIterator<E>
 {
     private final Iterator<E> mDelegate;
 

@@ -16,7 +16,7 @@
 
 package com.smoothsync.smoothsetup.utils;
 
-import org.dmfs.jems.function.Function;
+import org.dmfs.jems2.Function;
 
 import java.util.Iterator;
 

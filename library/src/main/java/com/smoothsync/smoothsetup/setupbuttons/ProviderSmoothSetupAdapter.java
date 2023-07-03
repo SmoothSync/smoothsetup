@@ -26,9 +26,9 @@ import com.smoothsync.smoothsetup.autocomplete.DomainExpansionConverter;
 import com.smoothsync.smoothsetup.utils.Domain;
 
 import org.dmfs.httpessentials.exceptions.ProtocolException;
-import org.dmfs.iterators.elementary.PresentValues;
-import org.dmfs.jems.iterator.decorators.Mapped;
 import org.dmfs.jems.iterator.elementary.Seq;
+import org.dmfs.jems2.iterator.Mapped;
+import org.dmfs.jems2.iterator.PresentValues;
 
 import java.util.Iterator;
 

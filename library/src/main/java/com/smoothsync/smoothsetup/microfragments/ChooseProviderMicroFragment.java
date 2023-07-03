@@ -40,9 +40,9 @@ import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
-import org.dmfs.jems.optional.Optional;
-import org.dmfs.jems.single.combined.Backed;
-import org.dmfs.optional.NullSafe;
+import org.dmfs.jems2.Optional;
+import org.dmfs.jems2.optional.NullSafe;
+import org.dmfs.jems2.single.Backed;
 
 import java.util.Arrays;
 
@@ -69,24 +69,24 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
             System.arraycopy(providers, 0, parcelableProviders, 0, providers.length);
             Optional<String> username = new NullSafe<>(source.readString());
             return new ChooseProviderMicroFragment(
-                    new ProviderSelection()
+                new ProviderSelection()
+                {
+                    @NonNull
+                    @Override
+                    public Provider[] providers()
                     {
-                        @NonNull
-                        @Override
-                        public Provider[] providers()
-                        {
-                            return parcelableProviders;
-                        }
+                        return parcelableProviders;
+                    }
 
 
-                        @NonNull
-                        @Override
-                        public Optional<String> username()
-                        {
-                            return username;
-                        }
-                    },
-                    new Unboxed<MicroWizard<LoginInfo>>(source).value());
+                    @NonNull
+                    @Override
+                    public Optional<String> username()
+                    {
+                        return username;
+                    }
+                },
+                new Unboxed<MicroWizard<LoginInfo>>(source).value());
         }
 
 
@@ -241,13 +241,13 @@ public final class ChooseProviderMicroFragment implements MicroFragment<ChoosePr
         public void onProviderSelected(@NonNull Provider provider)
         {
             mMicroFragmentEnvironment.host()
-                    .execute(getActivity(),
-                            new Swiped(
-                                    new ForwardTransition<>(
-                                            mMicroFragmentEnvironment.microFragment().parameter().next().microFragment(
-                                                    getActivity(),
-                                                    new ProviderLoadMicroFragment.SimpleProviderInfo(provider,
-                                                            mMicroFragmentEnvironment.microFragment().parameter().account())))));
+                .execute(getActivity(),
+                    new Swiped(
+                        new ForwardTransition<>(
+                            mMicroFragmentEnvironment.microFragment().parameter().next().microFragment(
+                                getActivity(),
+                                new ProviderLoadMicroFragment.SimpleProviderInfo(provider,
+                                    mMicroFragmentEnvironment.microFragment().parameter().account())))));
         }
 
 

@@ -22,14 +22,15 @@ import android.widget.Filter;
 import com.smoothsync.smoothsetup.services.providerservice.ProviderService;
 import com.smoothsync.smoothsetup.utils.AutoCompleteIterable;
 
-import org.dmfs.iterables.EmptyIterable;
-import org.dmfs.jems.single.elementary.Collected;
+import org.dmfs.jems2.single.Collected;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.rxjava3.core.Single;
+
+import static org.dmfs.jems2.iterable.EmptyIterable.emptyIterable;
 
 
 /**
@@ -50,7 +51,7 @@ public final class ProviderAutoCompleteAdapter extends AbstractAutoCompleteAdapt
      * Creates an auto-complete adapter using the given {@link ProviderService} instance.
      *
      * @param providerService
-     *         A {@link Single} {@link ProviderService}.
+     *     A {@link Single} {@link ProviderService}.
      */
     public ProviderAutoCompleteAdapter(Single<ProviderService> providerService)
     {
@@ -141,7 +142,7 @@ public final class ProviderAutoCompleteAdapter extends AbstractAutoCompleteAdapt
                         @Override
                         public Iterable<String> extensions()
                         {
-                            return EmptyIterable.instance();
+                            return emptyIterable();
                         }
                     });
                 }

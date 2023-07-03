@@ -19,7 +19,7 @@ package com.smoothsync.smoothsetup.restrictions;
 import android.os.Bundle;
 
 import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
-import org.dmfs.jems.optional.Optional;
+import org.dmfs.jems2.Optional;
 
 
 /**

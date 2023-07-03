@@ -20,7 +20,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
-import org.dmfs.jems.single.Single;
+import org.dmfs.jems2.Single;
 
 
 /**

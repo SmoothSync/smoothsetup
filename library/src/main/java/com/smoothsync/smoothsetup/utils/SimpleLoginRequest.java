@@ -19,9 +19,9 @@ package com.smoothsync.smoothsetup.utils;
 import android.os.Parcel;
 
 import org.dmfs.android.microwizard.box.Box;
-import org.dmfs.jems.optional.Optional;
-import org.dmfs.jems.optional.elementary.NullSafe;
-import org.dmfs.jems.single.combined.Backed;
+import org.dmfs.jems2.Optional;
+import org.dmfs.jems2.optional.NullSafe;
+import org.dmfs.jems2.single.Backed;
 
 
 /**

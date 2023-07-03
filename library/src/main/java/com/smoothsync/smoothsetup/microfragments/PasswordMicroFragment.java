@@ -56,10 +56,10 @@ import org.dmfs.android.microwizard.box.Box;
 import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
-import org.dmfs.jems.iterator.decorators.Mapped;
-import org.dmfs.jems.optional.decorators.MapCollapsed;
-import org.dmfs.optional.First;
-import org.dmfs.optional.Optional;
+import org.dmfs.jems2.Optional;
+import org.dmfs.jems2.iterator.Mapped;
+import org.dmfs.jems2.optional.First;
+import org.dmfs.jems2.optional.MapCollapsed;
 import org.dmfs.pigeonpost.Dovecote;
 import org.dmfs.pigeonpost.localbroadcast.ParcelableDovecote;
 
@@ -81,7 +81,7 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
         public PasswordMicroFragment createFromParcel(Parcel source)
         {
             return new PasswordMicroFragment((Account) source.readParcelable(getClass().getClassLoader()),
-                    new Unboxed<MicroWizard<AccountDetails>>(source).value());
+                new Unboxed<MicroWizard<AccountDetails>>(source).value());
         }
 
 
@@ -188,8 +188,8 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
             else
             {
                 PasswordFragment.this.getActivity()
-                        .getWindow()
-                        .setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+                    .getWindow()
+                    .setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
                 mPassword.setTransformationMethod(null);
             }
         };
@@ -247,9 +247,9 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
             {
                 String providerId = provider.id();
                 Optional<UserCredentials> credentialsRestrictions = new MapCollapsed<>(
-                        AccountRestriction::credentials,
-                        new First<>(
-                                new ProviderAccountRestrictions(getActivity(), providerId)));
+                    AccountRestriction::credentials,
+                    new First<>(
+                        new ProviderAccountRestrictions(getActivity(), providerId)));
 
                 if (credentialsRestrictions.isPresent() && credentialsRestrictions.value().password().length() > 0)
                 {
@@ -275,9 +275,9 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
             try
             {
                 String appSpecificPasswordOption = new Default<>(new Mapped<>(
-                        element -> element.target().toASCIIString(),
-                        new Related(mParams.account().provider().links(), "http://smoothsync.com/rel/app-specific-password")),
-                        "no").next();
+                    element -> element.target().toASCIIString(),
+                    new Related(mParams.account().provider().links(), "http://smoothsync.com/rel/app-specific-password")),
+                    "no").next();
 
                 switch (appSpecificPasswordOption)
                 {
@@ -298,7 +298,7 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
                             setupClickableTextView(result, R.id.smoothsetup_forgot_password);
                         }
                         messageView.setText(
-                                getString(R.string.smoothsetup_prompt_enter_password_or_app_specific_password, mParams.account().provider().name()));
+                            getString(R.string.smoothsetup_prompt_enter_password_or_app_specific_password, mParams.account().provider().name()));
                         break;
                     default:
                         if (new Related(mParams.account().provider().links(), "http://smoothsync.com/rel/forgot-password").hasNext())
@@ -317,8 +317,8 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
                     public void run()
                     {
                         mMicroFragmentEnvironment.host()
-                                .execute(getActivity(),
-                                        new Swiped(new ForwardTransition<>(new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_network)))));
+                            .execute(getActivity(),
+                                new Swiped(new ForwardTransition<>(new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_network)))));
                     }
                 });
             }
@@ -376,10 +376,10 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
             catch (ProtocolException e)
             {
                 mMicroFragmentEnvironment.host()
-                        .execute(getActivity(),
-                                new Swiped(
-                                        new ForwardTransition<>(
-                                                new ErrorRetryMicroFragment(e.getMessage()))));
+                    .execute(getActivity(),
+                        new Swiped(
+                            new ForwardTransition<>(
+                                new ErrorRetryMicroFragment(e.getMessage()))));
             }
         }
 
@@ -388,53 +388,53 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
         {
             // verify entered password
             mMicroFragmentEnvironment.host()
-                    .execute(getActivity(),
-                            new Swiped(new ForwardTransition<>(
-                                    mParams.next().microFragment(
-                                            getActivity(),
-                                            new AccountDetails()
-                                            {
-                                                @Override
-                                                public Account account()
-                                                {
-                                                    return mParams.account();
-                                                }
+                .execute(getActivity(),
+                    new Swiped(new ForwardTransition<>(
+                        mParams.next().microFragment(
+                            getActivity(),
+                            new AccountDetails()
+                            {
+                                @Override
+                                public Account account()
+                                {
+                                    return mParams.account();
+                                }
 
 
-                                                @Override
-                                                public UserCredentials credentials()
-                                                {
-                                                    return new UserCredentials()
-                                                    {
-                                                        @Override
-                                                        public CharSequence userName()
-                                                        {
-                                                            return mParams.account().accountId();
-                                                        }
+                                @Override
+                                public UserCredentials credentials()
+                                {
+                                    return new UserCredentials()
+                                    {
+                                        @Override
+                                        public CharSequence userName()
+                                        {
+                                            return mParams.account().accountId();
+                                        }
 
 
-                                                        @Override
-                                                        public CharSequence password()
-                                                        {
-                                                            return password;
-                                                        }
-                                                    };
-                                                }
+                                        @Override
+                                        public CharSequence password()
+                                        {
+                                            return password;
+                                        }
+                                    };
+                                }
 
 
-                                                @Override
-                                                public Bundle settings()
-                                                {
-                                                    return Bundle.EMPTY;
-                                                }
+                                @Override
+                                public Bundle settings()
+                                {
+                                    return Bundle.EMPTY;
+                                }
 
 
-                                                @Override
-                                                public Box<AccountDetails> boxed()
-                                                {
-                                                    return new AccountDetailsBox(this);
-                                                }
-                                            }))));
+                                @Override
+                                public Box<AccountDetails> boxed()
+                                {
+                                    return new AccountDetailsBox(this);
+                                }
+                            }))));
         }
 
 
@@ -451,11 +451,11 @@ public final class PasswordMicroFragment implements MicroFragment<PasswordMicroF
             try
             {
                 mMicroFragmentEnvironment.host()
-                        .execute(getActivity(),
-                                new Swiped(
-                                        new ForwardTransition<>(
-                                                new CreateAppSpecificPasswordMicroFragment(title,
-                                                        mDovecote.cage(), new Related(mParams.account().provider().links(), name).next().target()))));
+                    .execute(getActivity(),
+                        new Swiped(
+                            new ForwardTransition<>(
+                                new CreateAppSpecificPasswordMicroFragment(title,
+                                    mDovecote.cage(), new Related(mParams.account().provider().links(), name).next().target()))));
             }
             catch (ProtocolException e)
             {

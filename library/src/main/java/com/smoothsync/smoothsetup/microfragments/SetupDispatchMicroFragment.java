@@ -23,6 +23,7 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.text.TextUtils;
 
+import com.google.common.base.Objects;
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.model.Account;
 import com.smoothsync.smoothsetup.utils.AccountDetails;
@@ -47,8 +48,11 @@ import org.dmfs.android.microfragments.transitions.ForwardTransition;
 import org.dmfs.android.microfragments.transitions.XFaded;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Unboxed;
-import org.dmfs.jems.optional.Optional;
-import org.dmfs.jems.optional.elementary.NullSafe;
+import org.dmfs.jems2.Optional;
+import org.dmfs.jems2.optional.FirstPresent;
+import org.dmfs.jems2.optional.MapCollapsed;
+import org.dmfs.jems2.optional.NullSafe;
+import org.dmfs.jems2.optional.Sieved;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -193,7 +197,14 @@ public final class SetupDispatchMicroFragment implements MicroFragment<SetupDisp
                         new LoadProvider(loginWizard),
                         new SimpleLoginRequest(
                             uri.getQueryParameter(PARAM_PROVIDER),
-                            new NullSafe<>(uri.getQueryParameter(PARAM_ACCOUNT))));
+                            new FirstPresent<>(
+                                new NullSafe<>(uri.getQueryParameter(PARAM_ACCOUNT)),
+                                new MapCollapsed<>(data -> new NullSafe<>(data.getQueryParameter(PARAM_ACCOUNT)),
+                                    new Sieved<>(
+                                        data -> Objects.equal(uri.getQueryParameter(PARAM_PROVIDER), data.getQueryParameter(PARAM_PROVIDER)),
+                                        new NullSafe<>(
+                                            new FragmentEnvironment<Params>(DispatchFragment.this).microFragment().parameter().data()))))
+                        ));
                     return;
                 }
 

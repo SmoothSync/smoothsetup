@@ -26,8 +26,8 @@ import com.smoothsync.smoothsetup.wizard.ValidateCustomAccountLogin;
 
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microwizard.MicroWizard;
-import org.dmfs.jems.optional.Optional;
 import org.dmfs.jems2.Function;
+import org.dmfs.jems2.Optional;
 import org.dmfs.jems2.iterable.EmptyIterable;
 import org.dmfs.jems2.iterable.Just;
 

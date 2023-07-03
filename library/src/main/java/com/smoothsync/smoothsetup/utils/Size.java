@@ -16,9 +16,9 @@
 
 package com.smoothsync.smoothsetup.utils;
 
-import org.dmfs.jems.single.Single;
-import org.dmfs.jems.single.elementary.Frozen;
-import org.dmfs.jems.single.elementary.Reduced;
+import org.dmfs.jems2.Single;
+import org.dmfs.jems2.single.Frozen;
+import org.dmfs.jems2.single.Reduced;
 
 
 /**
@@ -31,7 +31,7 @@ public final class Size extends Number
 
     public Size(Iterable<?> iterable)
     {
-        mCount = new Frozen<>(new Reduced<>(0, (count, element) -> count + 1, iterable));
+        mCount = new Frozen<>(new Reduced<>(() -> 0, (count, element) -> count + 1, iterable));
     }
 
 

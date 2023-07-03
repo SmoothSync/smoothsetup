@@ -16,7 +16,7 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
-import org.dmfs.jems.function.Function;
+import org.dmfs.jems2.Function;
 
 
 /**
@@ -37,7 +37,7 @@ public final class LocalPartConverter implements Function<String, String>
      * Creates a Converter that prepends domains with the given local part to form a valid email address.
      *
      * @param localPart
-     *         The local part to prepend.
+     *     The local part to prepend.
      */
     public LocalPartConverter(String localPart)
     {

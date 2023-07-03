@@ -24,9 +24,9 @@ import com.smoothsync.smoothsetup.microfragments.InitWizardMicroFragment;
 import com.smoothsync.smoothsetup.utils.ActivityInfo;
 
 import org.dmfs.android.microfragments.MicroFragment;
-import org.dmfs.jems.optional.Optional;
-import org.dmfs.jems.optional.elementary.NullSafe;
-import org.dmfs.jems.single.combined.Backed;
+import org.dmfs.jems2.Optional;
+import org.dmfs.jems2.optional.NullSafe;
+import org.dmfs.jems2.single.Backed;
 
 
 /**

@@ -18,20 +18,18 @@ package com.smoothsync.smoothsetup.restrictions;
 
 import android.content.Context;
 import android.content.RestrictionsManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 
 import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
-import org.dmfs.iterables.elementary.PresentValues;
-import org.dmfs.iterators.EmptyIterator;
-import org.dmfs.jems.iterable.composite.Joined;
-import org.dmfs.jems.iterable.decorators.Mapped;
-import org.dmfs.jems.iterable.elementary.Seq;
-import org.dmfs.jems.optional.Optional;
-import org.dmfs.jems.optional.decorators.MapCollapsed;
-import org.dmfs.jems.optional.elementary.NullSafe;
 import org.dmfs.jems.single.elementary.Reduced;
+import org.dmfs.jems2.Optional;
+import org.dmfs.jems2.iterable.Joined;
+import org.dmfs.jems2.iterable.Mapped;
+import org.dmfs.jems2.iterable.PresentValues;
+import org.dmfs.jems2.iterable.Seq;
+import org.dmfs.jems2.optional.MapCollapsed;
+import org.dmfs.jems2.optional.NullSafe;
 
 import java.util.Iterator;
 
@@ -56,83 +54,79 @@ public final class AccountRestrictions implements Iterable<AccountRestriction>
     @Override
     public Iterator<AccountRestriction> iterator()
     {
-        if (Build.VERSION.SDK_INT < 23)
-        {
-            return EmptyIterator.instance();
-        }
         RestrictionsManager restrictionsManager = (RestrictionsManager) mContext.getSystemService(Context.RESTRICTIONS_SERVICE);
         return new Mapped<Parcelable, AccountRestriction>(parcelable ->
 
-                new AccountRestriction()
+            new AccountRestriction()
+            {
+                @Override
+                public String accountId()
                 {
-                    @Override
-                    public String accountId()
-                    {
-                        return ((Bundle) parcelable).getString("id");
-                    }
+                    return ((Bundle) parcelable).getString("id");
+                }
 
 
-                    @Override
-                    public String providerId()
-                    {
-                        return ((Bundle) parcelable).getString("provider-id");
-                    }
+                @Override
+                public String providerId()
+                {
+                    return ((Bundle) parcelable).getString("provider-id");
+                }
 
 
-                    @Override
-                    public Optional<UserCredentials> credentials()
-                    {
-                        return new org.dmfs.jems.optional.decorators.Mapped<>(parcelable ->
+                @Override
+                public Optional<UserCredentials> credentials()
+                {
+                    return new org.dmfs.jems2.optional.Mapped<>(parcelable ->
 
-                                new UserCredentials()
-                                {
-                                    @Override
-                                    public CharSequence userName()
-                                    {
-                                        return parcelable.getString("username");
-                                    }
-
-
-                                    @Override
-                                    public CharSequence password()
-                                    {
-                                        return parcelable.getString("password");
-                                    }
-                                },
-                                new NullSafe<>(((Bundle) parcelable).getBundle("credentials")));
-                    }
+                        new UserCredentials()
+                        {
+                            @Override
+                            public CharSequence userName()
+                            {
+                                return parcelable.getString("username");
+                            }
 
 
-                    @Override
-                    public Bundle settings()
-                    {
-                        return new Reduced<Bundle, Bundle>(
-                                Bundle::new,
-                                (result, value) -> {
-                                    String serviceType = value.getString("service-type");
-                                    Bundle typeSettings = result.getBundle(serviceType);
-                                    if (typeSettings == null)
-                                    {
-                                        typeSettings = new Bundle();
-                                        result.putBundle(serviceType, typeSettings);
-                                    }
-                                    typeSettings.putAll(value);
-                                    return result;
-                                },
-                                new Joined<>(
-                                        new Mapped<>(
-                                                array -> new Mapped<>(b -> (Bundle) b, new Seq<>(array)),
-                                                new PresentValues<>(
-                                                        new NullSafe<>(((Bundle) parcelable).getParcelableArray("settings")))))).value();
-                    }
-                },
-                new Joined<>(
-                        new Mapped<>(
-                                Seq::new,
+                            @Override
+                            public CharSequence password()
+                            {
+                                return parcelable.getString("password");
+                            }
+                        },
+                        new NullSafe<>(((Bundle) parcelable).getBundle("credentials")));
+                }
+
+
+                @Override
+                public Bundle settings()
+                {
+                    return new Reduced<Bundle, Bundle>(
+                        Bundle::new,
+                        (result, value) -> {
+                            String serviceType = value.getString("service-type");
+                            Bundle typeSettings = result.getBundle(serviceType);
+                            if (typeSettings == null)
+                            {
+                                typeSettings = new Bundle();
+                                result.putBundle(serviceType, typeSettings);
+                            }
+                            typeSettings.putAll(value);
+                            return result;
+                        },
+                        new Joined<>(
+                            new Mapped<>(
+                                array -> new Mapped<>(b -> (Bundle) b, new Seq<>(array)),
                                 new PresentValues<>(
-                                        new MapCollapsed<>(
-                                                bundle -> new NullSafe<>(bundle.getParcelableArray("accounts")),
-                                                new NullSafe<>(restrictionsManager.getApplicationRestrictions())))))).iterator();
+                                    new NullSafe<>(((Bundle) parcelable).getParcelableArray("settings")))))).value();
+                }
+            },
+            new Joined<>(
+                new Mapped<>(
+                    Seq::new,
+                    new PresentValues<>(
+                        new MapCollapsed<>(
+                            bundle -> new NullSafe<>(bundle.getParcelableArray("accounts")),
+                            new NullSafe<>(restrictionsManager.getApplicationRestrictions())))))).iterator();
 
     }
 }

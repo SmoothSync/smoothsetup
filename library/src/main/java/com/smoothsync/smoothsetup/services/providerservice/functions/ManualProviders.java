@@ -28,8 +28,8 @@ import com.smoothsync.smoothsetup.utils.SharedPrefs;
 import com.smoothsync.smoothsetup.utils.WithIdPrefix;
 
 import org.dmfs.express.json.elementary.JsonText;
-import org.dmfs.jems.iterable.elementary.Seq;
 import org.dmfs.jems2.Function;
+import org.dmfs.jems2.iterable.Seq;
 import org.json.JSONObject;
 
 import androidx.annotation.StringRes;
@@ -53,8 +53,8 @@ public final class ManualProviders implements Function<Context, ProviderService>
     private final io.reactivex.rxjava3.functions.Function<? super Provider, ? extends Provider> prefixFunction =
         provider -> new WithIdPrefix(PREFIX, provider);
 
-
-    private final @StringRes int accountTypeResource;
+    private final @StringRes
+    int accountTypeResource;
 
 
     /**
@@ -80,7 +80,7 @@ public final class ManualProviders implements Function<Context, ProviderService>
                     .map(providerJson -> (Provider) new JsonProvider(new JSONObject(providerJson)))
                     .switchIfEmpty(
                         Observable.fromIterable(new Seq<>(
-                            am.getAccountsByTypeForPackage(context.getString(accountTypeResource), context.getPackageName())))
+                                am.getAccountsByTypeForPackage(context.getString(accountTypeResource), context.getPackageName())))
                             .filter(account -> id.equals(am.getUserData(account, KEY_PROVIDER_ID)))
                             .firstElement()
                             .map(account -> new JsonProvider(new JSONObject(am.getUserData(account, KEY_PROVIDER)))));

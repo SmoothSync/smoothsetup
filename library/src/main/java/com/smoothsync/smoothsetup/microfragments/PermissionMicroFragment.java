@@ -47,11 +47,11 @@ import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Boxable;
 import org.dmfs.android.microwizard.box.Unboxed;
-import org.dmfs.iterables.Distinct;
-import org.dmfs.iterables.decorators.Sieved;
-import org.dmfs.jems.iterable.decorators.Mapped;
-import org.dmfs.jems.predicate.elementary.Equals;
-import org.dmfs.jems.single.elementary.Collected;
+import org.dmfs.jems2.iterable.Distinct;
+import org.dmfs.jems2.iterable.Mapped;
+import org.dmfs.jems2.iterable.Sieved;
+import org.dmfs.jems2.predicate.Equals;
+import org.dmfs.jems2.single.Collected;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -93,9 +93,9 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
         public PermissionMicroFragment<?> createFromParcel(Parcel source)
         {
             return new PermissionMicroFragment(
-                    new Mapped<>(b -> b.boxed().value(), new Unboxed<Iterable<Boxable<String>>>(source).value()),
-                    (Boxable) new Unboxed<>(source).value(),
-                    new Unboxed<MicroWizard<?>>(source).value());
+                new Mapped<>(b -> b.boxed().value(), new Unboxed<Iterable<Boxable<String>>>(source).value()),
+                (Boxable) new Unboxed<>(source).value(),
+                new Unboxed<MicroWizard<?>>(source).value());
         }
 
 
@@ -124,8 +124,8 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
     public String title(@NonNull Context context)
     {
         return context.getResources()
-                .getQuantityString(R.plurals.smoothsetup_wizard_title_grant_permissions,
-                        new Size(new PermissionGroups(context.getPackageManager(), new Denied(context, mPermissions))).intValue());
+            .getQuantityString(R.plurals.smoothsetup_wizard_title_grant_permissions,
+                new Size(new PermissionGroups(context.getPackageManager(), new Denied(context, mPermissions))).intValue());
     }
 
 
@@ -209,8 +209,8 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
             Activity activity = getActivity();
             mMicroFragmentEnvironment = new FragmentEnvironment<>(this);
             if (!new Sieved<>(new Equals<>(PERMISSION_DENIED),
-                    new Mapped<>(perm -> ContextCompat.checkSelfPermission(activity, perm),
-                            mMicroFragmentEnvironment.microFragment().parameter().permissions())).iterator().hasNext())
+                new Mapped<>(perm -> ContextCompat.checkSelfPermission(activity, perm),
+                    mMicroFragmentEnvironment.microFragment().parameter().permissions())).iterator().hasNext())
             {
                 container.post(() ->
                     mMicroFragmentEnvironment.host()
@@ -246,7 +246,7 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
                     return "";
                 }
             }, new Sieved<>(perm -> ContextCompat.checkSelfPermission(activity, perm) == PERMISSION_DENIED,
-                    mMicroFragmentEnvironment.microFragment().parameter().permissions())));
+                mMicroFragmentEnvironment.microFragment().parameter().permissions())));
             for (String permissionGroup : permissionGroups)
             {
                 View view = inflater.inflate(R.layout.smoothsetup_permission, mView.findViewById(R.id.container), false);
@@ -264,10 +264,10 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
                 }
             }
             ((TextView) mView.findViewById(android.R.id.message)).setText(activity.getResources()
-                    .getQuantityString(R.plurals.smoothsetup_prompt_grant_permission,
-                            new Size(new PermissionGroups(activity.getPackageManager(),
-                                    new Denied(activity, mMicroFragmentEnvironment.microFragment().parameter().permissions()))).intValue(),
-                            new AppLabel(getActivity()).value()));
+                .getQuantityString(R.plurals.smoothsetup_prompt_grant_permission,
+                    new Size(new PermissionGroups(activity.getPackageManager(),
+                        new Denied(activity, mMicroFragmentEnvironment.microFragment().parameter().permissions()))).intValue(),
+                    new AppLabel(getActivity()).value()));
             return mView;
         }
 
@@ -283,11 +283,11 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
                 }
             }
             mMicroFragmentEnvironment.host()
-                    .execute(getActivity(), new Swiped(
-                            new ForwardTransition<>(mMicroFragmentEnvironment.microFragment()
-                                    .parameter()
-                                    .next()
-                                    .microFragment(getActivity(), mMicroFragmentEnvironment.microFragment().parameter().data()))));
+                .execute(getActivity(), new Swiped(
+                    new ForwardTransition<>(mMicroFragmentEnvironment.microFragment()
+                        .parameter()
+                        .next()
+                        .microFragment(getActivity(), mMicroFragmentEnvironment.microFragment().parameter().data()))));
         }
 
 
@@ -295,9 +295,9 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
         public void onClick(View view)
         {
             requestPermissions(
-                    new Collected<>(ArrayList::new,
-                            mMicroFragmentEnvironment.microFragment().parameter().permissions()).value().toArray(new String[0]),
-                    1);
+                new Collected<>(ArrayList::new,
+                    mMicroFragmentEnvironment.microFragment().parameter().permissions()).value().toArray(new String[0]),
+                1);
         }
 
 

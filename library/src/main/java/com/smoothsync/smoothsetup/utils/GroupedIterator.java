@@ -16,10 +16,10 @@
 
 package com.smoothsync.smoothsetup.utils;
 
-import org.dmfs.iterators.AbstractBaseIterator;
-import org.dmfs.jems.function.Function;
-import org.dmfs.optional.Next;
-import org.dmfs.optional.Optional;
+import org.dmfs.jems2.Function;
+import org.dmfs.jems2.Optional;
+import org.dmfs.jems2.iterator.BaseIterator;
+import org.dmfs.jems2.optional.Next;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -30,7 +30,7 @@ import java.util.NoSuchElementException;
 /**
  * @author Marten Gajda
  */
-public final class GroupedIterator<T, V> extends AbstractBaseIterator<Iterable<T>>
+public final class GroupedIterator<T, V> extends BaseIterator<Iterable<T>>
 {
     private final Iterator<T> mDelegate;
     private final Function<T, V> mCriterionFunction;

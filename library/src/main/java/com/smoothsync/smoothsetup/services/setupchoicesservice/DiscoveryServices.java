@@ -31,10 +31,10 @@ import com.smoothsync.smoothsetup.wizard.UsernameLogin;
 import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
-import org.dmfs.jems.optional.Optional;
-import org.dmfs.jems.optional.decorators.Mapped;
-import org.dmfs.jems.single.combined.Backed;
 import org.dmfs.jems2.Function;
+import org.dmfs.jems2.Optional;
+import org.dmfs.jems2.optional.Mapped;
+import org.dmfs.jems2.single.Backed;
 
 import java.util.ArrayList;
 import java.util.List;

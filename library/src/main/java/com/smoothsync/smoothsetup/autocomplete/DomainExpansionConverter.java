@@ -16,10 +16,10 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
-import org.dmfs.jems.function.Function;
-import org.dmfs.jems.optional.Optional;
-import org.dmfs.jems.optional.elementary.Absent;
-import org.dmfs.jems.optional.elementary.Present;
+import org.dmfs.jems2.Function;
+import org.dmfs.jems2.Optional;
+import org.dmfs.jems2.optional.Absent;
+import org.dmfs.jems2.optional.Present;
 
 
 /**

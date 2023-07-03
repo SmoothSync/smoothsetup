@@ -46,11 +46,11 @@ import org.dmfs.android.microfragments.MicroFragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragmentHost;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
-import org.dmfs.jems.generator.Generator;
-import org.dmfs.jems.optional.Optional;
-import org.dmfs.jems.optional.adapters.First;
-import org.dmfs.jems.optional.decorators.MapCollapsed;
-import org.dmfs.jems.single.combined.Backed;
+import org.dmfs.jems2.Generator;
+import org.dmfs.jems2.Optional;
+import org.dmfs.jems2.optional.First;
+import org.dmfs.jems2.optional.MapCollapsed;
+import org.dmfs.jems2.single.Backed;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

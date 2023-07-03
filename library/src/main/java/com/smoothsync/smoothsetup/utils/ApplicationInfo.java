@@ -19,7 +19,7 @@ package com.smoothsync.smoothsetup.utils;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
-import org.dmfs.jems.single.Single;
+import org.dmfs.jems2.Single;
 
 import androidx.annotation.NonNull;
 

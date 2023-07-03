@@ -53,9 +53,9 @@ import org.dmfs.httpessentials.executors.authorizing.AuthScope;
 import org.dmfs.httpessentials.executors.authorizing.ServiceScope;
 import org.dmfs.httpessentials.executors.authorizing.authstrategies.UserCredentialsAuthStrategy;
 import org.dmfs.httpessentials.executors.authorizing.credentialsstores.SimpleCredentialsStore;
-import org.dmfs.iterators.decorators.Filtered;
-import org.dmfs.iterators.decorators.Serialized;
-import org.dmfs.jems.iterator.decorators.Mapped;
+import org.dmfs.jems2.iterator.Concat;
+import org.dmfs.jems2.iterator.Mapped;
+import org.dmfs.jems2.iterator.Sieved;
 
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
@@ -197,35 +197,35 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                 protected Boolean doInBackgroundWithException(Void[] params) throws Exception
                 {
                     Iterator<FutureServiceConnection<VerificationService>> serviceConnections =
-                            new Mapped<>(
-                                    element -> new FutureLocalServiceConnection<>(context, element),
-                                    new Serialized<>(
-                                            new Mapped<Service, Iterator<Intent>>(
-                                                    element -> new IndirectServiceIntentIterable(context,
-                                                            new Intent(VerificationService.ACTION)
-                                                                    .setData(Uri.fromParts(element.serviceType(), element.uri().toASCIIString(), null))
-                                                                    .setPackage(context.getPackageName())).iterator(),
-                                                    new Filtered<>(
-                                                            mParams.accountDetails().account().provider().services(),
-                                                            element -> "com.smoothsync.authenticate".equals(element.serviceType()))
-                                            ))
-                            );
+                        new Mapped<>(
+                            element -> new FutureLocalServiceConnection<>(context, element),
+                            new Concat<>(
+                                new Mapped<Service, Iterator<Intent>>(
+                                    element -> new IndirectServiceIntentIterable(context,
+                                        new Intent(VerificationService.ACTION)
+                                            .setData(Uri.fromParts(element.serviceType(), element.uri().toASCIIString(), null))
+                                            .setPackage(context.getPackageName())).iterator(),
+                                    new Sieved<>(
+                                        element -> "com.smoothsync.authenticate".equals(element.serviceType()),
+                                        mParams.accountDetails().account().provider().services())
+                                ))
+                        );
                     if (!serviceConnections.hasNext())
                     {
                         throw new RuntimeException("No verification service found");
                     }
                     return serviceConnections.next()
-                            .service(1000)
-                            .verify(mParams.accountDetails().account().provider(),
-                                    new UserCredentialsAuthStrategy(new SimpleCredentialsStore<>(new ServiceScope()
-                                    {
-                                        @Override
-                                        public boolean contains(AuthScope authScope)
-                                        {
-                                            // Consider creating a ServiceScope which covers all service-URLs of the given provider
-                                            return true;
-                                        }
-                                    }, mParams.accountDetails().credentials())));
+                        .service(1000)
+                        .verify(mParams.accountDetails().account().provider(),
+                            new UserCredentialsAuthStrategy(new SimpleCredentialsStore<>(new ServiceScope()
+                            {
+                                @Override
+                                public boolean contains(AuthScope authScope)
+                                {
+                                    // Consider creating a ServiceScope which covers all service-URLs of the given provider
+                                    return true;
+                                }
+                            }, mParams.accountDetails().credentials())));
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
@@ -246,7 +246,7 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
                     else
                     {
                         forward(activity, new ErrorRetryMicroFragment(getString(R.string.smoothsetup_error_authentication), null,
-                                getString(R.string.smoothsetup_wizard_title_authentication_error)));
+                            getString(R.string.smoothsetup_wizard_title_authentication_error)));
                     }
                 }
                 catch (Exception e)
@@ -261,10 +261,10 @@ public final class ApproveAuthorizationMicroFragment implements MicroFragment<Ap
         private void forward(Activity activity, MicroFragment<?> mf)
         {
             mMicroFragmentEnvironment.host()
-                    .execute(activity,
-                            mTimestamp.nanoSeconds() + TimeUnit.MILLISECONDS.toNanos(400) < System.nanoTime() ?
-                                    new XFaded(new ForwardTransition<>(mf)) :
-                                    new Swiped(new ForwardTransition<>(mf)));
+                .execute(activity,
+                    mTimestamp.nanoSeconds() + TimeUnit.MILLISECONDS.toNanos(400) < System.nanoTime() ?
+                        new XFaded(new ForwardTransition<>(mf)) :
+                        new Swiped(new ForwardTransition<>(mf)));
         }
     }
 

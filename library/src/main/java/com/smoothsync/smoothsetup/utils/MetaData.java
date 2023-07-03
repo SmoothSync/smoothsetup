@@ -19,8 +19,9 @@ package com.smoothsync.smoothsetup.utils;
 import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 
-import org.dmfs.jems.single.Single;
-import org.dmfs.optional.NullSafe;
+import org.dmfs.jems2.Single;
+import org.dmfs.jems2.optional.NullSafe;
+import org.dmfs.jems2.single.Backed;
 
 
 /**
@@ -42,6 +43,6 @@ public final class MetaData implements Single<Bundle>
     @Override
     public Bundle value()
     {
-        return new NullSafe<>(mApplicationInfo.value().metaData).value(Bundle.EMPTY);
+        return new Backed<>(new NullSafe<>(mApplicationInfo.value().metaData), Bundle.EMPTY).value();
     }
 }

@@ -50,11 +50,10 @@ import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
 import org.dmfs.httpessentials.executors.authorizing.UserCredentials;
 import org.dmfs.httpessentials.types.Link;
-import org.dmfs.iterators.EmptyIterator;
-import org.dmfs.iterators.elementary.Seq;
-import org.dmfs.jems.optional.Optional;
-import org.dmfs.jems.optional.elementary.Present;
+import org.dmfs.jems2.Optional;
+import org.dmfs.jems2.iterator.Seq;
 import org.dmfs.jems2.optional.Absent;
+import org.dmfs.jems2.optional.Present;
 import org.dmfs.rfc5545.DateTime;
 
 import java.net.InetAddress;
@@ -75,7 +74,8 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import static io.reactivex.rxjava3.core.Single.just;
-import static org.dmfs.jems.optional.elementary.Absent.absent;
+import static org.dmfs.jems2.iterator.EmptyIterator.emptyIterator;
+import static org.dmfs.jems2.optional.Absent.absent;
 
 
 /**
@@ -250,10 +250,10 @@ public final class ManualSetupSimpleMicroFragment implements MicroFragment<Manua
                     .onErrorReturnItem(false)
                 );
             mObserverDisposable = Flowable.combineLatest(
-                new AfterTextChangedFlowable(mUsername),
-                new AfterTextChangedFlowable(mPassword),
-                addressValid,
-                (user, password, address) -> !user.isEmpty() && !password.isEmpty() && address)
+                    new AfterTextChangedFlowable(mUsername),
+                    new AfterTextChangedFlowable(mPassword),
+                    addressValid,
+                    (user, password, address) -> !user.isEmpty() && !password.isEmpty() && address)
                 .onErrorResumeWith(Flowable.just(false))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -390,7 +390,7 @@ public final class ManualSetupSimpleMicroFragment implements MicroFragment<Manua
                                             @Override
                                             public Iterator<Link> links()
                                             {
-                                                return EmptyIterator.instance();
+                                                return emptyIterator();
                                             }
 
 

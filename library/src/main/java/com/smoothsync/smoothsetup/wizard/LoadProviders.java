@@ -25,7 +25,7 @@ import org.dmfs.android.microfragments.MicroFragment;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.AbstractSingleBox;
 import org.dmfs.android.microwizard.box.Box;
-import org.dmfs.jems.optional.Optional;
+import org.dmfs.jems2.Optional;
 
 
 /**

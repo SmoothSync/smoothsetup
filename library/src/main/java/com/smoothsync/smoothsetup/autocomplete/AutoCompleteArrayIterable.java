@@ -16,9 +16,10 @@
 
 package com.smoothsync.smoothsetup.autocomplete;
 
-import org.dmfs.iterables.decorators.DelegatingIterable;
-import org.dmfs.iterables.decorators.Fluent;
-import org.dmfs.jems.optional.Optional;
+import org.dmfs.jems2.iterable.DelegatingIterable;
+import org.dmfs.jems2.iterable.Mapped;
+import org.dmfs.jems2.iterable.PresentValues;
+import org.dmfs.jems2.iterable.Sieved;
 
 import java.util.Iterator;
 
@@ -33,11 +34,9 @@ public final class AutoCompleteArrayIterable extends DelegatingIterable<String>
 
     public AutoCompleteArrayIterable(Iterable<String> autoCompleteDomains, String localPart, String domainPart)
     {
-        super(new Fluent<>(autoCompleteDomains)
-                .filtered(element -> !element.startsWith("@"))
-                // TODO: replace with new fluent to allow using the new function directly
-                .mapped(s -> new DomainExpansionConverter(domainPart).value(s))
-                .filtered(Optional::isPresent)
-                .mapped(s -> new LocalPartConverter(localPart).value(s.value())));
+        super(new Mapped<>(new LocalPartConverter(localPart),
+            new PresentValues<>(
+                new Mapped<>(new DomainExpansionConverter(domainPart),
+                    new Sieved<>(element -> !element.startsWith("@"), autoCompleteDomains)))));
     }
 }

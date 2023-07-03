@@ -18,10 +18,10 @@ package com.smoothsync.smoothsetup.utils;
 
 import android.content.pm.PackageManager;
 
-import org.dmfs.iterables.Distinct;
-import org.dmfs.iterables.decorators.DelegatingIterable;
-import org.dmfs.iterables.decorators.Sieved;
-import org.dmfs.jems.iterable.decorators.Mapped;
+import org.dmfs.jems2.iterable.DelegatingIterable;
+import org.dmfs.jems2.iterable.Distinct;
+import org.dmfs.jems2.iterable.Mapped;
+import org.dmfs.jems2.iterable.Sieved;
 
 
 /**

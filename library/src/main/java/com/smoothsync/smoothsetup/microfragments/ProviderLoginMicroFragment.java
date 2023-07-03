@@ -40,10 +40,10 @@ import org.dmfs.android.microfragments.transitions.Swiped;
 import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.httpessentials.exceptions.ProtocolException;
-import org.dmfs.jems.generator.Generator;
-import org.dmfs.jems.iterable.elementary.Seq;
-import org.dmfs.jems.optional.Optional;
-import org.dmfs.jems.optional.elementary.Present;
+import org.dmfs.jems2.Generator;
+import org.dmfs.jems2.Optional;
+import org.dmfs.jems2.iterable.Seq;
+import org.dmfs.jems2.optional.Present;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
