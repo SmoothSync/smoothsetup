@@ -84,6 +84,8 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
         PERMISSION_GROUPS.put(Manifest.permission.WRITE_CALENDAR, Manifest.permission_group.CALENDAR);
         PERMISSION_GROUPS.put(Manifest.permission.READ_CONTACTS, Manifest.permission_group.CONTACTS);
         PERMISSION_GROUPS.put(Manifest.permission.WRITE_CONTACTS, Manifest.permission_group.CONTACTS);
+        PERMISSION_GROUPS.put(Manifest.permission.POST_NOTIFICATIONS, Manifest.permission_group.NOTIFICATIONS);
+
     }
 
     public final static Creator<PermissionMicroFragment<?>> CREATOR = new Creator<PermissionMicroFragment<?>>()
