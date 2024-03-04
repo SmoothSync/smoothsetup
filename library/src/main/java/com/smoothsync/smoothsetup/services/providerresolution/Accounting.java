@@ -81,7 +81,7 @@ public final class Accounting implements ProviderResolutionStrategy
                             new ApiServiceBinder(context)
                                 .observeOn(Schedulers.io())
                                 .compose(new FlatMapFirst<>(smoothSyncApi ->
-                                    Flowable.just(smoothSyncApi.resultOf(
+                                    Flowable.fromCallable(() -> smoothSyncApi.resultOf(
                                         new Ping(new BasicInstance(new UnPrefixed(pingProvider), context.getPackageName(),
                                             account.name))))))
                                 .firstOrError()
