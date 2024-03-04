@@ -27,7 +27,27 @@ android {
     buildFeatures {
         aidl true
     }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.github.smoothsync'
+            artifactId = 'smoothsetup'
+            version = version
+
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
+}
+
 
 dependencies {
     testImplementation 'junit:junit:4.13.2'
