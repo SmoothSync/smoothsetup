@@ -21,6 +21,9 @@ android {
         abortOnError false
     }
     namespace 'com.smoothsync.smoothsetup'
+    buildFeatures {
+        aidl true
+    }
 }
 
 dependencies {
@@ -30,11 +33,9 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.5.0'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'org.dmfs:explain-android:0.0.6'
-    api 'io.reactivex.rxjava3:rxjava:3.1.6'
+    api 'io.reactivex.rxjava3:rxjava:3.1.8'
     implementation 'com.google.guava:guava:27.0.1-android'
-    implementation('org.dmfs:express-json:0.2.0') {
-        exclude group: "org.hamcrest"
-    }
+    implementation 'org.dmfs:express-json:0.3.1'
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
 
     api 'org.dmfs:http-client-essentials:' + HTTP_CLIENT_ESSENTIALS_VERSION
