@@ -19,6 +19,7 @@ package com.smoothsync.smoothsetup.utils;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.IBinder;
 
 import org.dmfs.android.bolts.service.StubProxy;
@@ -29,15 +30,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.core.SingleSource;
+import io.reactivex.rxjava3.core.FlowableEmitter;
+import io.reactivex.rxjava3.core.FlowableOnSubscribe;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 
 /**
- * A {@link SingleSource} providing an {@link IBinder} of a service.
+ * A {@link Flowable} providing an {@link IBinder} of a service.
  * <p>
- * The service gets disconnected when the {@link Single} gets disposed.
+ * The service gets disconnected when the {@link Flowable} gets disposed.
  */
 public final class ServiceBinder extends Flowable<IBinder>
 {
@@ -93,31 +94,54 @@ public final class ServiceBinder extends Flowable<IBinder>
     @Override
     protected void subscribeActual(@io.reactivex.rxjava3.annotations.NonNull Subscriber<? super IBinder> observer)
     {
-        Flowable.<IBinder>create(
-                emitter -> {
-                    android.content.ServiceConnection connection = new android.content.ServiceConnection()
+        Flowable.using(
+                Connection::new,
+                connection -> {
+                    if (context.bindService(intent, connection, Context.BIND_AUTO_CREATE))
                     {
-
-                        @Override
-                        public void onServiceConnected(ComponentName name, IBinder service)
-                        {
-                            emitter.onNext(service);
-                        }
-
-
-                        @Override
-                        public void onServiceDisconnected(ComponentName name)
-                        {
-                            emitter.onComplete();
-                        }
-                    };
-                    emitter.setCancellable(() -> context.unbindService(connection));
-                    if (!context.bindService(intent, connection, Context.BIND_AUTO_CREATE))
+                        return Flowable.create(connection, BackpressureStrategy.MISSING);
+                    }
+                    else
                     {
-                        emitter.onError(new IllegalStateException("Can't connect to service " + intent.toString()));
+                        return Flowable.error(new IllegalStateException("Can't connect to service " + intent.toString()));
                     }
                 },
-                BackpressureStrategy.MISSING)
+                context::unbindService,
+                false
+            )
             .subscribe(observer);
+    }
+
+
+    private static final class Connection implements FlowableOnSubscribe<IBinder>, ServiceConnection
+    {
+        private FlowableEmitter<IBinder> mEmitter;
+
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service)
+        {
+            if (mEmitter != null && !mEmitter.isCancelled())
+            {
+                mEmitter.onNext(service);
+            }
+        }
+
+
+        @Override
+        public void onServiceDisconnected(ComponentName name)
+        {
+            if (mEmitter != null && !mEmitter.isCancelled())
+            {
+                mEmitter.onComplete();
+            }
+        }
+
+
+        @Override
+        public void subscribe(@io.reactivex.rxjava3.annotations.NonNull FlowableEmitter<IBinder> emitter)
+        {
+            mEmitter = emitter;
+        }
     }
 }
