@@ -37,7 +37,8 @@ public final class PermissionGroups extends DelegatingIterable<String>
         {
             try
             {
-                return packageManager.getPermissionInfo(permission, 0).group;
+                String group = packageManager.getPermissionInfo(permission, 0).group;
+                return group != null ? group : "";
             }
             catch (PackageManager.NameNotFoundException e)
             {
