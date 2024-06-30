@@ -257,7 +257,7 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
                 ((ViewGroup) mView.findViewById(R.id.container)).addView(view);
                 try
                 {
-                    if (permissionGroup.contains("permission.group"))
+                    if (permissionGroup.contains("permission-group"))
                     {
                         PermissionGroupInfo permissionGroupInfo = packageManager.getPermissionGroupInfo(permissionGroup, 0);
                         ((TextView) view.findViewById(R.id.content)).setText(permissionGroupInfo.loadLabel(packageManager));
