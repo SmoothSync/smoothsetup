@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.PermissionGroupInfo;
+import android.content.pm.PermissionInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -85,6 +86,7 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
         PERMISSION_GROUPS.put(Manifest.permission.READ_CONTACTS, Manifest.permission_group.CONTACTS);
         PERMISSION_GROUPS.put(Manifest.permission.WRITE_CONTACTS, Manifest.permission_group.CONTACTS);
         PERMISSION_GROUPS.put(Manifest.permission.POST_NOTIFICATIONS, Manifest.permission_group.NOTIFICATIONS);
+        PERMISSION_GROUPS.put(Manifest.permission.SCHEDULE_EXACT_ALARM, Manifest.permission.SCHEDULE_EXACT_ALARM);
 
     }
 
@@ -253,12 +255,20 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
             {
                 View view = inflater.inflate(R.layout.smoothsetup_permission, mView.findViewById(R.id.container), false);
                 ((ViewGroup) mView.findViewById(R.id.container)).addView(view);
-                PermissionGroupInfo permissionGroupInfo = null;
                 try
                 {
-                    permissionGroupInfo = packageManager.getPermissionGroupInfo(permissionGroup, 0);
-                    ((TextView) view.findViewById(R.id.content)).setText(permissionGroupInfo.loadLabel(packageManager));
-                    ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(permissionGroupInfo.loadIcon(packageManager));
+                    if (permissionGroup.contains("permission.group"))
+                    {
+                        PermissionGroupInfo permissionGroupInfo = packageManager.getPermissionGroupInfo(permissionGroup, 0);
+                        ((TextView) view.findViewById(R.id.content)).setText(permissionGroupInfo.loadLabel(packageManager));
+                        ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(permissionGroupInfo.loadIcon(packageManager));
+                    }
+                    else
+                    {
+                        PermissionInfo permissionInfo = packageManager.getPermissionInfo(permissionGroup, 0);
+                        ((TextView) view.findViewById(R.id.content)).setText(permissionInfo.loadLabel(packageManager));
+                        ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(permissionInfo.loadIcon(packageManager));
+                    }
                 }
                 catch (PackageManager.NameNotFoundException e)
                 {
