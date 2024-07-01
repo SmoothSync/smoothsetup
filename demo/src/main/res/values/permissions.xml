@@ -1,0 +1,11 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <array name="com.smoothsync.smoothsetup.permissions"
+            tools:ignore="InconsistentArrays">
+        <item>android.permission.READ_CALENDAR</item>
+        <item>android.permission.WRITE_CALENDAR</item>
+        <item>android.permission.READ_CONTACTS</item>
+        <item>android.permission.WRITE_CONTACTS</item>
+        <item>android.permission.POST_NOTIFICATIONS</item>
+        <item>android.permission.SCHEDULE_EXACT_ALARM</item>
+    </array>
+</resources>

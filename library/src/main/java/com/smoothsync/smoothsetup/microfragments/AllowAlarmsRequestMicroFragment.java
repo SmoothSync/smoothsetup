@@ -16,10 +16,12 @@
 
 package com.smoothsync.smoothsetup.microfragments;
 
+import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +29,6 @@ import android.widget.TextView;
 
 import com.smoothsync.smoothsetup.R;
 import com.smoothsync.smoothsetup.utils.AppLabel;
-import com.smoothsync.smoothsetup.utils.UnusedAppRestriction;
 
 import org.dmfs.android.microfragments.FragmentEnvironment;
 import org.dmfs.android.microfragments.MicroFragment;
@@ -39,50 +40,40 @@ import org.dmfs.android.microwizard.MicroWizard;
 import org.dmfs.android.microwizard.box.Boxable;
 import org.dmfs.android.microwizard.box.Unboxed;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.AlarmManagerCompat;
 import androidx.core.content.IntentCompat;
-import androidx.core.content.UnusedAppRestrictionsConstants;
 import androidx.fragment.app.Fragment;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
-
-import static java.util.Arrays.asList;
 
 
 /**
- * A {@link MicroFragment} that presents the user with a list of providers to choose from.
+ * A {@link MicroFragment} that prompts the user to allow alarms.
  *
  * @author Marten Gajda
  */
-public final class UnusedAppRestrictionsRequestMicroFragment<T extends Boxable<T>> implements MicroFragment<UnusedAppRestrictionsRequestMicroFragment.PermissionListFragment.Params<T>>
+public final class AllowAlarmsRequestMicroFragment<T extends Boxable<T>> implements MicroFragment<AllowAlarmsRequestMicroFragment.PermissionListFragment.Params<T>>
 {
-
-    public final static List<Integer> APP_RESTRICTED_VALUES = asList(
-        UnusedAppRestrictionsConstants.API_30_BACKPORT,
-        UnusedAppRestrictionsConstants.API_30,
-        UnusedAppRestrictionsConstants.API_31
-    );
-
-    public final static Creator<UnusedAppRestrictionsRequestMicroFragment<?>> CREATOR = new Creator<UnusedAppRestrictionsRequestMicroFragment<?>>()
+    public final static Creator<AllowAlarmsRequestMicroFragment<?>> CREATOR = new Creator<AllowAlarmsRequestMicroFragment<?>>()
     {
         @SuppressWarnings("unchecked") // we don't know the generic type in static context
         @Override
-        public UnusedAppRestrictionsRequestMicroFragment<?> createFromParcel(Parcel source)
+        public AllowAlarmsRequestMicroFragment<?> createFromParcel(Parcel source)
         {
-            return new UnusedAppRestrictionsRequestMicroFragment(
+            return new AllowAlarmsRequestMicroFragment(
                 (Boxable) new Unboxed<>(source).value(),
                 new Unboxed<MicroWizard<?>>(source).value());
         }
 
 
         @Override
-        public UnusedAppRestrictionsRequestMicroFragment<?>[] newArray(int size)
+        public AllowAlarmsRequestMicroFragment<?>[] newArray(int size)
         {
-            return new UnusedAppRestrictionsRequestMicroFragment[size];
+            return new AllowAlarmsRequestMicroFragment[size];
         }
     };
 
@@ -90,7 +81,7 @@ public final class UnusedAppRestrictionsRequestMicroFragment<T extends Boxable<T
     private final MicroWizard<T> mNext;
 
 
-    public UnusedAppRestrictionsRequestMicroFragment(T passthroughData, MicroWizard<T> next)
+    public AllowAlarmsRequestMicroFragment(T passthroughData, MicroWizard<T> next)
     {
         mData = passthroughData;
         mNext = next;
@@ -101,7 +92,7 @@ public final class UnusedAppRestrictionsRequestMicroFragment<T extends Boxable<T
     @Override
     public String title(@NonNull Context context)
     {
-        return context.getString(org.dmfs.android.explainandroid.R.string.explain_android_title_disable_app_hibernation);
+        return context.getString(R.string.smoothsetup_title_allow_alarms);
     }
 
 
@@ -176,13 +167,14 @@ public final class UnusedAppRestrictionsRequestMicroFragment<T extends Boxable<T
             mView = inflater.inflate(R.layout.smoothsetup_microfragment_liftrestrictions, container, false);
             mView.findViewById(R.id.button)
                 .setOnClickListener(
-                    view -> startActivityForResult(IntentCompat.createManageUnusedAppRestrictionsIntent(getContext(), getActivity().getPackageName()), 1));
+                    view -> startActivityForResult(new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM), 123));
             String appLabel = new AppLabel(getContext()).value();
-            ((TextView) mView.findViewById(R.id.message1)).setText(
-                getContext().getString(org.dmfs.android.explainandroid.R.string.explain_android_prompt_disable_app_hibernation, appLabel));
-            ((TextView) mView.findViewById(R.id.message2)).setText(
-                getContext().getString(org.dmfs.android.explainandroid.R.string.explain_android_prompt_disable_app_hibernation_reasoning, appLabel));
-            checkPermission(false);
+            ((TextView) mView.findViewById(R.id.message1)).setText(getContext().getString(R.string.smoothsetup_prompt_allow_alarms, appLabel));
+            ((TextView) mView.findViewById(R.id.message2)).setText("");
+            ((TextView) mView.findViewById(R.id.message_instructions)).setText("");
+            ((TextView) mView.findViewById(R.id.button)).setText(R.string.smoothsetup_title_allow_alarms);
+            mView.findViewById(R.id.lift_restrictions_root).setAlpha(1);
+
             return mView;
         }
 
@@ -192,31 +184,10 @@ public final class UnusedAppRestrictionsRequestMicroFragment<T extends Boxable<T
         {
             super.onActivityResult(requestCode, resultCode, data);
 
-            if (requestCode == 1)
+            if (requestCode == 123)
             {
-                checkPermission(true);
+                moveOn(mMicroFragmentEnvironment.microFragment().parameter().next());
             }
-        }
-
-
-        private void checkPermission(boolean showReasoning)
-        {
-            mDisposable = new UnusedAppRestriction(getContext())
-                .filter(value -> !APP_RESTRICTED_VALUES.contains(value))
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnComplete(() ->
-                    {
-                        if (showReasoning)
-                        {
-                            mView.findViewById(R.id.message2).setVisibility(View.VISIBLE);
-                        }
-                        mView.findViewById(R.id.lift_restrictions_root).setAlpha(1);
-                    }
-                )
-                .map(ignored -> mMicroFragmentEnvironment.microFragment().parameter().next())
-                // for now we ignore errors and move on
-                .onErrorResumeWith(Maybe.just(mMicroFragmentEnvironment.microFragment().parameter().next()))
-                .subscribe(this::moveOn);
         }
 
 

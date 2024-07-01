@@ -312,4 +312,15 @@
     -->
     <string name="smoothsetup_app_specific_password_inserted">App-specific password inserted</string>
 
+
+    <!--
+    Enable exact alarms title
+    -->
+    <string name="smoothsetup_title_allow_alarms">Allow Alarms</string>
+    <!--
+    Enable exact alarms prompt
+    -->
+    <string name="smoothsetup_prompt_allow_alarms">Please allow Alarms, so %1$s can notify you when tasks are due.</string>
+
+
 </resources>

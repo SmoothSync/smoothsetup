@@ -67,4 +67,8 @@
     <string name="smoothsetup_error_unknown_host">Adresse nicht gefunden.</string>
     <string name="smoothsetup_error_invalid_url">Bitte gib einen gültige https Adresse ein.</string>
     <string name="smoothsetup_error_insecure_scheme">Bitte gibt eine https Adresse ein.</string>
+
+    <string name="smoothsetup_title_allow_alarms">Wecker zulassen</string>
+    <string name="smoothsetup_prompt_allow_alarms">Bitte erlaube %1$s zeitgebundene Aktionen zu planen, um dich bei Fällikeit von Aufgaben zu benachrichtigen.</string>
+
 </resources>

@@ -21,7 +21,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.PermissionGroupInfo;
-import android.content.pm.PermissionInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -50,7 +49,11 @@ import org.dmfs.android.microwizard.box.Boxable;
 import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.jems2.iterable.Distinct;
 import org.dmfs.jems2.iterable.Mapped;
+import org.dmfs.jems2.iterable.PresentValues;
 import org.dmfs.jems2.iterable.Sieved;
+import org.dmfs.jems2.optional.Absent;
+import org.dmfs.jems2.optional.NullSafe;
+import org.dmfs.jems2.optional.Present;
 import org.dmfs.jems2.predicate.Equals;
 import org.dmfs.jems2.single.Collected;
 
@@ -77,7 +80,7 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
      * <p>
      * https://android.googlesource.com/platform/packages/apps/PackageInstaller/+/master/src/com/android/packageinstaller/permission/utils/Utils.java
      */
-    private final static Map<String, String> PERMISSION_GROUPS = new HashMap<>();
+    public final static Map<String, String> PERMISSION_GROUPS = new HashMap<>();
 
     static
     {
@@ -86,8 +89,6 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
         PERMISSION_GROUPS.put(Manifest.permission.READ_CONTACTS, Manifest.permission_group.CONTACTS);
         PERMISSION_GROUPS.put(Manifest.permission.WRITE_CONTACTS, Manifest.permission_group.CONTACTS);
         PERMISSION_GROUPS.put(Manifest.permission.POST_NOTIFICATIONS, Manifest.permission_group.NOTIFICATIONS);
-        PERMISSION_GROUPS.put(Manifest.permission.SCHEDULE_EXACT_ALARM, Manifest.permission.SCHEDULE_EXACT_ALARM);
-
     }
 
     public final static Creator<PermissionMicroFragment<?>> CREATOR = new Creator<PermissionMicroFragment<?>>()
@@ -228,7 +229,7 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
             mView = inflater.inflate(R.layout.smoothsetup_microfragment_permissions, container, false);
             mView.findViewById(R.id.button).setOnClickListener(this);
             PackageManager packageManager = activity.getPackageManager();
-            Iterable<String> permissionGroups = new Distinct<>(new Mapped<>(perm ->
+            Iterable<String> permissionGroups = new Distinct<>(new PresentValues<>(new Mapped<>(perm ->
             {
                 try
                 {
@@ -239,36 +240,27 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
                         String group = PERMISSION_GROUPS.get(perm);
                         if (group != null)
                         {
-                            return group;
+                            return new Present<>(group);
                         }
                         // fall through to asking packageManager, this might still work for 3rd party permission groups
                     }
-                    return packageManager.getPermissionInfo(perm, 0).group;
+                    return new NullSafe<>(packageManager.getPermissionInfo(perm, 0).group);
                 }
                 catch (PackageManager.NameNotFoundException e)
                 {
-                    return "";
+                    return Absent.absent();
                 }
             }, new Sieved<>(perm -> ContextCompat.checkSelfPermission(activity, perm) == PERMISSION_DENIED,
-                mMicroFragmentEnvironment.microFragment().parameter().permissions())));
+                mMicroFragmentEnvironment.microFragment().parameter().permissions()))));
             for (String permissionGroup : permissionGroups)
             {
                 View view = inflater.inflate(R.layout.smoothsetup_permission, mView.findViewById(R.id.container), false);
                 ((ViewGroup) mView.findViewById(R.id.container)).addView(view);
                 try
                 {
-                    if (permissionGroup.contains("permission-group"))
-                    {
-                        PermissionGroupInfo permissionGroupInfo = packageManager.getPermissionGroupInfo(permissionGroup, 0);
-                        ((TextView) view.findViewById(R.id.content)).setText(permissionGroupInfo.loadLabel(packageManager));
-                        ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(permissionGroupInfo.loadIcon(packageManager));
-                    }
-                    else
-                    {
-                        PermissionInfo permissionInfo = packageManager.getPermissionInfo(permissionGroup, 0);
-                        ((TextView) view.findViewById(R.id.content)).setText(permissionInfo.loadLabel(packageManager));
-                        ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(permissionInfo.loadIcon(packageManager));
-                    }
+                    PermissionGroupInfo permissionGroupInfo = packageManager.getPermissionGroupInfo(permissionGroup, 0);
+                    ((TextView) view.findViewById(R.id.content)).setText(permissionGroupInfo.loadLabel(packageManager));
+                    ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(permissionGroupInfo.loadIcon(packageManager));
                 }
                 catch (PackageManager.NameNotFoundException e)
                 {
@@ -308,7 +300,9 @@ public final class PermissionMicroFragment<T extends Boxable<T>> implements Micr
         {
             requestPermissions(
                 new Collected<>(ArrayList::new,
-                    mMicroFragmentEnvironment.microFragment().parameter().permissions()).value().toArray(new String[0]),
+                    new Sieved<>(
+                        PERMISSION_GROUPS::containsKey,
+                        mMicroFragmentEnvironment.microFragment().parameter().permissions())).value().toArray(new String[0]),
                 1);
         }
 

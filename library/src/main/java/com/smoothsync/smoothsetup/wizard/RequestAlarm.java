@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 dmfs GmbH
+ * Copyright (c) 2022 dmfs GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,13 @@
 
 package com.smoothsync.smoothsetup.wizard;
 
+import android.Manifest;
+import android.app.AlarmManager;
 import android.content.Context;
+import android.os.Build;
 import android.os.Parcel;
 
-import com.smoothsync.smoothsetup.microfragments.PermissionMicroFragment;
-import com.smoothsync.smoothsetup.utils.Denied;
+import com.smoothsync.smoothsetup.microfragments.AllowAlarmsRequestMicroFragment;
 import com.smoothsync.smoothsetup.utils.IterableBox;
 import com.smoothsync.smoothsetup.utils.StringBox;
 
@@ -30,23 +32,18 @@ import org.dmfs.android.microwizard.box.Box;
 import org.dmfs.android.microwizard.box.Boxable;
 import org.dmfs.android.microwizard.box.Unboxed;
 import org.dmfs.jems2.iterable.Mapped;
-import org.dmfs.jems2.iterable.Sieved;
+import org.dmfs.jems2.optional.First;
+
+import androidx.core.app.AlarmManagerCompat;
 
 
-/**
- * A MicroWizard which asks the user about one or multiple permission.
- * <p>
- * If running on Android 5 or lower this step is always skipped.
- *
- * @author Marten Gajda
- */
-public final class RequestPermissions<T extends Boxable<T>> implements MicroWizard<T>
+public final class RequestAlarm<T extends Boxable<T>> implements MicroWizard<T>
 {
     private final Iterable<String> mPermissions;
     private final MicroWizard<T> mNext;
 
 
-    public RequestPermissions(Iterable<String> permissions, MicroWizard<T> next)
+    public RequestAlarm(Iterable<String> permissions, MicroWizard<T> next)
     {
         mPermissions = permissions;
         mNext = next;
@@ -54,11 +51,14 @@ public final class RequestPermissions<T extends Boxable<T>> implements MicroWiza
 
 
     @Override
-    public MicroFragment<?> microFragment(Context context, T argument)
+    public MicroFragment<?> microFragment(Context context, T params)
     {
-        // skip this on Android 5 and below or if all permissions have been granted before
-        return !new Denied(context, new Sieved<>(PermissionMicroFragment.PERMISSION_GROUPS::containsKey, mPermissions)).iterator().hasNext() ?
-            mNext.microFragment(context, argument) : new PermissionMicroFragment<>(mPermissions, argument, mNext);
+        return
+            Build.VERSION.SDK_INT >= 31
+                && new First<>(Manifest.permission.SCHEDULE_EXACT_ALARM::equals, mPermissions).isPresent()
+                && !AlarmManagerCompat.canScheduleExactAlarms(context.getSystemService(AlarmManager.class))
+                ? new AllowAlarmsRequestMicroFragment<>(params, mNext)
+                : mNext.microFragment(context, params);
     }
 
 
@@ -100,26 +100,26 @@ public final class RequestPermissions<T extends Boxable<T>> implements MicroWiza
         @Override
         public MicroWizard<T> value()
         {
-            return new RequestPermissions<>(mPermissions, mNext);
+            return new RequestAlarm<>(mPermissions, mNext);
         }
 
 
-        public final static Creator<WizardBox<?>> CREATOR = new Creator<WizardBox<?>>()
+        public final static Creator<RequestAlarm.WizardBox<?>> CREATOR = new Creator<RequestAlarm.WizardBox<?>>()
         {
             @SuppressWarnings("unchecked") // in static context we don't know about the generic type
             @Override
-            public WizardBox<?> createFromParcel(Parcel parcel)
+            public RequestAlarm.WizardBox<?> createFromParcel(Parcel parcel)
             {
                 Iterable<Boxable<String>> boxablePermissions = new Unboxed<Iterable<Boxable<String>>>(parcel).value();
                 Iterable<String> permissions = new Mapped<>(b -> b.boxed().value(), boxablePermissions);
-                return new WizardBox(permissions, new RequestPermissions(permissions, new Unboxed<MicroWizard<?>>(parcel).value()));
+                return new WizardBox(permissions, new RequestAlarm(permissions, new Unboxed<MicroWizard<?>>(parcel).value()));
             }
 
 
             @Override
-            public WizardBox<?>[] newArray(int i)
+            public RequestAlarm.WizardBox<?>[] newArray(int i)
             {
-                return new WizardBox[i];
+                return new RequestAlarm.WizardBox[i];
             }
         };
     }

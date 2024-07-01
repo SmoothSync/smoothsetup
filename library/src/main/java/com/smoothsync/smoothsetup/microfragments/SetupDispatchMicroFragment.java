@@ -36,6 +36,7 @@ import com.smoothsync.smoothsetup.wizard.CreateAccount;
 import com.smoothsync.smoothsetup.wizard.EnterPassword;
 import com.smoothsync.smoothsetup.wizard.GenericLogin;
 import com.smoothsync.smoothsetup.wizard.LoadProvider;
+import com.smoothsync.smoothsetup.wizard.RequestAlarm;
 import com.smoothsync.smoothsetup.wizard.RequestPermissions;
 import com.smoothsync.smoothsetup.wizard.RequestUnusedAppRestrictions;
 import com.smoothsync.smoothsetup.wizard.UsernameLogin;
@@ -183,8 +184,10 @@ public final class SetupDispatchMicroFragment implements MicroFragment<SetupDisp
 
                 MicroWizard<AccountDetails> permissionsWizard = new RequestPermissions<>(
                     new StringArrayResource(getContext(), R.array.com_smoothsync_smoothsetup_permissions),
-                    new RequestUnusedAppRestrictions<>(
-                        new CreateAccount(new Congratulations(R.string.smoothsetup_message_setup_completed))));
+                    new RequestAlarm<>(
+                        new StringArrayResource(getContext(), R.array.com_smoothsync_smoothsetup_permissions),
+                        new RequestUnusedAppRestrictions<>(
+                            new CreateAccount(new Congratulations(R.string.smoothsetup_message_setup_completed)))));
                 MicroWizard<Account> passwordWizard = new EnterPassword(new VerifyLogin(permissionsWizard));
                 MicroWizard<LoginInfo> loginWizard = new UsernameLogin(passwordWizard);
 

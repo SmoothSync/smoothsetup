@@ -21,7 +21,10 @@ import android.content.pm.PackageManager;
 import org.dmfs.jems2.iterable.DelegatingIterable;
 import org.dmfs.jems2.iterable.Distinct;
 import org.dmfs.jems2.iterable.Mapped;
+import org.dmfs.jems2.iterable.PresentValues;
 import org.dmfs.jems2.iterable.Sieved;
+import org.dmfs.jems2.optional.Absent;
+import org.dmfs.jems2.optional.NullSafe;
 
 
 /**
@@ -33,17 +36,18 @@ public final class PermissionGroups extends DelegatingIterable<String>
 {
     public PermissionGroups(PackageManager packageManager, Iterable<String> permissions)
     {
-        super(new Sieved<>(permission -> permission.length() > 0, new Distinct<>(new Mapped<>(permission ->
-        {
-            try
+        super(new Sieved<>(permission -> permission.length() > 0, new Distinct<>(new PresentValues<>(
+            new Mapped<>(permission ->
             {
-                String group = packageManager.getPermissionInfo(permission, 0).group;
-                return group != null ? group : "";
-            }
-            catch (PackageManager.NameNotFoundException e)
-            {
-                return "";
-            }
-        }, permissions))));
+                try
+                {
+                    String group = packageManager.getPermissionInfo(permission, 0).group;
+                    return new NullSafe<>(group);
+                }
+                catch (PackageManager.NameNotFoundException e)
+                {
+                    return Absent.absent();
+                }
+            }, permissions)))));
     }
 }
