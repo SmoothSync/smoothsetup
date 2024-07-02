@@ -85,7 +85,8 @@ public final class Accounting implements ProviderResolutionStrategy
                                         new Ping(new BasicInstance(new UnPrefixed(pingProvider), context.getPackageName(),
                                             account.name))))))
                                 .firstOrError()
-                                .timeout(100, TimeUnit.SECONDS)
+                                .timeout(10, TimeUnit.SECONDS)
+                                .retry(5)
                                 .doOnSuccess(pingResponse -> am.setUserData(account, KEY_LAST_API_PING, DateTime.now().toString()))
                                 .flatMap(r -> r.provider().isPresent() ? Single.just(r.provider().value()) : Single.just(provider))
                                 .doOnSuccess(newProvider -> {

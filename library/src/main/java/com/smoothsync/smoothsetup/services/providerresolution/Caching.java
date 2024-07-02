@@ -64,14 +64,14 @@ public final class Caching implements ProviderResolutionStrategy
             .filter(cached -> cached.addDuration(CACHE_DURATION).after(DateTime.now()))
             .flatMap(cached -> Maybe.fromCallable(() -> am.getUserData(account, ManualProviders.KEY_PROVIDER)))
             .map(provider -> (Provider) new JsonProvider(new JSONObject(provider)))
-            .switchIfEmpty(mDelegate.provider(context, account))
-            .doOnSuccess(provider ->
-            {
-                if (provider.id().startsWith(ApiProviders.PREFIX))
+            .switchIfEmpty(mDelegate.provider(context, account)
+                .doOnSuccess(provider ->
                 {
-                    am.setUserData(account, ManualProviders.KEY_PROVIDER, new JsonText(new ProviderJson(provider)).value());
-                    am.setUserData(account, KEY_CACHE_DATE, DateTime.now().toString());
-                }
-            });
+                    if (provider.id().startsWith(ApiProviders.PREFIX))
+                    {
+                        am.setUserData(account, ManualProviders.KEY_PROVIDER, new JsonText(new ProviderJson(provider)).value());
+                        am.setUserData(account, KEY_CACHE_DATE, DateTime.now().toString());
+                    }
+                }));
     }
 }
