@@ -46,7 +46,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public final class Accounting implements ProviderResolutionStrategy
 {
     final static String KEY_LAST_API_PING = "last-api-ping";
-    final static Duration PING_GRACE_PERIOD = new Duration(1, 8);
+    final static Duration PING_GRACE_PERIOD = new Duration(1, 1000);
 
     private final PingStrategy mPingStrategy;
     private final ProviderResolutionStrategy mDelegate;
@@ -82,11 +82,12 @@ public final class Accounting implements ProviderResolutionStrategy
                                 .observeOn(Schedulers.io())
                                 .compose(new FlatMapFirst<>(smoothSyncApi ->
                                     Flowable.fromCallable(() -> smoothSyncApi.resultOf(
-                                        new Ping(new BasicInstance(new UnPrefixed(pingProvider), context.getPackageName(),
-                                            account.name))))))
+                                            new Ping(new BasicInstance(new UnPrefixed(pingProvider), context.getPackageName(),
+                                                account.name)))).
+                                        subscribeOn(Schedulers.io())))
                                 .firstOrError()
                                 .timeout(10, TimeUnit.SECONDS)
-                                .retry(5)
+                                .retry(2)
                                 .doOnSuccess(pingResponse -> am.setUserData(account, KEY_LAST_API_PING, DateTime.now().toString()))
                                 .flatMap(r -> r.provider().isPresent() ? Single.just(r.provider().value()) : Single.just(provider))
                                 .doOnSuccess(newProvider -> {

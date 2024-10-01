@@ -42,7 +42,7 @@ public final class PingFirst implements PingStrategy
     public Maybe<Provider> pingProvider(@NonNull Provider provider)
     {
         return Observable.fromIterable(mPingStrategies)
-                .flatMapMaybe(pingStrategy -> pingStrategy.pingProvider(provider))
-                .firstElement();
+            .concatMapMaybe(pingStrategy -> pingStrategy.pingProvider(provider))
+            .firstElement();
     }
 }
